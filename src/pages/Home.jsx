@@ -104,7 +104,7 @@ function Home() {
         ))}
       </div>
       <div className="flex gap-x-4">
-        <div className="flex-[4] flex w-full">
+        <div className="flex-4 flex w-full">
           <input 
             type="date"
             value={startDate}
@@ -118,7 +118,7 @@ function Home() {
             className="w-full border rounded-xl px-3 py-2"
           />
         </div>
-        <div className="flex-[4] flex w-full">
+        <div className="flex-4 flex w-full">
           <input 
             type="time"
             value={startTime}
@@ -135,7 +135,7 @@ function Home() {
         <select
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="flex-[2] w-full border rounded-xl px-3 py-2"
+          className="flex-2 w-full border rounded-xl px-3 py-2"
         >
           <option value="">Svi gradovi</option>
           {cities.map(c => (
@@ -147,15 +147,15 @@ function Home() {
       <h1 className="text-3xl">Aktivnosti</h1>
       <div className="text-md">
         <div className="flex gap-x-4">
-          <span className="flex-[5]">Ime</span>
+          <span className="flex-5">Ime</span>
 
-          <div className="flex-[4] flex items-center justify-center md:flex-row md:items-center md:gap-6">
-            <span className="flex-[3]">Datum i vreme</span>
-            <span className="flex-[2]">Lokacija</span>
-            <span className="flex-[1]">Popunjenost</span>
+          <div className="flex-4 flex items-center justify-center md:flex-row md:items-center md:gap-6">
+            <span className="flex-3">Datum i vreme</span>
+            <span className="flex-2">Lokacija</span>
+            <span className="flex-1">Popunjenost</span>
           </div>
           
-          <span className="flex-[1]"></span>
+          <span className="flex-1"></span>
         </div>
       </div>
 
@@ -165,18 +165,18 @@ function Home() {
             key={a.id}
             className="flex items-center border rounded-xl p-4 gap-x-4"
           >
-            <span className="flex-[5] font-semibold">{a.hobby}</span>
-            <div className="flex-[4] flex items-end justify-end md:flex-row md:items-center md:gap-6">
-              <div className="flex-[3] flex flex-col items-center">
+            <span className="flex-5 font-semibold">{a.hobby}</span>
+            <div className="flex-4 flex items-end justify-end md:flex-row md:items-center md:gap-6">
+              <div className="flex-3 flex flex-col items-center">
                 <span className="">{a.date}</span>
                 <span>{a.time}</span>
               </div>
-              <span className="flex-[2]">{a.location}</span>
-              <span className="flex-[1]">{a.signed}/{a.max}</span>
+              <span className="flex-2">{a.location}</span>
+              <span className="flex-1">{a.signed}/{a.max}</span>
             </div>
             <button 
               onClick={() => joinActivity(a.id)}
-              className="flex-[1] bg-secondary px-4 py-2 rounded-xl text-white"
+              className="flex-1 bg-secondary px-4 py-2 rounded-xl text-white"
             >
               Pridruzi se
             </button>
