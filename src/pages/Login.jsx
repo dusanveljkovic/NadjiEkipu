@@ -1,8 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const users = [
+  {
+    username: "tigar",
+    password: "admin"
+  },
+  {
+    username: "dusan",
+    password: "admin"
+  }
+]
+
 function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
@@ -11,13 +22,20 @@ function Login() {
 
     e.preventDefault();
 
-    console.log("Email:", email);
+    console.log("Username:", username);
     console.log("Password:", password);
 
-    const loginSuccess = true;
+    const user = users.find(
+      (u) => u.username === username && u.password === password
+    );
 
-    if (loginSuccess){
-        navigate("/");
+    if (user){
+      console.log("Login successful");
+      navigate("/home");
+    }
+    else {
+      console.log("Login failed");
+      navigate("/")
     }
     // ovde ide API poziv
   };
@@ -28,18 +46,18 @@ function Login() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Email:</label>
+          <label>Username:</label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
             style={{
-                border: "1px solid #ccc",   // okvir
-                padding: "8px",             // unutrašnji razmak
-                marginTop: "4px",           // razmak od labele
-                borderRadius: "4px",        // malo zaobljeno
-                width: "100%",              // da bude full width
+                border: "1px solid #ccc",
+                padding: "8px",
+                marginTop: "4px",
+                borderRadius: "4px",
+                width: "100%",
                 boxSizing: "border-box"
             }}
           />
@@ -53,11 +71,11 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
             style={{
-                border: "1px solid #ccc",   // okvir
-                padding: "8px",             // unutrašnji razmak
-                marginTop: "4px",           // razmak od labele
-                borderRadius: "4px",        // malo zaobljeno
-                width: "100%",              // da bude full width
+                border: "1px solid #ccc",
+                padding: "8px",
+                marginTop: "4px",
+                borderRadius: "4px",
+                width: "100%",
                 boxSizing: "border-box"
             }}
           />
