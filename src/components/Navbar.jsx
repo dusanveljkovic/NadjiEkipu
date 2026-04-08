@@ -6,11 +6,6 @@ function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    // <nav className="bg-primary text-white p-4 flex gap-4">
-    //   <Link to="/home">Home</Link>
-    //   <Link to="/about">About</Link>
-    //   <Link to="/my-profile">Moj profil</Link>
-    // </nav>
     <>
       {/* TOP BAR */}
       <nav className="bg-primary text-white p-4 flex items-center relative z-50">
@@ -71,6 +66,17 @@ function Navbar() {
             }
           >
             Chat
+          </NavLink>
+
+          <NavLink
+            to="/zahtevi"
+            onClick={() => setIsOpen(false)}
+            className={({ isActive }) =>
+              `px-3 py-2 rounded-lg transition-all duration-200 
+              ${isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-200"}`
+            }
+          >
+            Zahtevi
           </NavLink>
 
           <NavLink
