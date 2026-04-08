@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import MyProfile from "./pages/MyProfile";
@@ -6,9 +6,11 @@ import Navbar from "./components/Navbar";
 import Registration from "./pages/Registration";
 
 function App() {
+  const location = useLocation();
+  
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
+      {location.pathname !== "/login" && <Navbar />}
       <div className="p-4">
         <Routes>
           <Route path="/" element={<Login />} />
