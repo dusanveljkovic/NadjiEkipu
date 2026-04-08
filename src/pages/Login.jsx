@@ -18,6 +18,10 @@ function Login() {
 
   const navigate = useNavigate();
 
+  const handleRegistration = (e) => {
+    navigate("/registration");
+  }
+
   const handleSubmit = (e) => {
 
     e.preventDefault();
@@ -35,7 +39,7 @@ function Login() {
     }
     else {
       console.log("Login failed");
-      navigate("/")
+      navigate("/");
     }
     // ovde ide API poziv
   };
@@ -80,8 +84,10 @@ function Login() {
             }}
           />
         </div>
-
-        <button type="submit">Uloguj se</button>
+            <div style={{display: "flex", gap: "20px"}}>
+             <button type="submit">Uloguj se</button>
+             <button type="button" onClick={handleRegistration}>Registruj se</button>
+        </div>
       </form>
     </div>
   );

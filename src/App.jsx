@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import MyProfile from "./pages/MyProfile";
 import Navbar from "./components/Navbar";
+import Registration from "./pages/Registration";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/home" element={<Home />}/>
           <Route path="/login" element={<Login />} />
           <Route path="my-profile" element={<MyProfile />} />
+          <Route path="/registration" element={<Registration />}/>
         </Routes>
       </div>
     </div>
