@@ -62,9 +62,9 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 - 🟥 Brisanje interesovanja  
 
 ### Administrator
-- 🟥 Pregled korisnika  
-- 🟥 Brisanje korisnika  
-- 🟥 Dodela moderatora  
+- 🟦 Pregled korisnika  
+- 🟦 Brisanje korisnika  
+- 🟦 Dodela moderatora  
 - 🟥 Pregled statistike  
 
 ### Napredno
