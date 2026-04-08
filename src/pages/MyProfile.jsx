@@ -1,6 +1,7 @@
 import React from "react";
 import Avatar from "../assets/avatar1.png";
 import Button from "../components/Button";
+import MojeInteresovanjeKartica from "../components/MojeInteresovanjeKartica";
 
 const user = {
   fullName: "Kralj Karaburme",
@@ -68,28 +69,11 @@ export default function ProfilePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {interests.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-2xl p-5 shadow-md border border-primary bg-linear-to-br from-white to-gray-50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-              >
-                <h3 className="text-lg font-bold mb-2 text-primary">
-                  {item.name}
-                </h3>
-
-                <div className="mb-2">
-                  <p className="text-sm text-gray-600">Skill level</p>
-                  <div className="w-full bg-gray-200 h-2 rounded-full mt-1">
-                    <div
-                      className="bg-primary h-2 rounded-full"
-                      style={{ width: `${item.skill * 10}%` }}
-                    />
-                  </div>
-                </div>
-
-                <p className="text-sm text-gray-600">
-                  Prisustva aktivnosti: <span className="font-semibold">{item.count}</span>
-                </p>
-              </div>
+                <MojeInteresovanjeKartica
+                    key={item.id}
+                    item={item}
+                    onEdit={(item) => console.log("edit:", item)}
+                />
             ))}
           </div>
         </div>
