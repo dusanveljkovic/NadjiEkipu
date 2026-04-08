@@ -52,14 +52,14 @@ function Navbar() {
 
         <div className="flex flex-col p-4 gap-2">
           <NavLink
-            to="/"
+            to="/home"
             onClick={() => setIsOpen(false)}
             className={({ isActive }) =>
               `px-3 py-2 rounded-lg transition-all duration-200 
               ${isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-200"}`
             }
           >
-            Početna
+            Aktivnosti
           </NavLink>
 
           <NavLink
