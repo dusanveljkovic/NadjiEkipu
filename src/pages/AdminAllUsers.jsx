@@ -1,57 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { users } from "../data/users";
 
 
-const requestsMock = [
-  {
-    id: 1,
-    fullName: "jana",
-    username: "voli_fonovca",
-    email: "jana@gmail.com",
-    birthYear: 2004,
-    
-  },
-  {
-    id: 2,
-    fullName: "ana",
-    username: "voli_matiju",
-    email: "ana@gmail.com",
-    birthYear: 2004,
-  },
-  {
-    id: 3,
-    fullName: "fonovac",
-    username: "voli_janu",
-    email: "fonovac@gmail.com",
-    birthYear: 2004,
-  },
-  {
-    id: 4,
-    fullName: "matija",
-    username: "voli_anu",
-    email: "matija@gmail.com",
-    birthYear: 2000,
-  },
-];
-
-function AdminZahtevi() {
+function AdminAllUsers() {
   const navigate = useNavigate();
 
-  const [requests, setRequests] = useState(requestsMock);
+  const [all_users, setAllUsers] = useState(users);
 
-  const handleAccept = (id) => {
-    setRequests(requests.filter((r) => r.id !== id));
-    console.log("Prihvaćen:", id);
-  };
-
-  const handleReject = (id) => {
-    setRequests(requests.filter((r) => r.id !== id));
-    console.log("Odbijen:", id);
+  const handleDelete = (id) => {
+    setRequests(all_users.filter((r) => r.id !== id));
+    console.log("Odrisan korisnik:", id);
   };
 
   return (
     <div className="flex flex-col gap-4 p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-semibold text-accent">Zahtevi za moderatora</h1>
+      <h1 className="text-3xl font-semibold text-accent">Svi korisnici</h1>
 
       {/* Header */}
       <div className="flex gap-x-4 text-md font-semibold">
@@ -59,12 +23,12 @@ function AdminZahtevi() {
         <span className="flex-3">Username</span>
         <span className="flex-3">Email</span>
         <span className="flex-2">Godiste</span>
-        <span className="flex-2 pr-4 text-right">Akcije</span>
+        <span className="flex-2 pr-4 text-right">Obrisi</span>
       </div>
 
       {/* Lista */}
       <div className="space-y-3">
-        {requests.map((user) => (
+        {all_users.map((user) => (
          <div
             key={user.id}
             className="flex items-center border rounded-xl p-4 gap-x-4 
@@ -88,26 +52,23 @@ function AdminZahtevi() {
             {/* Akcije */}
             <div className="flex-2 flex justify-end gap-3 text-lg">
               <button
-                onClick={() => handleAccept(user.id)}
-                className="text-green-500 hover:scale-110 transition"
-                title="Prihvati"
+                onClick={() => handleDelete(user.id)}
+                className="text-gray hover:scale-110 transition"
+                title="Obrisi"
               >
-                <i className="fa-solid fa-check"></i>
-              </button>
-
-              <button
-                onClick={() => handleReject(user.id)}
-                className="text-red-500 hover:scale-110 transition"
-                title="Odbij"
-              >
-                <i className="fa-solid fa-xmark"></i>
+                <i className="fa-solid fa-trash"></i>
               </button>
             </div>
           </div>
         ))}
       </div>
+      <div className="flex justify-center mt-6 gap-2">
+        <button className="px-3 py-1 border rounded"><i className="fa-solid fa-chevron-left"></i></button>
+        <span className="px-3 py-1">1 / 5</span>
+        <button className="px-3 py-1 border rounded"><i className="fa-solid fa-chevron-right"></i></button>
+      </div>
     </div>
   );
 }
 
-export default AdminZahtevi;
+export default AdminAllUsers;

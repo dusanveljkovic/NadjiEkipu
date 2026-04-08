@@ -69,7 +69,18 @@ function Navbar() {
           </NavLink>
 
           <NavLink
-            to="/zahtevi"
+            to="/all_users"
+            onClick={() => setIsOpen(false)}
+            className={({ isActive }) =>
+              `px-3 py-2 rounded-lg transition-all duration-200 
+              ${isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-200"}`
+            }
+          >
+            Svi korisnici
+          </NavLink>
+
+          <NavLink
+            to="/requests"
             onClick={() => setIsOpen(false)}
             className={({ isActive }) =>
               `px-3 py-2 rounded-lg transition-all duration-200 

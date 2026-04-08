@@ -4,7 +4,9 @@ import Login from "./pages/Login";
 import MyProfile from "./pages/MyProfile";
 import Navbar from "./components/Navbar";
 import Registration from "./pages/Registration";
-import AdminZahtevi from "./pages/AdminZahtevi";
+import AdminRequests from "./pages/AdminRequests";
+import AdminAllUsers from "./pages/AdminAllUsers";
+
 
 function App() {
   const location = useLocation();
@@ -19,7 +21,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />}/>
           <Route path="my-profile" element={<MyProfile />} />
-          <Route path="/zahtevi" element={<AdminZahtevi />}/>
+          <Route path="/requests" element={<AdminRequests />}/>
+          <Route path="/all_users" element={<AdminAllUsers />}/>
         </Routes>
       </div>
     </div>
