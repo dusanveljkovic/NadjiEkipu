@@ -4,6 +4,8 @@ import Login from "./pages/Login";
 import MyProfile from "./pages/MyProfile";
 import Navbar from "./components/Navbar";
 import Registration from "./pages/Registration";
+import SingleChat from "./pages/SingleChat"
+import MyChats from "./pages/MyChats";
 
 function App() {
   const location = useLocation();
@@ -16,8 +18,10 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/home" element={<Home />}/>
           <Route path="/login" element={<Login />} />
-          <Route path="my-profile" element={<MyProfile />} />
+          <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/registration" element={<Registration />}/>
+          <Route path="/mock-chat" element={<SingleChat />}/>
+          <Route path="/my-chats" element={<MyChats />}/>
         </Routes>
       </div>
     </div>

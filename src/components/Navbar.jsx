@@ -22,7 +22,7 @@ function Navbar() {
         </button>
         <h1 className="font-bold text-lg">NađiEkipu</h1>
         <div className="ml-auto">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <i className="fa-solid fa-arrow-right-from-bracket"></i>
         </div>
       </nav>
 
