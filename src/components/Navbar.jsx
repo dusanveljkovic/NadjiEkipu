@@ -21,11 +21,6 @@ function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    // <nav className="bg-primary text-white p-4 flex gap-4">
-    //   <Link to="/home">Home</Link>
-    //   <Link to="/about">About</Link>
-    //   <Link to="/my-profile">Moj profil</Link>
-    // </nav>
     <>
       {/* TOP BAR */}
       <nav className="bg-primary text-white p-4 flex items-center relative z-50">
@@ -69,6 +64,8 @@ function Navbar() {
           <NavbarItem to="/home" onClickF={() => setIsOpen(false)} name="Aktivnosti" />
           <NavbarItem to="/my-chats" onClickF={() => setIsOpen(false)} name="Moji cetovi" />
           <NavbarItem to="/my-profile" onClickF={() => setIsOpen(false)} name="Moj profil" />
+          <NavbarItem to="/all-users" onClickF={() => setIsOpen(false)} name="Svi korisnici" />
+          <NavbarItem to="/requests" onClickF={() => setIsOpen(false)} name="Zahtevi za moderaciju" />
         </div>
       </div>
     </>
