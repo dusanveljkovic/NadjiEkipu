@@ -54,7 +54,8 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 - 🟦 Filter po lokaciji  
 
 ### Chat
-- 🟥 Chat između učesnika  
+- 🟦 Prikaz svi chetova za korisnika
+- 🟦 Chat između učesnika  
 - 🟥 Automatsko brisanje chata  
 
 ### Moderator

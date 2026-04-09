@@ -4,9 +4,10 @@ import Login from "./pages/Login";
 import MyProfile from "./pages/MyProfile";
 import Navbar from "./components/Navbar";
 import Registration from "./pages/Registration";
+import SingleChat from "./pages/SingleChat"
+import MyChats from "./pages/MyChats";
 import AdminRequests from "./pages/AdminRequests";
 import AdminAllUsers from "./pages/AdminAllUsers";
-
 
 function App() {
   const location = useLocation();
@@ -19,8 +20,10 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/home" element={<Home />}/>
           <Route path="/login" element={<Login />} />
+          <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/registration" element={<Registration />}/>
-          <Route path="my-profile" element={<MyProfile />} />
+          <Route path="/mock-chat" element={<SingleChat />}/>
+          <Route path="/my-chats" element={<MyChats />}/>
           <Route path="/requests" element={<AdminRequests />}/>
           <Route path="/all_users" element={<AdminAllUsers />}/>
         </Routes>
@@ -30,3 +33,4 @@ function App() {
 }
 
 export default App;
+

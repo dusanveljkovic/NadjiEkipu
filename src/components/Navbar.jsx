@@ -2,6 +2,21 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Logo from "../assets/logo.png";
 
+function NavbarItem({to, onClickF, name}) {
+  return (
+    <NavLink
+      to={to}
+      onClick={() => onClickF()}
+      className={({ isActive }) =>
+        `px-3 py-2 rounded-lg transition-all duration-200 
+        ${isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-200"}`
+      }
+    >
+      {name}
+    </NavLink>
+  )
+}
+
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -17,7 +32,7 @@ function Navbar() {
         </button>
         <h1 className="font-bold text-lg">NađiEkipu</h1>
         <div className="ml-auto">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <i className="fa-solid fa-arrow-right-from-bracket"></i>
         </div>
       </nav>
 
@@ -46,60 +61,11 @@ function Navbar() {
         </div>
 
         <div className="flex flex-col p-4 gap-2">
-          <NavLink
-            to="/home"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `px-3 py-2 rounded-lg transition-all duration-200 
-              ${isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-200"}`
-            }
-          >
-            Aktivnosti
-          </NavLink>
-
-          <NavLink
-            to="/chat"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `px-3 py-2 rounded-lg transition-all duration-200 
-              ${isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-200"}`
-            }
-          >
-            Chat
-          </NavLink>
-
-          <NavLink
-            to="/all_users"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `px-3 py-2 rounded-lg transition-all duration-200 
-              ${isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-200"}`
-            }
-          >
-            Svi korisnici
-          </NavLink>
-
-          <NavLink
-            to="/requests"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `px-3 py-2 rounded-lg transition-all duration-200 
-              ${isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-200"}`
-            }
-          >
-            Zahtevi
-          </NavLink>
-
-          <NavLink
-            to="/my-profile"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `px-3 py-2 rounded-lg transition-all duration-200 
-              ${isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-200"}`
-            }
-          >
-            Moj profil
-          </NavLink>
+          <NavbarItem to="/home" onClickF={() => setIsOpen(false)} name="Aktivnosti" />
+          <NavbarItem to="/my-chats" onClickF={() => setIsOpen(false)} name="Moji cetovi" />
+          <NavbarItem to="/my-profile" onClickF={() => setIsOpen(false)} name="Moj profil" />
+          <NavbarItem to="/all-users" onClickF={() => setIsOpen(false)} name="Svi korisnici" />
+          <NavbarItem to="/requests" onClickF={() => setIsOpen(false)} name="Zahtevi za moderaciju" />
         </div>
       </div>
     </>
