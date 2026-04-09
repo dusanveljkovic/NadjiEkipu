@@ -48,7 +48,40 @@ const mockActivities = [
   },
 ]
 
+const HOBBY_COLORS = [
+  { bg: "#EEEDFE", color: "#534AB7" },
+  { bg: "#E1F5EE", color: "#0F6E56" },
+  { bg: "#FAECE7", color: "#993C1D" },
+  { bg: "#E6F1FB", color: "#185FA5" },
+  { bg: "#FBEAF0", color: "#993556" },
+  { bg: "#FAEEDA", color: "#854F0B" },
+  { bg: "#EAF3DE", color: "#3B6D11" },
+  { bg: "#FCEBEB", color: "#A32D2D" },
+];
+ 
+function hobbyColor(hobby) {
+  let hash = 0;
+  for (let i = 0; i < hobby.length; i++) hash = hobby.charCodeAt(i) + ((hash << 5) - hash);
+  return HOBBY_COLORS[Math.abs(hash) % HOBBY_COLORS.length];
+}
 
+function FillBar({ signed, max }) {
+  const pct = Math.round((signed / max) * 100);
+  const full = pct >= 90;
+  const mid  = pct >= 60;
+  const barColor = full ? "#A32D2D" : mid ? "#854F0B" : "#534AB7";
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 80 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#6b6b67" }}>
+        <span>{signed}/{max}</span>
+        <span style={{ color: barColor, fontWeight: 500 }}>{pct}%</span>
+      </div>
+      <div style={{ height: 4, borderRadius: 99, background: "rgba(0,0,0,0.08)", overflow: "hidden" }}>
+        <div style={{ width: `${pct}%`, height: "100%", borderRadius: 99, background: barColor, transition: "width 0.3s" }} />
+      </div>
+    </div>
+  );
+}
 function Home() {
   const [search, setSearch] = useState("")
   const [selectedHobbies, setSelectedHobbies] = useState([])
@@ -58,10 +91,12 @@ function Home() {
   const [endTime, setEndTime] = useState("")
   const [location, setLocation] = useState("")
   const [activites, setActivites] = useState(mockActivities)
+  const [page, setPage] = useState(1)
+
 
   const filteredHobbies = hobbies.filter(h => h.toLowerCase().includes(search.toLowerCase()))
 
-  const filteredActivites = useMemo(() => {
+  const filteredActivities = useMemo(() => {
     return activites.filter((a) => {
       return (
         (selectedHobbies.length === 0 || selectedHobbies.includes(a.hobby)) &&
@@ -74,6 +109,10 @@ function Home() {
     })
   }, [activites, selectedHobbies, startDate, endDate, startTime, endTime, location])
 
+  const PAGE_SIZE = 5
+  const totalPages = Math.max(1, Math.ceil(filteredActivities.length / PAGE_SIZE));
+  const safePage   = Math.min(page, totalPages);
+  const pageSlice  = filteredActivities.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
   const joinActivity = (id) => {}
 
   const handleSelectedHobby = (hobby => {
@@ -86,111 +125,269 @@ function Home() {
     console.log(selectedHobbies)
   })
 
+  const inputStyle = {
+    width: "100%",
+    border: "0.5px solid rgba(0,0,0,0.18)",
+    borderRadius: 10,
+    padding: "8px 12px",
+    fontSize: 13,
+    fontFamily: "inherit",
+    color: "#1a1a18",
+    background: "#f5f5f3",
+    outline: "none",
+  }
+
   return (
-    <div className="flex flex-col gap-4 p-6 max-w-5xl mx-auto">
-      <div className="space-y-4">
-        <input type="text" placeholder="Pretrazi interesovanja..." value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full border border-primary rounded-xl px-4 py-2"/>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {filteredHobbies.map((hobby) => (
-          <button key={hobby}
-          onClick={() => handleSelectedHobby(hobby)}
-          className={`px-3 py-1 rounded-full ${selectedHobbies.includes(hobby) ? "bg-accent text-white border border-md" : "bg-secondary text-white"}`}
-          >
-            {hobby}
-          </button>
-        ))}
-      </div>
-      <div className="flex gap-x-4">
-        <div className="flex-4 flex w-full">
-          <input 
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="w-full border rounded-xl px-3 py-2"
-          />
-          <input 
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="w-full border rounded-xl px-3 py-2"
-          />
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#f5f5f3",
+        fontFamily: "",
+        padding: "32px 16px",
+      }}
+    >
+      <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+ 
+        {/* Page title */}
+        <div>
+          <h1 style={{ fontSize: 22, fontWeight: 500, color: "#1a1a18", margin: 0 }}>Aktivnosti</h1>
+          <p style={{ fontSize: 12, color: "#9ca3a0", marginTop: 4 }}>
+            {filteredActivities.length} {filteredActivities.length === 1 ? "rezultat" : "rezultata"}
+          </p>
         </div>
-        <div className="flex-4 flex w-full">
-          <input 
-            type="time"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            className="w-full border rounded-xl px-3 py-2"
-          />
-          <input 
-            type="time"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            className="w-full border rounded-xl px-3 py-2"
-          />
-        </div>
-        <select
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="flex-2 w-full border rounded-xl px-3 py-2"
+ 
+        {/* Filter card */}
+        <div
+          style={{
+            background: "white",
+            border: "0.5px solid rgba(0,0,0,0.1)",
+            borderRadius: 12,
+            padding: "20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+          }}
         >
-          <option value="">Svi gradovi</option>
-          {cities.map(c => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
-      </div>
-
-      <h1 className="text-3xl">Aktivnosti</h1>
-      <div className="text-md">
-        <div className="flex gap-x-4">
-          <span className="flex-5">Ime</span>
-
-          <div className="flex-4 flex items-center justify-center md:flex-row md:items-center md:gap-6">
-            <span className="flex-3">Datum i vreme</span>
-            <span className="flex-2">Lokacija</span>
-            <span className="flex-1">Popunjenost</span>
-          </div>
-          
-          <span className="flex-1"></span>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        {filteredActivites.map(a => (
-          <div 
-            key={a.id}
-            className="flex items-center border rounded-xl p-4 gap-x-4"
-          >
-            <span className="flex-5 font-semibold">{a.hobby}</span>
-            <div className="flex-4 flex items-end justify-end md:flex-row md:items-center md:gap-6">
-              <div className="flex-3 flex flex-col items-center">
-                <span className="">{a.date}</span>
-                <span>{a.time}</span>
-              </div>
-              <span className="flex-2">{a.location}</span>
-              <span className="flex-1">{a.signed}/{a.max}</span>
+          {/* Search + hobby chips */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ position: "relative" }}>
+              <svg
+                width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3a0" strokeWidth="2"
+                style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)" }}
+              >
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Pretrazi interesovanja..."
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                style={{ ...inputStyle, paddingLeft: 32 }}
+              />
             </div>
-            <button 
-              onClick={() => joinActivity(a.id)}
-              className="flex-1 bg-secondary px-4 py-2 rounded-xl text-white"
+ 
+            {filteredHobbies.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {filteredHobbies.map((hobby) => {
+                  const active = selectedHobbies.includes(hobby);
+                  return (
+                    <button
+                      key={hobby}
+                      onClick={() => toggleHobby(hobby)}
+                      style={{
+                        padding: "5px 12px",
+                        borderRadius: 99,
+                        fontSize: 12,
+                        fontWeight: active ? 500 : 400,
+                        fontFamily: "inherit",
+                        cursor: "pointer",
+                        border: active ? "none" : "0.5px solid rgba(0,0,0,0.15)",
+                        background: active ? "#534AB7" : "transparent",
+                        color: active ? "white" : "#6b6b67",
+                        transition: "all 0.15s",
+                      }}
+                    >
+                      {hobby}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+ 
+          {/* Date / time / city row */}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 6, flex: "1 1 220px" }}>
+              <input type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); setPage(1); }} style={inputStyle} />
+              <input type="date" value={endDate}   onChange={(e) => { setEndDate(e.target.value);   setPage(1); }} style={inputStyle} />
+            </div>
+            <div style={{ display: "flex", gap: 6, flex: "1 1 160px" }}>
+              <input type="time" value={startTime} onChange={(e) => { setStartTime(e.target.value); setPage(1); }} style={inputStyle} />
+              <input type="time" value={endTime}   onChange={(e) => { setEndTime(e.target.value);   setPage(1); }} style={inputStyle} />
+            </div>
+            <select
+              value={location}
+              onChange={(e) => { setLocation(e.target.value); setPage(1); }}
+              style={{ ...inputStyle, flex: "0 1 160px", cursor: "pointer" }}
             >
-              Pridruzi se
+              <option value="">Svi gradovi</option>
+              {cities.map((c) => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+        </div>
+ 
+        {/* Activity list */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {pageSlice.length === 0 ? (
+            <div
+              style={{
+                background: "white",
+                border: "0.5px solid rgba(0,0,0,0.1)",
+                borderRadius: 12,
+                padding: "40px 20px",
+                textAlign: "center",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+              }}
+            >
+              <div style={{ fontSize: 28, marginBottom: 8 }}>🔍</div>
+              <p style={{ fontSize: 14, color: "#6b6b67", margin: 0 }}>Nema aktivnosti koje odgovaraju filterima</p>
+              <p style={{ fontSize: 12, color: "#9ca3a0", marginTop: 4 }}>Pokušaj da promeniš pretragu ili filtere</p>
+            </div>
+          ) : (
+            pageSlice.map((a) => {
+              const { bg, color } = hobbyColor(a.hobby);
+              const full = a.signed >= a.max;
+              return (
+                <div
+                  key={a.id}
+                  style={{
+                    background: "white",
+                    border: "0.5px solid rgba(0,0,0,0.1)",
+                    borderRadius: 12,
+                    padding: "14px 18px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                    transition: "box-shadow 0.15s",
+                  }}
+                >
+                  {/* Hobby badge */}
+                  <div
+                    style={{
+                      width: 42, height: 42, borderRadius: "50%",
+                      background: bg, color,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 11, fontWeight: 500, flexShrink: 0,
+                      textAlign: "center", lineHeight: 1.2,
+                    }}
+                  >
+                    {a.hobby.slice(0, 3).toUpperCase()}
+                  </div>
+ 
+                  {/* Name */}
+                  <div style={{ flex: "0 0 140px", minWidth: 0 }}>
+                    <p style={{ fontSize: 14, fontWeight: 500, color: "#1a1a18", margin: 0 }}>{a.hobby}</p>
+                  </div>
+ 
+                  {/* Date & time */}
+                  <div style={{ flex: "0 0 100px", display: "flex", flexDirection: "column", gap: 2 }}>
+                    <span style={{ fontSize: 12, color: "#1a1a18" }}>{a.date}</span>
+                    <span style={{ fontSize: 11, color: "#9ca3a0" }}>{a.time}</span>
+                  </div>
+ 
+                  {/* Location */}
+                  <div style={{ flex: "0 0 100px", display: "flex", alignItems: "center", gap: 5 }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3a0" strokeWidth="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span style={{ fontSize: 12, color: "#6b6b67" }}>{a.location}</span>
+                  </div>
+ 
+                  {/* Fill bar */}
+                  <div style={{ flex: 1 }}>
+                    <FillBar signed={a.signed} max={a.max} />
+                  </div>
+ 
+                  {/* Join button */}
+                  <button
+                    onClick={() => !full && joinActivity(a.id)}
+                    disabled={full}
+                    style={{
+                      flexShrink: 0,
+                      padding: "7px 16px",
+                      borderRadius: 8,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      fontFamily: "inherit",
+                      cursor: full ? "not-allowed" : "pointer",
+                      border: "none",
+                      background: full ? "rgba(0,0,0,0.06)" : "#534AB7",
+                      color: full ? "#9ca3a0" : "white",
+                      transition: "opacity 0.15s",
+                    }}
+                    onMouseEnter={(e) => { if (!full) e.currentTarget.style.opacity = "0.85"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+                  >
+                    {full ? "Popunjeno" : "Pridruži se"}
+                  </button>
+                </div>
+              );
+            })
+          )}
+        </div>
+ 
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 4 }}>
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={safePage === 1}
+              style={{
+                width: 32, height: 32, borderRadius: 8, border: "0.5px solid rgba(0,0,0,0.15)",
+                background: "white", cursor: safePage === 1 ? "not-allowed" : "pointer",
+                color: safePage === 1 ? "#9ca3a0" : "#1a1a18", fontSize: 14, fontFamily: "inherit",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              ‹
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <button
+                key={n}
+                onClick={() => setPage(n)}
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: n === safePage ? "none" : "0.5px solid rgba(0,0,0,0.15)",
+                  background: n === safePage ? "#534AB7" : "white",
+                  color: n === safePage ? "white" : "#1a1a18",
+                  fontSize: 12, fontWeight: n === safePage ? 500 : 400,
+                  fontFamily: "inherit", cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safePage === totalPages}
+              style={{
+                width: 32, height: 32, borderRadius: 8, border: "0.5px solid rgba(0,0,0,0.15)",
+                background: "white", cursor: safePage === totalPages ? "not-allowed" : "pointer",
+                color: safePage === totalPages ? "#9ca3a0" : "#1a1a18", fontSize: 14, fontFamily: "inherit",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              ›
             </button>
           </div>
-        ))}
-      </div>
-
-      <div className="flex justify-center mt-6 gap-2">
-        <button className="px-3 py-1 border rounded">◀</button>
-        <span className="px-3 py-1">1 / 5</span>
-        <button className="px-3 py-1 border rounded">▶</button>
+        )}
       </div>
     </div>
-    );
+  );
 }
 
 export default Home;
