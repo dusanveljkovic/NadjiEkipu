@@ -1,43 +1,52 @@
 import {useEffect, useRef, useState} from "react"
 import ChatAvatar from "../components/ChatAvatar"
+const primaryColor = "#3852B4";
 
 const users = [
-  { name: "jana", initials: "JA", online: true, bg: "#E1F5EE", color: "#0F6E56"},
+  { name: "jana", initials: "JA", online: true, bg: "#EEEEEE", color: "#0F6E56"},
   { name: "ana", initials: "AN", online: true, bg: "#FAECE7", color: "#993C1D"},
   { name: "dusan", initials: "DU", online: false, bg: "#E6F1FB", color: "#185FA5"},
   { name: "tigar", initials: "TI", online: true, bg: "#FAEEDA", color: "#854F0B"},
 ]
 
 const initial_messages = [
-  {id: 1,  name: "jana", initials: "JA", online: true, bg: "#E1F5EE", color: "#0F6E56", text: "text1", self: false},
-  {id: 2,  name: "jana", initials: "JA", online: true, bg: "#E1F5EE", color: "#0F6E56", text: "text2", self: false},
-  {id: 3,  name: "jana", initials: "JA", online: true, bg: "#E1F5EE", color: "#0F6E56", text: "text3", self: false},
-  {id: 4, name: "tigar", initials: "TI", online: false, bg: "#FAEEDA", color: "#854F0B", text: "text4", self: false},
-  {id: 5, name: "tigar", initials: "TI", online: false, bg: "#FAEEDA", color: "#854F0B", text: "text5", self: false},
+  {id: 1,  name: "jana", initials: "JA", time: "13:00", online: true, bg: "#E1F5EE", color: "#0F6E56", text: "text1", self: false},
+  {id: 2,  name: "jana", initials: "JA", time: "13:02", online: true, bg: "#E1F5EE", color: "#0F6E56", text: "text2", self: false},
+  {id: 3,  name: "jana", initials: "JA", time: "13:03", online: true, bg: "#E1F5EE", color: "#0F6E56", text: "text3", self: false},
+  {id: 4, name: "tigar", initials: "TI", time: "13:04", online: false, bg: "#FAEEDA", color: "#854F0B", text: "text4", self: false},
+  {id: 5, name: "tigar", initials: "TI", time: "13:05", online: false, bg: "#FAEEDA", color: "#854F0B", text: "text5", self: false},
 ]
 
 function getTime() {
   return new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})
 }
 
-function Message({msg}) {
+function Message({msg, showAvatar, last}) {
+  const AVATAR_SIZE = 32
   return (
     <div className={`flex gap-2 items-start ${msg.self ? "flex-row-reverse": ""}`}>
-      <ChatAvatar initials={msg.initials} bg={msg.bg} color={msg.color} />
+      {showAvatar ? (
+        <ChatAvatar initials={msg.initials} bg={msg.bg} color={msg.color} size={AVATAR_SIZE} />
+      ) : (
+        <div style={{width: AVATAR_SIZE, flexShrink: 0 }} />
+      )}
       <div className={`flex flex-col gap-1 max-w-[%62] ${msg.self ? "items-end" : ""}`}>
-        {!msg.self && (
+        {!msg.self && showAvatar && (
           <span className="text-[11px] text-gray-400">{msg.name}</span>
         )}
         <div 
           className="px-3 py-2 rounded-2xl text-[13px] leading-relaxed break-words"
           style={
             msg.self
-              ? {background: "#534AB7", color: "#ffffff"}
-              : {background: "white", border: "0.5px solid rgba(0,0,0,0.1)", color: "#1a1a18"}
+              ? {background: primaryColor, color: "white"}
+              : {background: "white", border: "0.5px solid rgba(0,0,0,0.1)", color: "black"}
           }
         >
           {msg.text}
         </div>
+        {last && (
+          <span className="text-[10px] text-gray-400 mb-4">{msg.time}</span>
+        )}
       </div>
     </div>
   )
@@ -82,9 +91,9 @@ export default function ChatPage() {
         name: "Me",
         initials: "ME",
         bg: "#EEEDFE",
-        color: "#534AB7",
+        color: primaryColor,
         text,
-        time: getTime,
+        time: getTime(),
         self: true
       }
     ])
@@ -96,7 +105,7 @@ export default function ChatPage() {
 
   function handleKeyDown(e) {
     if(e.key === "Enter" && !e.shiftKey) {
-      e.preventDefualt()
+      e.preventDefault()
       sendMessage()
     }
   }
@@ -137,12 +146,20 @@ export default function ChatPage() {
           </div>
  
           <div
-            className="flex-1 overflow-y-auto flex flex-col gap-4 p-5"
+            className="flex-1 overflow-y-auto flex flex-col p-5"
             style={{ background: "#efefed" }}
           >
-            {messages.map((msg) => (
-              <Message key={msg.id} msg={msg} />
-            ))}
+            {messages.map((msg, i) => {
+              const prev = messages[i - 1]
+              const next = messages[i + 1]
+              const sameAsNext = next && next.name === msg.name && next.self === msg.self
+              const sameAsPrev = prev && prev.name === msg.name && prev.self === msg.self;
+              return (
+                <div key={msg.id} style={{marginTop: sameAsPrev ? 2 : 12}}>
+                  <Message msg={msg} showAvatar={!sameAsPrev} last={!sameAsNext} />
+                </div>
+              )
+            })}
             <div ref={messagesEndRef} />
           </div>
  
@@ -176,8 +193,8 @@ export default function ChatPage() {
  
         <div className="flex-3 flex flex-col bg-white">
           <div className="px-4 py-3 border-b border-black/10">
-            <p className="text-[13px] font-medium text-gray-900">Members</p>
-            <p className="text-[11px] text-gray-500 mt-0.5">{users.length} members</p>
+            <p className="text-[13px] font-medium text-gray-900">Korisnici</p>
+            <p className="text-[11px] text-gray-500 mt-0.5">{users.length} korisnika</p>
           </div>
  
           <div className="flex-1 overflow-y-auto py-2">
