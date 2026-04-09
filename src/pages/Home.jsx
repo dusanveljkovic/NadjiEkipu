@@ -124,6 +124,12 @@ function Home() {
     console.log(Array.isArray(selectedHobbies))
     console.log(selectedHobbies)
   })
+  const toggleHobby = (hobby) => {
+    setPage(1);
+    setSelectedHobbies((prev) =>
+      prev.includes(hobby) ? prev.filter((x) => x !== hobby) : [...prev, hobby]
+    );
+  };
 
   const inputStyle = {
     width: "100%",
