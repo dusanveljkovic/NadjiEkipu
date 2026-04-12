@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Avatar from "../assets/avatar1.png";
 import Button from "../components/Button";
@@ -100,7 +99,7 @@ export default function ProfilePage() {
                   item={{
                     id: hobby.id,
                     name: hobby.name,
-                    icon: hobby.icon,  // OVO JE BITNO - ikona mora da postoji
+                    icon: hobby.icon,  
                     skill: hobby.skill,
                     count: hobby.count
                   }}

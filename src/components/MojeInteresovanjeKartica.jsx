@@ -96,7 +96,6 @@ export default function MojeInteresovanjeKartica({
   onRemove, 
   onSave 
 }) {
-  // Zaštita ako item nije definisan
   if (!item) {
     return null;
   }
