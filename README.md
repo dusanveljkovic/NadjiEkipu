@@ -27,9 +27,9 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 🟩 - funkcionalnost kompletirana
 
 ### Autentifikacija
-- 🟥 Registracija korisnika  
+- 🟦  Registracija korisnika  
 - 🟦 Login  
-- 🟥 Logout  
+- 🟦  Logout  
 - 🟥 Role-based autorizacija  
 
 ### Profil
@@ -38,9 +38,9 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 - 🟦 Promena lozinke  
 
 ### Interesovanja
-- 🟥 Dodavanje interesovanja  
-- 🟥 Izmena interesovanja  
-- 🟥 Skill level  
+- 🟦 Dodavanje interesovanja  
+- 🟦  Izmena interesovanja  
+- 🟦  Skill level  
 
 ### Aktivnosti
 - 🟥 Kreiranje aktivnosti  
