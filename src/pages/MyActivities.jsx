@@ -1,5 +1,6 @@
 import { useState } from "react";
 import FillBar from "../components/FillBar"
+import CreateActivity from "./CreateActivity";
 
 const HOBBY_COLORS = [
   { bg: "#EEEDFE", color: "#534AB7", border: "#AFA9EC" },
@@ -186,6 +187,7 @@ function ActivityCard({ activity, onDelete }) {
 }
 
 export default function MyActivities() {
+
   const [activities, setActivities]     = useState(INITIAL_ACTIVITIES);
   const [page, setPage]                 = useState("list");      // "list" | "create"
   const [toDelete, setToDelete]         = useState(null);
@@ -215,7 +217,7 @@ export default function MyActivities() {
       )}
 
       {page === "create" ? (
-        <CreatePage onCreate={handleCreate} onBack={() => setPage("list")} />
+        <CreateActivity onCreate={handleCreate} onBack={() => setPage("list")} />
       ) : (
         <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
 
