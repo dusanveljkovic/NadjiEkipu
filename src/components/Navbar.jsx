@@ -64,6 +64,8 @@ function Navbar() {
           <NavbarItem to="/home" onClickF={() => setIsOpen(false)} name="Aktivnosti" />
           <NavbarItem to="/my-chats" onClickF={() => setIsOpen(false)} name="Moji cetovi" />
           <NavbarItem to="/my-profile" onClickF={() => setIsOpen(false)} name="Moj profil" />
+          <NavbarItem to="/my-interests" onClickF={() => setIsOpen(false)} name="Moja interesovanja" />
+          <NavbarItem to="/my-activities" onClickF={() => setIsOpen(false)} name="Kreirane aktivnosti" />
           <NavbarItem to="/all-users" onClickF={() => setIsOpen(false)} name="Svi korisnici" />
           <NavbarItem to="/requests" onClickF={() => setIsOpen(false)} name="Zahtevi za moderaciju" />
         </div>

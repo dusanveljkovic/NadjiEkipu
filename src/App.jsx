@@ -8,6 +8,8 @@ import SingleChat from "./pages/SingleChat"
 import MyChats from "./pages/MyChats";
 import AdminRequests from "./pages/AdminRequests";
 import AdminAllUsers from "./pages/AdminAllUsers";
+import MyInterests from "./pages/MyInterests";
+import MyActivites from "./pages/MyActivities"
 
 function App() {
   const location = useLocation();
@@ -25,7 +27,9 @@ function App() {
           <Route path="/mock-chat" element={<SingleChat />}/>
           <Route path="/my-chats" element={<MyChats />}/>
           <Route path="/requests" element={<AdminRequests />}/>
-          <Route path="/all_users" element={<AdminAllUsers />}/>
+          <Route path="/all-users" element={<AdminAllUsers />}/>
+          <Route path="/my-interests" element={<MyInterests />}/>
+          <Route path="/my-activities" element={<MyActivites />}/>
         </Routes>
       </div>
     </div>

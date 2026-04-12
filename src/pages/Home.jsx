@@ -1,4 +1,5 @@
 import {useState, useMemo} from "react";
+import FillBar from "../components/FillBar"
 
 const hobbies = [
   "Fudbal",
@@ -65,23 +66,6 @@ function hobbyColor(hobby) {
   return HOBBY_COLORS[Math.abs(hash) % HOBBY_COLORS.length];
 }
 
-function FillBar({ signed, max }) {
-  const pct = Math.round((signed / max) * 100);
-  const full = pct >= 90;
-  const mid  = pct >= 60;
-  const barColor = full ? "#A32D2D" : mid ? "#854F0B" : "#534AB7";
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 80 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#6b6b67" }}>
-        <span>{signed}/{max}</span>
-        <span style={{ color: barColor, fontWeight: 500 }}>{pct}%</span>
-      </div>
-      <div style={{ height: 4, borderRadius: 99, background: "rgba(0,0,0,0.08)", overflow: "hidden" }}>
-        <div style={{ width: `${pct}%`, height: "100%", borderRadius: 99, background: barColor, transition: "width 0.3s" }} />
-      </div>
-    </div>
-  );
-}
 function Home() {
   const [search, setSearch] = useState("")
   const [selectedHobbies, setSelectedHobbies] = useState([])
@@ -178,13 +162,9 @@ function Home() {
           {/* Search + hobby chips */}
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ position: "relative" }}>
-              <svg
-                width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="#9ca3a0" strokeWidth="2"
+              <i className="fa-solid fa-magnifying-glass"
                 style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)" }}
-              >
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-              </svg>
+              />
               <input
                 type="text"
                 placeholder="Pretrazi interesovanja..."
@@ -306,15 +286,13 @@ function Home() {
  
                   {/* Location */}
                   <div style={{ flex: "0 0 100px", display: "flex", alignItems: "center", gap: 5 }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3a0" strokeWidth="2">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                    </svg>
+                    <i className="fa-solid fa-location-pin" />
                     <span style={{ fontSize: 12, color: "#6b6b67" }}>{a.location}</span>
                   </div>
  
                   {/* Fill bar */}
                   <div style={{ flex: 1 }}>
-                    <FillBar signed={a.signed} max={a.max} />
+                    <FillBar signed={a.signed} max={a.max} useFull={true} />
                   </div>
  
                   {/* Join button */}
