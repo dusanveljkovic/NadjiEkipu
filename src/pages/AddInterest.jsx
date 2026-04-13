@@ -5,6 +5,7 @@ export default function AddInterest() {
   const [name, setName] = useState("");
   const [icon, setIcon] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [peopleCount, setPeopleCount] = useState(1);
 
   const navigate = useNavigate();
 
@@ -30,6 +31,7 @@ export default function AddInterest() {
     console.log({
       name,
       icon,
+      peopleCount,
     });
     navigate("/my-interests");
   };
@@ -87,6 +89,24 @@ export default function AddInterest() {
               width: "100%"
             }}
           />
+        </div>
+
+        {/* Br ljudi */}
+        <div>
+        <label style={{ fontSize: 14 }}>Broj ljudi</label>
+        <input
+            type="number"
+            value={peopleCount}
+            onChange={(e) => setPeopleCount(Number(e.target.value))}
+            min={1}
+            style={{
+            marginTop: 6,
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            width: "100%"
+            }}
+        />
         </div>
 
         {/* Dugmad */}
