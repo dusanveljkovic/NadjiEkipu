@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ALL_HOBBIES = [
   { id: 1,  name: "Fudbal",          icon: "⚽", members: 1243 },
@@ -225,6 +226,13 @@ export default function HobbiesPage() {
   const [search, setSearch]         = useState("");
   const [userHobbies, setUserHobbies] = useState({});   // { hobbyId: skillLevel }
 
+  
+  const navigate = useNavigate();
+
+  const handleAddInterest = () => {
+    navigate("/add-interest");
+  };
+
   const toggleHobby = (id) => {
     setUserHobbies((prev) => {
       if (prev[id] !== undefined) {
@@ -264,35 +272,65 @@ export default function HobbiesPage() {
     >
       <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
 
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-          <div>
-            <h1 style={{ fontSize: 22, fontWeight: 500, color: "#1a1a18", margin: 0 }}>Interesovanja</h1>
-            <p style={{ fontSize: 12, color: "#9ca3a0", marginTop: 4 }}>
-              {ALL_HOBBIES.length} interesovanja &middot; {selectedCount > 0 ? `${selectedCount} odabrano` : "nijedno nije odabrano"}
-            </p>
-          </div>
-          {selectedCount > 0 && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                background: "#EEEDFE",
-                border: "0.5px solid #AFA9EC",
-                borderRadius: 99,
-                padding: "6px 14px",
-                fontSize: 12,
-                fontWeight: 500,
-                color: "#534AB7",
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M2 6l3 3 5-5" stroke="#534AB7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              {selectedCount} odabrano
+        <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+
+          {/* Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            
+            {/* Leva strana */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              
+              {/* Red 1: naslov + dugme */}
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                <h1 style={{ fontSize: 22, fontWeight: 500, color: "#1a1a18", margin: 0 }}>
+                  Interesovanja
+                </h1>
+
+                <button
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "6px",
+                    border: "1px solid #ccc",
+                    background: "#fff",
+                    cursor: "pointer",
+                    fontSize: 12
+                  }}
+                  onClick={handleAddInterest}
+                >
+                  Dodaj interesovanje
+                </button>
+              </div>
+
+              {/* Red 2: opis */}
+              <p style={{ fontSize: 12, color: "#9ca3a0", margin: 0 }}>
+                {ALL_HOBBIES.length} interesovanja &middot; {selectedCount > 0 ? `${selectedCount} odabrano` : "nijedno nije odabrano"}
+              </p>
             </div>
-          )}
+
+            {/* Desna strana (badge) */}
+            {selectedCount > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  background: "#EEEDFE",
+                  border: "0.5px solid #AFA9EC",
+                  borderRadius: 99,
+                  padding: "6px 14px",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: "#534AB7",
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2 6l3 3 5-5" stroke="#534AB7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                {selectedCount} odabrano
+              </div>
+            )}
+
+          </div>
         </div>
 
         {/* Search */}
