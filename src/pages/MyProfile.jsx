@@ -84,7 +84,62 @@ export default function ProfilePage() {
                 <p className="text-gray-500 text-sm mt-1">@{user.username}</p>
               </div>
               
-              <Button text="Promeni lozinku" />
+              <div className="flex gap-3 md:justify-end">
+
+             <button
+                  onClick={() => {/* promena lozinke */}}
+                  style={{
+                    padding: "9px 20px",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: "#534AB7",
+                    cursor: "pointer",
+                    fontSize: 13,
+                    fontWeight: 500,
+                    fontFamily: "inherit",
+                    color: "white",
+                    transition: "all 0.2s ease",
+                    whiteSpace: "nowrap",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#4338A4";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#534AB7";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  Promeni lozinku
+                </button>
+                
+                <button
+                  onClick={() => {/* zahtev za moderatora */}}
+                  style={{
+                    padding: "9px 20px",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: "#534AB7",
+                    cursor: "pointer",
+                    fontSize: 13,
+                    fontWeight: 500,
+                    fontFamily: "inherit",
+                    color: "white",
+                    transition: "all 0.2s ease",
+                    whiteSpace: "nowrap",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#4338A4";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#534AB7";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  Zahtev za moderatora
+                </button>
+              </div>
             </div>
 
             {/* User Details Grid */}
