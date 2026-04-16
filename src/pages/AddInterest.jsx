@@ -39,7 +39,7 @@ export default function AddInterest() {
   return (
     <div style={{ maxWidth: 500, margin: "0 auto", padding: 20 }}>
       
-      <h1 style={{ fontSize: 22, marginBottom: 20 }}>
+      <h1 style={{ fontSize: 22, marginBottom: 20, fontWeight: 500}}>
         Dodaj interesovanje
       </h1>
 
@@ -47,7 +47,7 @@ export default function AddInterest() {
 
         {/* Upload ikone */}
         <div>
-          <label style={{ fontSize: 14 }}>Ikona</label>
+          <label style={{ fontSize: 14 }}>Ikonica</label>
 
           <div
             style={{
@@ -91,39 +91,56 @@ export default function AddInterest() {
           />
         </div>
 
-        {/* Br ljudi */}
-        <div>
-        <label style={{ fontSize: 14 }}>Broj ljudi</label>
-        <input
-            type="number"
-            value={peopleCount}
-            onChange={(e) => setPeopleCount(Number(e.target.value))}
-            min={1}
-            style={{
-            marginTop: 6,
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            width: "100%"
-            }}
-        />
-        </div>
-
         {/* Dugmad */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-          <button type="button" style={{ padding: "8px 12px", backgroundColor: "orange" }} onClick={handleCancel}>
+          <button type="button"  
+            style={{
+              padding: "9px 20px",
+              borderRadius: "10px",
+              border: "1px solid #e0e0e0",
+              background: "#fff",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 500,
+              fontFamily: "inherit",
+              color: "#1a1a18",
+              transition: "all 0.2s ease",
+              whiteSpace: "nowrap",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#f5f5f5";
+              e.currentTarget.style.borderColor = "#ccc";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#fff";
+              e.currentTarget.style.borderColor = "#e0e0e0";
+            }} 
+            onClick={handleCancel}>
             Otkaži
           </button>
 
           <button
             type="submit"
             style={{
-              padding: "8px 12px",
-              background: "#534AB7",
-              color: "#fff",
+              padding: "9px 20px",
+              borderRadius: "10px",
               border: "none",
-              borderRadius: 6,
-              cursor: "pointer"
+              background: "#534AB7",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 500,
+              fontFamily: "inherit",
+              color: "white",
+              transition: "all 0.2s ease",
+              whiteSpace: "nowrap",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#4338A4";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#534AB7";
+              e.currentTarget.style.transform = "translateY(0)";
             }}
           >
             Sačuvaj

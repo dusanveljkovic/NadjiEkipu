@@ -272,42 +272,26 @@ export default function HobbiesPage() {
     >
       <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
 
-        <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+        {/* Header */}
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "space-between", 
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 16
+        }}>
+          {/* Levo - naslov i opis */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <h1 style={{ fontSize: 22, fontWeight: 500, color: "#1a1a18", margin: 0 }}>
+              Interesovanja
+            </h1>
+            <p style={{ fontSize: 12, color: "#9ca3a0", margin: 0 }}>
+              {ALL_HOBBIES.length} interesovanja &middot; {selectedCount > 0 ? `${selectedCount} odabrano` : "nijedno nije odabrano"}
+            </p>
+          </div>
 
-          {/* Header */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            
-            {/* Leva strana */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              
-              {/* Red 1: naslov + dugme */}
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-                <h1 style={{ fontSize: 22, fontWeight: 500, color: "#1a1a18", margin: 0 }}>
-                  Interesovanja
-                </h1>
-
-                <button
-                  style={{
-                    padding: "6px 12px",
-                    borderRadius: "6px",
-                    border: "1px solid #ccc",
-                    background: "#fff",
-                    cursor: "pointer",
-                    fontSize: 12
-                  }}
-                  onClick={handleAddInterest}
-                >
-                  Dodaj interesovanje
-                </button>
-              </div>
-
-              {/* Red 2: opis */}
-              <p style={{ fontSize: 12, color: "#9ca3a0", margin: 0 }}>
-                {ALL_HOBBIES.length} interesovanja &middot; {selectedCount > 0 ? `${selectedCount} odabrano` : "nijedno nije odabrano"}
-              </p>
-            </div>
-
-            {/* Desna strana (badge) */}
+          {/* Desno - badge pa dugme */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {selectedCount > 0 && (
               <div
                 style={{
@@ -321,6 +305,7 @@ export default function HobbiesPage() {
                   fontSize: 12,
                   fontWeight: 500,
                   color: "#534AB7",
+                  whiteSpace: "nowrap",
                 }}
               >
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -330,8 +315,37 @@ export default function HobbiesPage() {
               </div>
             )}
 
+            <button
+              style={{
+                padding: "9px 20px",
+                borderRadius: "10px",
+                border: "none",
+                background: "#534AB7",
+                cursor: "pointer",
+                fontSize: 13,
+                fontWeight: 500,
+                fontFamily: "inherit",
+                color: "white",
+                transition: "all 0.2s ease",
+                whiteSpace: "nowrap",
+                transition: "all 0.2s ease",
+              }}
+              onClick={handleAddInterest}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#4338A4";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#534AB7";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              + Dodaj interesovanje
+            </button>
           </div>
+            
         </div>
+
 
         {/* Search */}
         <div style={{ position: "relative" }}>
