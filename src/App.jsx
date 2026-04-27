@@ -20,6 +20,7 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       {location.pathname !== "/login" && location.pathname !== "/registration" && location.pathname !== "/" && <Navbar />}
       <div className="p-4">
+        <div style={{marginTop: "20px"}}></div>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/home" element={<Home />}/>
