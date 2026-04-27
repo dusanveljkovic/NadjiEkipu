@@ -39,7 +39,7 @@ function Navbar() {
       {/* TOP BAR */}
       <nav 
         className="text-white px-4 py-3 flex items-center relative z-50 shadow-lg"
-        style={{ background: `linear-gradient(135deg, ${ACCENT} 0%, ${ACCENT_DARK} 100%)` }}
+        style={{ position: "fixed", width: "100%",  background: `linear-gradient(135deg, ${ACCENT} 0%, ${ACCENT_DARK} 100%)` }}
       >
         <button
           onClick={() => setIsOpen(true)}
