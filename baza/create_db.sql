@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `nadji_ekipu`.`activities` (
   `location_name` VARCHAR(128) NULL,
   `max_participants` INT NULL,
   `indoor` TINYINT NULL DEFAULT 0,
-  `created_at` TIMESTAMP NULL DEFAULT DEFAULT_TIMESTAMP,
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`idactivities`),
   INDEX `fk_interests_idx` (`interest_id` ASC) VISIBLE,
   INDEX `fk_users_idx` (`created_by` ASC) VISIBLE,
