@@ -17,6 +17,19 @@ urlpatterns = [
     path('activities/<int:activity_id>/leave/',
          views.LeaveActivityView.as_view(),
          name='leave-activity'),
-        ]
+     path('users/',
+          views.UserView.as_view(),
+          name='user-list'),
+     path('users/<int:user_id>/',
+          views.UserView.as_view(),
+          name='user-detail'),
+     path('moderator-requests/', 
+          views.ModeratorRequestView.as_view(), 
+          name='moderator-request-list'),
+     path('moderator-requests/<int:request_id>/', 
+          views.ModeratorRequestView.as_view(), 
+          name='moderator-request-detail'),
+     ]
+
 
 

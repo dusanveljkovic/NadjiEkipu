@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { users } from "../data/users";
 
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
@@ -13,33 +12,66 @@ const DANGER_LIGHT = "#fee2e2";
 function AdminRequests() {
   const navigate = useNavigate();
 
-  const [requests, setRequests] = useState(users.slice(0, 4));
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 5;
 
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/moderator-requests/")
+      .then((res) => {
+        if (!res.ok) throw new Error("Greška pri učitavanju zahteva");
+        return res.json();
+      })
+      .then((data) => {
+        // prikazujemo samo PENDING zahteve
+        setRequests(data.filter((r) => r.status === "PENDING"));
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
   const handleAccept = (id) => {
     if (window.confirm("Da li želite da prihvatite zahtev za moderatora?")) {
-      setRequests(requests.filter((r) => r.id !== id));
-      console.log("Prihvaćen:", id);
+        fetch(`http://127.0.0.1:8000/api/moderator-requests/${id}/`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ status: "APPROVED" }),
+        })
+        .then((res) => {
+            if (!res.ok) throw new Error("Greška");
+            setRequests(requests.filter((r) => r.id !== id));
+        })
+        .catch((err) => console.error(err));
     }
-  };
+};
 
-  const handleReject = (id) => {
+const handleReject = (id) => {
     if (window.confirm("Da li želite da odbijete zahtev za moderatora?")) {
-      setRequests(requests.filter((r) => r.id !== id));
-      console.log("Odbijen:", id);
+        fetch(`http://127.0.0.1:8000/api/moderator-requests/${id}/`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ status: "REJECTED" }),
+        })
+        .then((res) => {
+            if (!res.ok) throw new Error("Greška");
+            setRequests(requests.filter((r) => r.id !== id));
+        })
+        .catch((err) => console.error(err));
     }
-  };
+};
 
-  // Filter requests based on search
-  const filteredRequests = requests.filter((user) =>
-    user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredRequests = requests.filter((r) =>
+    r.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Pagination
   const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedRequests = filteredRequests.slice(startIndex, startIndex + itemsPerPage);
@@ -47,6 +79,22 @@ function AdminRequests() {
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-gray-400 text-sm">Učitavanje zahteva...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-red-400 text-sm">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -61,7 +109,7 @@ function AdminRequests() {
               Ukupno {requests.length} zahteva • {filteredRequests.length} prikazano
             </p>
           </div>
-          
+
           {/* Search */}
           <div className="relative">
             <i className="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
@@ -116,18 +164,15 @@ function AdminRequests() {
       {/* Table Header */}
       <div className="grid grid-cols-12 gap-4 mb-3 px-4 py-3 rounded-xl" style={{ background: ACCENT_LIGHT }}>
         <span className="col-span-4 text-sm font-semibold" style={{ color: ACCENT }}>
-          <i className="fa-solid fa-user mr-2"></i>Ime i prezime
+          <i className="fa-solid fa-user mr-2"></i>Korisnik
         </span>
         <span className="col-span-3 text-sm font-semibold" style={{ color: ACCENT }}>
-          <i className="fa-solid fa-at mr-2"></i>Username
+          <i className="fa-solid fa-circle-info mr-2"></i>Status
         </span>
         <span className="col-span-3 text-sm font-semibold" style={{ color: ACCENT }}>
-          <i className="fa-solid fa-envelope mr-2"></i>Email
+          <i className="fa-solid fa-calendar mr-2"></i>Datum zahteva
         </span>
-        <span className="col-span-1 text-sm font-semibold" style={{ color: ACCENT }}>
-          <i className="fa-solid fa-calendar mr-2"></i>Godište
-        </span>
-        <span className="col-span-1 text-sm font-semibold text-right" style={{ color: ACCENT }}>
+        <span className="col-span-2 text-sm font-semibold text-right" style={{ color: ACCENT }}>
           Akcije
         </span>
       </div>
@@ -141,51 +186,58 @@ function AdminRequests() {
             <p className="text-sm text-gray-400 mt-1">Kada korisnici pošalju zahtev, oni će se pojaviti ovde</p>
           </div>
         ) : (
-          paginatedRequests.map((user, index) => (
-            <div
-              key={user.id}
-              className="grid grid-cols-12 gap-4 items-center bg-white border border-gray-100 rounded-xl p-4 
-                         transition-all duration-300 hover:shadow-lg hover:border-accent/20 hover:-translate-y-0.5
-                         group"
-              style={{ animationDelay: `${index * 50}ms`, animation: "fadeInUp 0.4s ease-out" }}
-            >
-              <span 
-                onClick={() => navigate("/my-profile")}
-                className="col-span-4 font-semibold hover:text-accent transition cursor-pointer flex items-center gap-2"
+          paginatedRequests.map((req, index) => {
+            const initials = req.username.slice(0, 2).toUpperCase();
+            const createdAt = new Date(req.created_at).toLocaleDateString("sr-RS");
+
+            return (
+              <div
+                key={req.id}
+                className="grid grid-cols-12 gap-4 items-center bg-white border border-gray-100 rounded-xl p-4 
+                           transition-all duration-300 hover:shadow-lg hover:border-accent/20 hover:-translate-y-0.5 group"
+                style={{ animationDelay: `${index * 50}ms`, animation: "fadeInUp 0.4s ease-out" }}
               >
-                <div className="w-8 h-8 rounded-full bg-linear-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-xs font-bold">
-                  {user.fullName.charAt(0)}{user.fullName.split(" ")[1]?.charAt(0) || ""}
-                </div>
-                {user.fullName}
-                <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">
-                  Zahtev
+                <span
+                  onClick={() => navigate("/my-profile")}
+                  className="col-span-4 font-semibold hover:text-accent transition cursor-pointer flex items-center gap-2"
+                >
+                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-xs font-bold">
+                    {initials}
+                  </div>
+                  @{req.username}
+                  <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">
+                    Zahtev
+                  </span>
                 </span>
-              </span>
 
-              <span className="col-span-3 text-gray-600 text-sm">@{user.username}</span>
-              <span className="col-span-3 text-gray-600 text-sm truncate">{user.email}</span>
-              <span className="col-span-1 text-gray-600 text-sm">{user.birthYear}</span>
+                <span className="col-span-3">
+                  <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">
+                    {req.status}
+                  </span>
+                </span>
 
-              {/* Actions */}
-              <div className="col-span-1 flex justify-end gap-2">
-                <button
-                  onClick={() => handleAccept(user.id)}
-                  className="w-8 h-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-200 hover:scale-110"
-                  title="Prihvati zahtev"
-                >
-                  <i className="fa-solid fa-check text-sm"></i>
-                </button>
+                <span className="col-span-3 text-gray-600 text-sm">{createdAt}</span>
 
-                <button
-                  onClick={() => handleReject(user.id)}
-                  className="w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-200 hover:scale-110"
-                  title="Odbij zahtev"
-                >
-                  <i className="fa-solid fa-xmark text-lg"></i>
-                </button>
+                {/* Actions */}
+                <div className="col-span-2 flex justify-end gap-2">
+                  <button
+                    onClick={() => handleAccept(req.id)}
+                    className="w-8 h-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-200 hover:scale-110"
+                    title="Prihvati zahtev"
+                  >
+                    <i className="fa-solid fa-check text-sm"></i>
+                  </button>
+                  <button
+                    onClick={() => handleReject(req.id)}
+                    className="w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-200 hover:scale-110"
+                    title="Odbij zahtev"
+                  >
+                    <i className="fa-solid fa-xmark text-lg"></i>
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
@@ -201,7 +253,7 @@ function AdminRequests() {
           >
             <i className="fa-solid fa-chevron-left mr-1"></i> Prethodna
           </button>
-          
+
           <div className="flex gap-1">
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum;
@@ -214,14 +266,14 @@ function AdminRequests() {
               } else {
                 pageNum = currentPage - 2 + i;
               }
-              
+
               return (
                 <button
                   key={pageNum}
                   onClick={() => goToPage(pageNum)}
                   className={`w-10 h-10 rounded-lg font-medium transition-all duration-200
-                    ${currentPage === pageNum 
-                      ? "text-white shadow-md" 
+                    ${currentPage === pageNum
+                      ? "text-white shadow-md"
                       : "text-gray-600 hover:bg-gray-100 hover:border-accent/30"
                     }`}
                   style={currentPage === pageNum ? { background: ACCENT } : {}}
@@ -246,14 +298,8 @@ function AdminRequests() {
 
       <style>{`
         @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
