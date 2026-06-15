@@ -71,13 +71,7 @@ export default function CreateActivity({ onCreate, onBack }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !form.hobby ||
-      !form.date ||
-      !form.time ||
-      !form.location ||
-      !form.max
-    ) {
+    if (!form.hobby || !form.date || !form.time || !form.location || !form.max ) {
       alert("Popuni sva obavezna polja");
       return;
     }
@@ -97,8 +91,6 @@ export default function CreateActivity({ onCreate, onBack }) {
       lon: null,
     };
 
-    console.log(body)
-
     try {
       const response = await fetch(
         "http://127.0.0.1:8000/api/activities/",
@@ -117,13 +109,10 @@ export default function CreateActivity({ onCreate, onBack }) {
         alert(data.error || "Greška prilikom kreiranja aktivnosti");
         return;
       }
-
       alert("Aktivnost uspešno kreirana!");
-
       if (onCreate) {
         onCreate(data);
       }
-
       onBack();
     } catch (err) {
       console.error(err);
