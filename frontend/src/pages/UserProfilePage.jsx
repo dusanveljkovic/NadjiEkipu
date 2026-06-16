@@ -16,27 +16,17 @@ export default function UserProfilePage() {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // placeholder interesovanja - kasnije povuci iz API-ja
-  const interests = [
-    { id: 1, name: "Košarka", icon: "🏀", skill: 4, count: 7 },
-    { id: 2, name: "Fudbal", icon: "⚽", skill: 3, count: 2 },
-  ];
+  const [interests, setInterests] = useState([]);
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/users/${userId}/`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Greška pri učitavanju korisnika");
-        return res.json();
-      })
-      .then((data) => {
-        setUser(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+        .then(res => res.json())
+        .then(data => setUser(data));
+
+    fetch(`http://127.0.0.1:8000/api/users/${userId}/interests/`)
+        .then(res => res.json())
+        .then(data => setInterests(data))
+        .finally(() => setLoading(false));
   }, [userId]);
 
   if (loading) {
@@ -54,6 +44,9 @@ export default function UserProfilePage() {
       </div>
     );
   }
+
+
+
 
   return (
     <div className="min-h-screen" style={{ background: "#f5f5f3" }}>
@@ -172,8 +165,8 @@ export default function UserProfilePage() {
                       id: hobby.id,
                       name: hobby.name,
                       icon: hobby.icon,
-                      skill: hobby.skill,
-                      count: hobby.count,
+                      skill: hobby.skill_level,
+                      count: hobby.attended_count,
                     }}
                     readOnly={true}
                   />

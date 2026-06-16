@@ -29,6 +29,9 @@ urlpatterns = [
      path('moderator-requests/<int:request_id>/', 
           views.ModeratorRequestView.as_view(), 
           name='moderator-request-detail'),
+     path('users/<int:user_id>/interests/', 
+          views.UserInterestsView.as_view(), 
+          name='user-interests'),
      ]
 
 
