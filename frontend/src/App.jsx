@@ -12,6 +12,7 @@ import MyInterests from "./pages/MyInterests";
 import MyActivites from "./pages/MyActivities"
 import CreateActivity from "./pages/CreateActivity";
 import AddInterest from "./pages/AddInterest";
+import UserProfilePage from "./pages/UserProfilePage";
 
 function App() {
   const location = useLocation();
@@ -34,6 +35,7 @@ function App() {
           <Route path="/my-activities" element={<MyActivites />}/>
           <Route path="create-activity" element={<CreateActivity />}/>
           <Route path="/add-interest" element={<AddInterest/>}/>
+          <Route path="/user/:userId" element={<UserProfilePage/>}/>
         </Routes>
       </div>
     </div>

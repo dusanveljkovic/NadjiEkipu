@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+// Napisala Jana Jolovic 0338/2023
+
+
+import React,  { useState, useEffect } from "react";
 import Avatar from "../assets/avatar1.png";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
@@ -8,15 +11,7 @@ const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
 const ACCENT_DARK = "#3F3A8C";
 
-const user = {
-  fullName: "Kralj Karaburme",
-  email: "kraljkaraburme@gmail.com",
-  username: "kraljkaraburme",
-  birthYear: 2004,
-  gender: "muški",
-};
 
-// Inicijalna interesovanja sa svim potrebnim podacima
 const initialInterests = [
   { id: 1, name: "Košarka", icon: "🏀", skill: 4, count: 7 },
   { id: 2, name: "Fudbal", icon: "⚽", skill: 3, count: 2 },
@@ -25,8 +20,27 @@ const initialInterests = [
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  
-  const [interests, setInterests] = useState(initialInterests);
+
+  const [interests, setInterests] = useState(initialInterests)
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+      fetch("http://127.0.0.1:8000/api/users/1")
+        .then((res) => {
+          if (!res.ok) throw new Error("Greška pri učitavanju korisnika");
+          return res.json();
+        })
+        .then((data) => {
+          setUser(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError(err.message);
+          setLoading(false);
+        });
+    }, []);
 
   // Funkcija za uklanjanje interesovanja
   const handleRemove = (id) => {
@@ -79,7 +93,7 @@ export default function ProfilePage() {
             <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
               <div>
                 <h1 className="text-3xl font-bold" style={{ color: ACCENT_DARK }}>
-                  {user.fullName}
+                  {user.firstname + ' ' + user.lastname}
                 </h1>
                 <p className="text-gray-500 text-sm mt-1">@{user.username}</p>
               </div>
@@ -160,7 +174,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Godište</p>
-                  <p className="text-sm font-medium text-gray-700">{user.birthYear}</p>
+                  <p className="text-sm font-medium text-gray-700">{user.birthyear}</p>
                 </div>
               </div>
               

@@ -1,6 +1,7 @@
-import { useState } from "react";
+// Napisala Jana Jolovic 0338/2023
+
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { users } from "../data/users";
 
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
@@ -10,26 +11,51 @@ const DANGER_LIGHT = "#fde8e8";
 
 function AdminAllUsers() {
   const navigate = useNavigate();
-  const [all_users, setAllUsers] = useState(users);
+  const [all_users, setAllUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 5;
 
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/users/")
+      .then((res) => {
+        if (!res.ok) throw new Error("Greška pri učitavanju korisnika");
+        return res.json();
+      })
+      .then((data) => {
+        setAllUsers(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
   const handleDelete = (id) => {
     if (window.confirm("Da li ste sigurni da želite da obrišete ovog korisnika?")) {
-      setAllUsers(all_users.filter((r) => r.id !== id));
-      console.log("Obrisan korisnik:", id);
+        fetch(`http://127.0.0.1:8000/api/users/${id}/`, {
+            method: "DELETE",
+        })
+        .then((res) => {
+            if (!res.ok) throw new Error("Greška pri brisanju");
+            setAllUsers(all_users.filter((u) => u.idusers !== id));
+        })
+        .catch((err) => console.error(err));
     }
   };
 
-  // Filter users based on search
-  const filteredUsers = all_users.filter((user) =>
-    user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = all_users.filter((user) => {
+    const fullName = `${user.firstname ?? ""} ${user.lastname ?? ""}`.toLowerCase();
+    return (
+      fullName.includes(searchTerm.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
-  // Pagination
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
@@ -37,6 +63,22 @@ function AdminAllUsers() {
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-gray-400 text-sm">Učitavanje korisnika...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-red-400 text-sm">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -51,7 +93,7 @@ function AdminAllUsers() {
               Ukupno {all_users.length} korisnika • {filteredUsers.length} prikazano
             </p>
           </div>
-          
+
           {/* Search */}
           <div className="relative">
             <i className="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
@@ -117,40 +159,46 @@ function AdminAllUsers() {
             <p className="text-gray-500">Nema korisnika koji odgovaraju pretrazi</p>
           </div>
         ) : (
-          paginatedUsers.map((user, index) => (
-            <div
-              key={user.id}
-              className="grid grid-cols-12 gap-4 items-center bg-white border border-gray-100 rounded-xl p-4 
-                         transition-all duration-300 hover:shadow-lg hover:border-accent/20 hover:-translate-y-0.5
-                         cursor-pointer group"
-              style={{ animationDelay: `${index * 50}ms`, animation: "fadeInUp 0.4s ease-out" }}
-            >
-              <span 
-                onClick={() => navigate("/my-profile")}
-                className="col-span-4 font-semibold hover:text-accent transition cursor-pointer flex items-center gap-2"
+          paginatedUsers.map((user, index) => {
+            const fullName = `${user.firstname ?? ""} ${user.lastname ?? ""}`.trim() || user.username;
+            const initials = fullName.split(" ").map((n) => n.charAt(0)).slice(0, 2).join("");
+
+            return (
+              <div
+                key={user.idusers}
+                className="grid grid-cols-12 gap-4 items-center bg-white border border-gray-100 rounded-xl p-4 
+                           transition-all duration-300 hover:shadow-lg hover:border-accent/20 hover:-translate-y-0.5
+                           cursor-pointer group"
+                style={{ animationDelay: `${index * 50}ms`, animation: "fadeInUp 0.4s ease-out" }}
               >
-                <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
-                  {user.fullName.charAt(0)}{user.fullName.split(" ")[1]?.charAt(0) || ""}
-                </div>
-                {user.fullName}
-              </span>
-
-              <span className="col-span-3 text-gray-600 text-sm">@{user.username}</span>
-              <span className="col-span-3 text-gray-600 text-sm truncate">{user.email}</span>
-              <span className="col-span-1 text-gray-600 text-sm">{user.birthYear}</span>
-
-              {/* Actions */}
-              <div className="col-span-1 flex justify-end gap-2">
-                <button
-                  onClick={() => handleDelete(user.id)}
-                  className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all duration-200 hover:scale-110"
-                  title="Obriši korisnika"
+                <span
+                  onClick={() => navigate(`/user/${user.idusers}`)}
+                  className="col-span-4 font-semibold hover:text-accent transition cursor-pointer flex items-center gap-2"
                 >
-                  <i className="fa-solid fa-trash text-sm"></i>
-                </button>
+                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                    {initials}
+                  </div>
+                  {fullName}
+                </span>
+
+                <span className="col-span-3 text-gray-600 text-sm">@{user.username}</span>
+                <span className="col-span-3 text-gray-600 text-sm truncate">{user.email}</span>
+                <span className="col-span-1 text-gray-600 text-sm">{user.birthyear ?? '-'}</span>
+                {console.log(user)}
+
+                {/* Actions */}
+                <div className="col-span-1 flex justify-end gap-2">
+                  <button
+                    onClick={() => handleDelete(user.idusers)}
+                    className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all duration-200 hover:scale-110"
+                    title="Obriši korisnika"
+                  >
+                    <i className="fa-solid fa-trash text-sm"></i>
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
@@ -166,7 +214,7 @@ function AdminAllUsers() {
           >
             <i className="fa-solid fa-chevron-left mr-1"></i> Prethodna
           </button>
-          
+
           <div className="flex gap-1">
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum;
@@ -179,14 +227,14 @@ function AdminAllUsers() {
               } else {
                 pageNum = currentPage - 2 + i;
               }
-              
+
               return (
                 <button
                   key={pageNum}
                   onClick={() => goToPage(pageNum)}
                   className={`w-10 h-10 rounded-lg font-medium transition-all duration-200
-                    ${currentPage === pageNum 
-                      ? "text-white shadow-md" 
+                    ${currentPage === pageNum
+                      ? "text-white shadow-md"
                       : "text-gray-600 hover:bg-gray-100 hover:border-accent/30"
                     }`}
                   style={currentPage === pageNum ? { background: ACCENT } : {}}
@@ -211,14 +259,8 @@ function AdminAllUsers() {
 
       <style jsx>{`
         @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>

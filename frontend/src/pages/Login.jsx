@@ -4,10 +4,14 @@ import { useNavigate } from "react-router-dom";
 const users = [
   {
     username: "tigar",
-    password: "admin"
+    password: "nijeadmin"
   },
   {
     username: "dusan",
+    password: "admin"
+  },
+  {
+    username: "jana",
     password: "admin"
   }
 ]

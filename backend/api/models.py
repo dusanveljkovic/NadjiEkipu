@@ -40,7 +40,13 @@ class User(AbstractBaseUser):
     firstname = models.CharField(max_length=128, null=True, blank=True)
     lastname = models.CharField(max_length=128, null=True, blank=True)
     birthyear = models.IntegerField(null=True, blank=True)
-    role_id = models.IntegerField(default=1)
+    # role_id = models.IntegerField(default=1)
+    role_id = models.ForeignKey(
+        Role,
+        on_delete=models.DO_NOTHING,
+        db_column='role_id',
+        default=1
+    )
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     avatar_id = models.SmallIntegerField(default=0)
