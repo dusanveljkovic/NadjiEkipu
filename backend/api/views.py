@@ -166,6 +166,7 @@ class LeaveActivityView(View):
 
 
 
+# Napisala Jana Jolovic 0338/2023
 
 class UserView(View):
     def get(self, request, user_id=None):
@@ -234,6 +235,9 @@ class UserView(View):
         except User.DoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
         
+
+# Napisala Jana Jolovic 0338/2023
+
 class ModeratorRequestView(View):
     def get(self, request, request_id=None):
         if request_id:

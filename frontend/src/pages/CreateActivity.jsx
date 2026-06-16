@@ -1,3 +1,5 @@
+// Napisala Jana Jolovic 0338/2023
+
 import { useState, useEffect } from "react";
 
 const ACCENT = "#534AB7";

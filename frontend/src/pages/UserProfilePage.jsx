@@ -1,3 +1,5 @@
+// Napisala Jana Jolovic 0338/2023
+
 import React, { useState, useEffect } from "react";
 import Avatar from "../assets/avatar1.png";
 import { useNavigate, useParams } from "react-router-dom";
