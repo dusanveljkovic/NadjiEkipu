@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect, act } from "react";
 import FillBar from "../components/FillBar"
 import { getInterests } from "../services/interestService";
-import { getActivities } from "../services/activityService"
+import { getActivities, joinActivity } from "../services/activityService"
 import { getRandomColor } from "../services/utils"
 
 function extractCities(activities) {
@@ -63,7 +63,9 @@ function Home() {
   const totalPages = Math.max(1, Math.ceil(filteredActivities.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const pageSlice = filteredActivities.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  const joinActivity = (id) => { }
+  const _joinActivity = (id) => {
+    joinActivity(id)
+  }
 
   const handleSelectedInterest = (interest) => {
     if (selectedInterests.includes(interest))
@@ -210,7 +212,7 @@ function Home() {
           ) : (
             pageSlice.map((a) => {
               const { bg, color } = getRandomColor(a.interest_name);
-              const full = a.signed >= a.max;
+              const full = a.num_participants >= a.max_participants;
               return (
                 <div
                   key={a.idactivities}
@@ -258,12 +260,12 @@ function Home() {
 
                   {/* Fill bar */}
                   <div style={{ flex: 1 }}>
-                    <FillBar signed={0} max={a.max_participants} useFull={true} />
+                    <FillBar signed={a.num_participants} max={a.max_participants} useFull={true} />
                   </div>
 
                   {/* Join button */}
                   <button
-                    onClick={() => !full && joinActivity(a.id)}
+                    onClick={() => !full && _joinActivity(a)}
                     disabled={full}
                     style={{
                       flexShrink: 0,

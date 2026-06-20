@@ -5,8 +5,10 @@ info:
 
 http:
   method: GET
-  url: ""
-  auth: inherit
+  url: "{{apiserver}}/user-activities/"
+  auth:
+    type: bearer
+    token: sLjSiFYJASvrhm79DkmJi5PsLg58GsW41kvUmUGwsaE
 
 settings:
   encodeUrl: true

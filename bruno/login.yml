@@ -5,7 +5,14 @@ info:
 
 http:
   method: POST
-  url: "{{apiserver}}/auth/login"
+  url: "{{apiserver}}/auth/login/"
+  body:
+    type: json
+    data: |-
+      {
+        "username": "tigar",
+        "password": "password123"
+      }
   auth: inherit
 
 settings:

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import ChatAvatar from "../components/ChatAvatar"
+import { getUserChats } from "../services/chatService";
+import { getRandomColor } from "../services/utils";
 
 const chats = [
   {
@@ -34,24 +36,24 @@ const chats = [
   },
 ];
 
-function ChatItem({ chat, active, onClick }) {
-  const hasUnread = chat.unread > 0;
-  const noMessages = !chat.lastMessage;
+function ChatItem({ chat, onClick }) {
+  const lastMessage = chat.last_message
+  const { bg, color } = getRandomColor(chat.activity_title)
 
   return (
     <div
       onClick={onClick}
       className="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors rounded-xl mx-2"
       style={{
-        background: active ? "rgba(83,74,183,0.08)" : "transparent",
+        background: "transparent",
       }}
-      onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
-      onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}
+      onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
+      onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
     >
       <ChatAvatar
-        initials={chat.initials}
-        bg={chat.bg}
-        color={chat.color}
+        initials={chat.activity_title.slice(0, 3).toUpperCase()}
+        bg={bg}
+        color={color}
         size={44}
       />
 
@@ -61,19 +63,19 @@ function ChatItem({ chat, active, onClick }) {
             <span
               className="text-[14px] truncate"
               style={{
-                fontWeight: hasUnread ? 600 : 500,
+                fontWeight: lastMessage ? 600 : 500,
                 color: "#1a1a18",
               }}
             >
-              {chat.name}
+              {chat.activity_title}
             </span>
           </div>
-          {chat.time && (
+          {lastMessage && (
             <span
               className="text-[11px] flex-shrink-0"
-              style={{ color: hasUnread ? "#534AB7" : "#9ca3a0" }}
+              style={{ color: !lastMessage ? "#534AB7" : "#9ca3a0" }}
             >
-              {chat.time}
+              {lastMessage.sent_at.replace('T', ' ')}
             </span>
           )}
         </div>
@@ -82,42 +84,32 @@ function ChatItem({ chat, active, onClick }) {
           <span
             className="text-[12.5px] truncate"
             style={{
-              color: noMessages ? "#9ca3a0" : hasUnread ? "#1a1a18" : "#6b6b67",
-              fontStyle: noMessages ? "italic" : "normal",
-              fontWeight: hasUnread ? 500 : 400,
+              color: !lastMessage ? "#1a1a18" : "#6b6b67",
+              fontStyle: !lastMessage ? "italic" : "normal",
+              fontWeight: lastMessage ? 500 : 400,
             }}
           >
-            {noMessages ? "Nema poruka..." : chat.lastMessage}
+            {!lastMessage ? "Nema poruka..." : lastMessage.message}
           </span>
-
-          {hasUnread && (
-            <div
-              className="flex-shrink-0 flex items-center justify-center rounded-full text-white text-[11px] font-medium"
-              style={{
-                background: "#534AB7",
-                minWidth: chat.unread > 9 ? 22 : 18,
-                height: 18,
-                padding: "0 5px",
-              }}
-            >
-              {chat.unread > 99 ? "99+" : chat.unread}
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default function MyChats() {
+export default function MyChats({ onSelectChat }) {
   const [chats, setChats] = useState([])
-  const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
+    getUserChats()
+      .then((data) => {
+        setChats(data)
+      })
+      .catch(() => { })
+  }, [])
 
-  })
-
-  const totalUnread = chats.reduce((sum, c) => sum + c.unread, 0);
+  // const totalUnread = chats.reduce((sum, c) => sum + c.unread, 0);
+  const totalUnread = 0
 
   return (
     <div
@@ -152,10 +144,9 @@ export default function MyChats() {
         <div className="flex-1 overflow-y-auto py-2">
           {chats.map((chat) => (
             <ChatItem
-              key={chat.id}
+              key={chat.chat_id}
               chat={chat}
-              active={activeId === chat.id}
-              onClick={() => setActiveId(chat.id)}
+              onClick={() => onSelectChat(chat.chat_id)}
             />
           ))}
         </div>

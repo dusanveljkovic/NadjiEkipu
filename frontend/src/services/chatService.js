@@ -2,6 +2,10 @@
 
 import apiFetch from "./api";
 
-export const getMyChats = async () => {
-  return await apiFetch('/chats/')
+export const getUserChats = async () => {
+  return await apiFetch('/user-chats/')
+}
+
+export const getFullChat = async (id) => {
+  return await apiFetch(`/chats/${id}`)
 }

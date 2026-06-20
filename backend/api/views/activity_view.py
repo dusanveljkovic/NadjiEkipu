@@ -1,8 +1,9 @@
 # Author: Dusan Veljkovic 23/0417
 
+from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.views import View
-from ..models import Activity, ActivityParticipant, Chat
+from ..models import Activity, ActivityParticipant, Chat, Message
 from datetime import timedelta
 from ..utils import json_response, parse_json_body, validate_required_fields
 
@@ -11,9 +12,11 @@ class ActivityView(View):
     def get(self, request, activity_id=None):
         if activity_id:
             try:
-                activity = Activity.objects.select_related(
-                    "interest_id", "created_by"
-                ).get(idactivities=activity_id)
+                activity = (
+                    Activity.objects.select_related("interest_id", "created_by")
+                    .annotate(num_participants=Count("activityparticipant"))
+                    .get(idactivities=activity_id)
+                )
                 return json_response(
                     {
                         "idactivities": activity.idactivities,
@@ -30,14 +33,17 @@ class ActivityView(View):
                         "max_participants": activity.max_participants,
                         "indoor": activity.indoor,
                         "created_at": activity.created_at,
+                        "num_participants": activity.num_participants,
                     }
                 )
             except Activity.DoesNotExist:
                 return JsonResponse({"error": "Activity not found"}, status=404)
         else:
-            activities = Activity.objects.select_related(
-                "interest_id", "created_by"
-            ).all()
+            activities = (
+                Activity.objects.select_related("interest_id", "created_by")
+                .annotate(num_participants=Count("activityparticipant"))
+                .all()
+            )
             activity_list = [
                 {
                     "idactivities": a.idactivities,
@@ -47,6 +53,7 @@ class ActivityView(View):
                     "event_time": a.event_time,
                     "location_name": a.location_name,
                     "max_participants": a.max_participants,
+                    "num_participants": a.num_participants,
                 }
                 for a in activities
             ]
@@ -111,6 +118,20 @@ class ActivityView(View):
     def delete(self, request, activity_id):
         try:
             activity = Activity.objects.get(idactivities=activity_id)
+            if request.user.idusers != activity.created_by.idusers:
+                return JsonResponse(
+                    {"error": "Nemate dozvolu da obriste ovu aktivnost"}, status=403
+                )
+
+            ActivityParticipant.objects.filter(activity_id=activity).delete()
+
+            try:
+                chat = Chat.objects.get(event_id=activity)
+                Message.objects.filter(chat_id=chat).delete()
+                chat.delete()
+            except Chat.DoesNotExist:
+                pass
+
             activity.delete()
             return json_response({"message": "Activity deleted successfully"})
         except Activity.DoesNotExist:
@@ -122,6 +143,7 @@ class UserActivityView(View):
         activities = (
             Activity.objects.filter(created_by_id=request.user.idusers)
             .select_related("interest_id", "created_by")
+            .annotate(num_participants=Count("activityparticipant"))
             .all()
         )
         activity_list = [
@@ -133,6 +155,7 @@ class UserActivityView(View):
                 "event_time": a.event_time,
                 "location_name": a.location_name,
                 "max_participants": a.max_participants,
+                "num_participants": a.num_participants,
             }
             for a in activities
         ]

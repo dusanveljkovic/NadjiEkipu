@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import FillBar from "../components/FillBar"
 import CreateActivity from "./CreateActivity";
 import { getRandomColor } from "../services/utils";
-import { getUserActivities } from "../services/activityService";
+import { deleteActivity, getUserActivities } from "../services/activityService";
 
 
 function formatDate(d) {
@@ -15,7 +15,7 @@ function formatDate(d) {
 }
 
 function DeleteModal({ activity, onConfirm, onCancel }) {
-  const { color, bg } = getColor(activity.hobby);
+  const { color, bg } = getRandomColor(activity.interest_name);
   return (
     <div
       style={{
@@ -49,8 +49,8 @@ function DeleteModal({ activity, onConfirm, onCancel }) {
         </div>
         <p style={{ fontSize: 13, color: "#6b6b67", marginBottom: 24, lineHeight: 1.6 }}>
           Da li si siguran/na da želiš da obrišeš aktivnost{" "}
-          <strong style={{ color: "#1a1a18" }}>{activity.hobby}</strong> zakazanu za{" "}
-          <strong style={{ color: "#1a1a18" }}>{formatDate(activity.date)}</strong>?
+          <strong style={{ color: "#1a1a18" }}>{activity.title}</strong> zakazanu za{" "}
+          <strong style={{ color: "#1a1a18" }}>{formatDate(activity.event_time)}</strong>?
         </p>
         <div style={{ display: "flex", gap: 8 }}>
           <button
@@ -82,6 +82,7 @@ function DeleteModal({ activity, onConfirm, onCancel }) {
 function ActivityCard({ activity, onDelete }) {
   const { bg, color, border } = getRandomColor(activity.interest_name);
   const isPast = activity.event_time < new Date().toISOString().slice(0, 10);
+  console.log(activity)
 
   return (
     <div style={{
@@ -104,7 +105,7 @@ function ActivityCard({ activity, onDelete }) {
               {activity.interest_name.slice(0, 3).toUpperCase()}
             </div>
             <div>
-              <p style={{ fontSize: 15, fontWeight: 500, color: "#1a1a18", margin: 0 }}>{activity.interest_name}</p>
+              <p style={{ fontSize: 15, fontWeight: 500, color: "#1a1a18", margin: 0 }}>{activity.title}</p>
               {isPast && (
                 <span style={{ fontSize: 10, fontWeight: 500, color: "#9ca3a0", background: "#f5f5f3", borderRadius: 99, padding: "2px 7px", display: "inline-block", marginTop: 3 }}>
                   Završena
@@ -162,7 +163,7 @@ function ActivityCard({ activity, onDelete }) {
         )}
 
         {/* Fill bar */}
-        <FillBar signed={0} max={activity.max_participants} color={color} />
+        <FillBar signed={activity.num_participants} max={activity.max_participants} color={color} />
       </div>
     </div>
   );
@@ -187,7 +188,8 @@ export default function MyActivities() {
   };
 
   const handleDelete = () => {
-    setActivities((prev) => prev.filter((a) => a.id !== toDelete.id));
+    deleteActivity(toDelete.idactivities)
+    setActivities((prev) => prev.filter((a) => a.idactivities != toDelete.idactivities))
     setToDelete(null);
   };
 

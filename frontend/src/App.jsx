@@ -5,7 +5,7 @@ import MyProfile from "./pages/MyProfile";
 import Navbar from "./components/Navbar";
 import Registration from "./pages/Registration";
 import SingleChat from "./pages/SingleChat"
-import MyChats from "./pages/MyChats";
+import Chats from "./pages/Chats";
 import AdminRequests from "./pages/AdminRequests";
 import AdminAllUsers from "./pages/AdminAllUsers";
 import MyInterests from "./pages/MyInterests";
@@ -27,7 +27,7 @@ function App() {
           <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/mock-chat" element={<SingleChat />} />
-          <Route path="/my-chats" element={<MyChats />} />
+          <Route path="/my-chats" element={<Chats />} />
           <Route path="/requests" element={<AdminRequests />} />
           <Route path="/all-users" element={<AdminAllUsers />} />
           <Route path="/my-interests" element={<MyInterests />} />
