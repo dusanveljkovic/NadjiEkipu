@@ -28,7 +28,7 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 
 ### Autentifikacija
 - 🟦 Registracija korisnika  
-- 🟦 Login  
+- 🟩 Login  
 - 🟦 Logout  
 - 🟥 Role-based autorizacija  
 
@@ -45,13 +45,13 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 ### Aktivnosti
 - 🟦 Kreiranje aktivnosti  
 - 🟦 Prijava na aktivnost  
-- 🟦 Prikaz aktivnosti  
+- 🟩 Prikaz aktivnosti  
 - 🟥 Preporučene aktivnosti  
 
 ### Pretraga i filteri
-- 🟦 Pretraga po interesovanju
-- 🟦 Filter po vremenu i datumu
-- 🟦 Filter po lokaciji  
+- 🟩 Pretraga po interesovanju
+- 🟩 Filter po vremenu i datumu
+- 🟩 Filter po lokaciji  
 
 ### Chat
 - 🟦 Prikaz svi chetova za korisnika
