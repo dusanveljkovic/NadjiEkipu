@@ -1,0 +1,4 @@
+name: default
+variables:
+  - name: apiserver
+    value: http://localhost:8000/api
