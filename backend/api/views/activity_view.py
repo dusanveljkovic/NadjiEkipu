@@ -1,3 +1,5 @@
+# Author: Dusan Veljkovic 23/0417
+
 from django.http import JsonResponse
 from django.views import View
 from ..models import Activity, ActivityParticipant, Chat
@@ -113,6 +115,28 @@ class ActivityView(View):
             return json_response({"message": "Activity deleted successfully"})
         except Activity.DoesNotExist:
             return JsonResponse({"error": "Activity not found"}, status=404)
+
+
+class UserActivityView(View):
+    def get(self, request):
+        activities = (
+            Activity.objects.filter(created_by_id=request.user.idusers)
+            .select_related("interest_id", "created_by")
+            .all()
+        )
+        activity_list = [
+            {
+                "idactivities": a.idactivities,
+                "title": a.title,
+                "interest_name": a.interest_id.name,
+                "created_by_name": a.created_by.username,
+                "event_time": a.event_time,
+                "location_name": a.location_name,
+                "max_participants": a.max_participants,
+            }
+            for a in activities
+        ]
+        return json_response(activity_list)
 
 
 class ActivityParticipantsView(View):

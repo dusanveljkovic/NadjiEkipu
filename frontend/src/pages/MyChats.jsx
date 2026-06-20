@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ChatAvatar from "../components/ChatAvatar"
 
 const chats = [
@@ -110,24 +110,29 @@ function ChatItem({ chat, active, onClick }) {
 }
 
 export default function MyChats() {
+  const [chats, setChats] = useState([])
   const [activeId, setActiveId] = useState(null);
+
+  useEffect(() => {
+
+  })
 
   const totalUnread = chats.reduce((sum, c) => sum + c.unread, 0);
 
   return (
     <div
       className="flex flex-col min-h-screen rounded-xl"
-      style={{ 
-        background: "#f5f5f3", 
+      style={{
+        background: "#f5f5f3",
       }}
     >
       <div
         className="flex flex-col mx-auto w-full rounded-xl"
-        style={{ 
-          maxWidth: 480, 
-          minHeight: "100vh", 
-          background: "white", 
-          border: "0.5px solid rgba(0,0,0,0.08)", 
+        style={{
+          maxWidth: 480,
+          minHeight: "100vh",
+          background: "white",
+          border: "0.5px solid rgba(0,0,0,0.08)",
           boxShadow: "0 2px 24px rgba(0,0,0,0.07)",
         }}
       >
@@ -146,13 +151,13 @@ export default function MyChats() {
 
         <div className="flex-1 overflow-y-auto py-2">
           {chats.map((chat) => (
-              <ChatItem
-                key={chat.id}
-                chat={chat}
-                active={activeId === chat.id}
-                onClick={() => setActiveId(chat.id)}
-              />
-            ))}
+            <ChatItem
+              key={chat.id}
+              chat={chat}
+              active={activeId === chat.id}
+              onClick={() => setActiveId(chat.id)}
+            />
+          ))}
         </div>
       </div>
     </div>

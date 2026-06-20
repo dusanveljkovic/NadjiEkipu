@@ -1,25 +1,9 @@
+// Author: Dusan Veljkovic 23/0417
 import { useState, useMemo, useEffect, act } from "react";
 import FillBar from "../components/FillBar"
 import { getInterests } from "../services/interestService";
 import { getActivities } from "../services/activityService"
-import { getCities } from "../services/misc"
-
-const HOBBY_COLORS = [
-  { bg: "#EEEDFE", color: "#534AB7" },
-  { bg: "#E1F5EE", color: "#0F6E56" },
-  { bg: "#FAECE7", color: "#993C1D" },
-  { bg: "#E6F1FB", color: "#185FA5" },
-  { bg: "#FBEAF0", color: "#993556" },
-  { bg: "#FAEEDA", color: "#854F0B" },
-  { bg: "#EAF3DE", color: "#3B6D11" },
-  { bg: "#FCEBEB", color: "#A32D2D" },
-];
-
-function hobbyColor(interestName) {
-  let hash = 0;
-  for (let i = 0; i < interestName.length; i++) hash = interestName.charCodeAt(i) + ((hash << 5) - hash);
-  return HOBBY_COLORS[Math.abs(hash) % HOBBY_COLORS.length];
-}
+import { getRandomColor } from "../services/utils"
 
 function extractCities(activities) {
   return [...new Set(activities.map(a => a.location_name))]
@@ -225,7 +209,7 @@ function Home() {
             </div>
           ) : (
             pageSlice.map((a) => {
-              const { bg, color } = hobbyColor(a.interest_name);
+              const { bg, color } = getRandomColor(a.interest_name);
               const full = a.signed >= a.max;
               return (
                 <div
