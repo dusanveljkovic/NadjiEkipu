@@ -221,8 +221,8 @@ export default function HobbiesPage() {
 
   const filtered = allInterests.filter((i) => i.name.toLowerCase().includes(search.toLowerCase()))
 
-  const notUserInterests = useMemo(() =>
-    allInterests.filter(i => !userInterests.some(ui => ui.idinterests === i.idinterests)), [userInterests])
+  const notUserInterests =
+    allInterests.filter(i => !userInterests.some(ui => ui.idinterests === i.idinterests))
 
   const selectedCount = userInterests.length;
   console.log(filtered)
@@ -420,12 +420,11 @@ export default function HobbiesPage() {
                 gap: 12,
               }}
             >
-              {sorted.map((hobby) => (
-                <HobbyCard
-                  key={hobby.id}
-                  hobby={hobby}
-                  selected={userHobbies[hobby.id] !== undefined}
-                  skill={userHobbies[hobby.id] ?? 0}
+              {filtered.map(i => (
+                <InterestCard
+                  key={i.idinterests}
+                  interest={i}
+                  selected={false}
                   onToggle={toggleInterests}
                   onSkillChange={setSkill}
                 />

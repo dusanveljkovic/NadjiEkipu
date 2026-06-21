@@ -40,6 +40,7 @@ class LoginView(View):
                             "firstname": user.firstname,
                             "lastname": user.lastname,
                             "role_id": user.role_id.idroles,
+                            "birthyear": user.birthyear,
                         },
                         "expires_at": expires_at,
                     }
