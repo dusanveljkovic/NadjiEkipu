@@ -38,9 +38,9 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 - 🟦 Promena lozinke  
 
 ### Interesovanja
-- 🟦 Dodavanje interesovanja  
-- 🟦 Izmena interesovanja  
-- 🟦 Skill level  
+- 🟩 Dodavanje interesovanja  
+- 🟩 Izmena interesovanja  
+- 🟩 Skill level  
 
 ### Aktivnosti
 - 🟦 Kreiranje aktivnosti  
@@ -54,7 +54,7 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 - 🟩 Filter po lokaciji  
 
 ### Chat
-- 🟦 Prikaz svi chetova za korisnika
+- 🟩 Prikaz svi chetova za korisnika
 - 🟦 Chat između učesnika  
 - 🟥 Automatsko brisanje chata  
 
