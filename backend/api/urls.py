@@ -6,7 +6,7 @@ from .views.activity_view import (
     LeaveActivityView,
     UserActivityView,
 )
-from .views.interest_view import InterestView
+from .views.interest_view import InterestView, UserInterestsView
 from .views.auth_view import LoginView, LogoutView
 from .views.chat_view import UserChatsView, ChatView
 
@@ -37,6 +37,12 @@ urlpatterns = [
     path("interests/", InterestView.as_view(), name="interest-list"),
     path(
         "interests/<int:interest_id>/", InterestView.as_view(), name="interest-detail"
+    ),
+    path("user-interests/", UserInterestsView.as_view(), name="user-activities"),
+    path(
+        "user-interests/<int:user_interest_id>",
+        UserInterestsView.as_view(),
+        name="user-activities-single",
     ),
     path("user-activities/", UserActivityView.as_view(), name="user-activities"),
     path("user-chats/", UserChatsView.as_view(), name="user-chats"),

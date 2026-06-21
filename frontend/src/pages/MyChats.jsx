@@ -3,39 +3,6 @@ import ChatAvatar from "../components/ChatAvatar"
 import { getUserChats } from "../services/chatService";
 import { getRandomColor } from "../services/utils";
 
-const chats = [
-  {
-    id: 1,
-    name: "Basket",
-    initials: "BA",
-    bg: "#EEEDFE",
-    color: "#534AB7",
-    lastMessage: "Tigar: JA SAM NAJJACI",
-    time: "10:12 AM",
-    unread: 4,
-  },
-  {
-    id: 2,
-    name: "Fudbal",
-    initials: "FU",
-    bg: "#FCEBEB",
-    color: "#A32D2D",
-    lastMessage: null,
-    time: null,
-    unread: 0,
-  },
-  {
-    id: 3,
-    name: "Ucenje",
-    initials: "UC",
-    bg: "#EEEDFE",
-    color: "#538AB7",
-    lastMessage: "Jana: os mi je omiljeni predmet!",
-    time: "10:12 AM",
-    unread: 99,
-  },
-];
-
 function ChatItem({ chat, onClick }) {
   const lastMessage = chat.last_message
   const { bg, color } = getRandomColor(chat.activity_title)
