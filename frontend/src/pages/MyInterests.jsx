@@ -1,33 +1,7 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const ALL_HOBBIES = [
-  { id: 1,  name: "Fudbal",          icon: "⚽", members: 1243 },
-  { id: 2,  name: "Košarka",         icon: "🏀", members: 876  },
-  { id: 3,  name: "Kuvanje",         icon: "🍳", members: 2104 },
-  { id: 4,  name: "Fotografija",     icon: "📷", members: 654  },
-  { id: 5,  name: "Vožnja bicikla",  icon: "🚴", members: 431  },
-  { id: 6,  name: "Učenje",          icon: "📚", members: 988  },
-];
-
-const HOBBY_COLORS = [
-  { bg: "#EEEDFE", color: "#534AB7", border: "#AFA9EC" },
-  { bg: "#E1F5EE", color: "#0F6E56", border: "#5DCAA5" },
-  { bg: "#FAECE7", color: "#993C1D", border: "#F0997B" },
-  { bg: "#E6F1FB", color: "#185FA5", border: "#85B7EB" },
-  { bg: "#FBEAF0", color: "#993556", border: "#ED93B1" },
-  { bg: "#FAEEDA", color: "#854F0B", border: "#EF9F27" },
-  { bg: "#EAF3DE", color: "#3B6D11", border: "#97C459" },
-  { bg: "#FCEBEB", color: "#A32D2D", border: "#F09595" },
-];
-
-function getColor(id) {
-  return HOBBY_COLORS[(id - 1) % HOBBY_COLORS.length];
-}
-
-function formatCount(n) {
-  return n >= 1000 ? (n / 1000).toFixed(1).replace(".0", "") + "k" : String(n);
-}
+import { getRandomColor, formatCount } from "../services/utils";
+import { getUserInterests, getInterests, addUserInterest, deleteUserInterest, updateUserInterest } from "../services/interestService";
 
 function SkillBar({ level, onChange, color }) {
   const trackRef = useRef(null);
@@ -46,7 +20,7 @@ function SkillBar({ level, onChange, color }) {
   const handleMouseDown = (e) => {
     e.stopPropagation();
     const move = (ev) => onChange(calcLevel(ev.clientX));
-    const up   = () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); };
+    const up = () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); };
     window.addEventListener("mousemove", move);
     window.addEventListener("mouseup", up);
   };
@@ -101,12 +75,13 @@ function SkillBar({ level, onChange, color }) {
   );
 }
 
-function HobbyCard({ hobby, selected, skill, onToggle, onSkillChange }) {
-  const { bg, color, border } = getColor(hobby.id);
+function InterestCard({ interest, selected, skill, onToggle, onSkillChange }) {
+  const { bg, color } = getRandomColor(interest.name)
+  const border = color
 
   return (
     <div
-      onClick={() => { if (!selected) onToggle(hobby.id)}}
+      onClick={() => { if (!selected) onToggle(interest.idinterests) }}
       style={{
         background: selected ? bg : "white",
         border: selected ? `1.5px solid ${border}` : "0.5px solid rgba(0,0,0,0.1)",
@@ -134,27 +109,9 @@ function HobbyCard({ hobby, selected, skill, onToggle, onSkillChange }) {
             gap: 6,
           }}
         >
-          {/* Checkmark badge */}
-          <div
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: "50%",
-              background: color,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-              <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
- 
           {/* X remove button */}
           <button
-            onClick={(e) => { e.stopPropagation(); onToggle(hobby.id); }}
+            onClick={(e) => { e.stopPropagation(); onToggle(interest.idinterests); }}
             title="Ukloni interesovanje"
             style={{
               width: 20,
@@ -195,14 +152,14 @@ function HobbyCard({ hobby, selected, skill, onToggle, onSkillChange }) {
             flexShrink: 0,
           }}
         >
-          {hobby.icon}
+          {interest.avatar_id}
         </div>
         <div>
           <p style={{ fontSize: 14, fontWeight: 500, color: selected ? color : "#1a1a18", margin: 0, lineHeight: 1.3 }}>
-            {hobby.name}
+            {interest.name}
           </p>
           <p style={{ fontSize: 11, color: "#9ca3a0", margin: 0, marginTop: 2 }}>
-            {formatCount(hobby.members)} članova
+            {interest.members !== undefined ? formatCount(interest.members) + " članova" : ""}
           </p>
         </div>
       </div>
@@ -214,7 +171,7 @@ function HobbyCard({ hobby, selected, skill, onToggle, onSkillChange }) {
           style={{ display: "flex", flexDirection: "column", gap: 6 }}
         >
           <p style={{ fontSize: 11, color, fontWeight: 500, margin: 0 }}>Nivo veštine</p>
-          <SkillBar level={skill} onChange={(v) => onSkillChange(hobby.id, v)} color={color} />
+          <SkillBar level={skill} onChange={(v) => onSkillChange(interest.iduser_interests, v)} color={color} />
         </div>
       )}
 
@@ -223,44 +180,52 @@ function HobbyCard({ hobby, selected, skill, onToggle, onSkillChange }) {
 }
 
 export default function HobbiesPage() {
-  const [search, setSearch]         = useState("");
-  const [userHobbies, setUserHobbies] = useState({});   // { hobbyId: skillLevel }
+  const [search, setSearch] = useState("");
+  const [allInterests, setAllInterests] = useState([])
+  const [userInterests, setUserInterests] = useState([])
 
-  
-  const navigate = useNavigate();
+  useEffect(() => {
+    loadUserInterests()
+  }, [])
+
+  const loadUserInterests = async () => {
+    const data = await getUserInterests()
+    setUserInterests(data)
+  }
+
+  useEffect(() => {
+    getInterests()
+      .then((data) => {
+        setAllInterests(data)
+      })
+      .catch(() => { })
+  }, [])
 
   const handleAddInterest = () => {
-    navigate("/add-interest");
+    useNavigate("/add-interest")
   };
 
-  const toggleHobby = (id) => {
-    setUserHobbies((prev) => {
-      if (prev[id] !== undefined) {
-        const next = { ...prev };
-        delete next[id];
-        return next;
-      }
-      return { ...prev, [id]: 5 };
-    });
+  const toggleInterests = async (id) => {
+    let found = userInterests.filter(ui => ui.idinterests === id)
+    if (found.length != 0)
+      await deleteUserInterest(found[0].iduser_interests)
+    else
+      await addUserInterest(id)
+    loadUserInterests()
   };
 
-  const setSkill = (id, level) => {
-    setUserHobbies((prev) => ({ ...prev, [id]: level }));
+  const setSkill = async (ui_id, level) => {
+    await updateUserInterest(ui_id, level)
+    loadUserInterests()
   };
 
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return ALL_HOBBIES.filter((h) => h.name.toLowerCase().includes(q));
-  }, [search]);
+  const filtered = allInterests.filter((i) => i.name.toLowerCase().includes(search.toLowerCase()))
 
-  // Selected hobbies first, then the rest — both groups preserve original order
-  const sorted = useMemo(() => {
-    const selected = filtered.filter((h) => userHobbies[h.id] !== undefined);
-    const rest     = filtered.filter((h) => userHobbies[h.id] === undefined);
-    return [...selected, ...rest];
-  }, [filtered, userHobbies]);
+  const notUserInterests = useMemo(() =>
+    allInterests.filter(i => !userInterests.some(ui => ui.idinterests === i.idinterests)), [userInterests])
 
-  const selectedCount = Object.keys(userHobbies).length;
+  const selectedCount = userInterests.length;
+  console.log(filtered)
 
   return (
     <div
@@ -273,9 +238,9 @@ export default function HobbiesPage() {
       <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
 
         {/* Header */}
-        <div style={{ 
-          display: "flex", 
-          justifyContent: "space-between", 
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
           gap: 16
@@ -286,7 +251,7 @@ export default function HobbiesPage() {
               Interesovanja
             </h1>
             <p style={{ fontSize: 12, color: "#9ca3a0", margin: 0 }}>
-              {ALL_HOBBIES.length} interesovanja &middot; {selectedCount > 0 ? `${selectedCount} odabrano` : "nijedno nije odabrano"}
+              {allInterests.length} interesovanja &middot; {selectedCount > 0 ? `${selectedCount} odabrano` : "nijedno nije odabrano"}
             </p>
           </div>
 
@@ -343,7 +308,7 @@ export default function HobbiesPage() {
               + Dodaj interesovanje
             </button>
           </div>
-            
+
         </div>
 
 
@@ -391,15 +356,14 @@ export default function HobbiesPage() {
                   gap: 12,
                 }}
               >
-                {sorted
-                  .filter((h) => userHobbies[h.id] !== undefined)
-                  .map((hobby) => (
-                    <HobbyCard
-                      key={hobby.id}
-                      hobby={hobby}
+                {userInterests
+                  .map((ui) => (
+                    <InterestCard
+                      key={ui.idinterests}
+                      interest={ui}
                       selected
-                      skill={userHobbies[hobby.id]}
-                      onToggle={toggleHobby}
+                      skill={ui.skill_level}
+                      onToggle={toggleInterests}
                       onSkillChange={setSkill}
                     />
                   ))}
@@ -408,7 +372,7 @@ export default function HobbiesPage() {
 
             <div>
               <p style={{ fontSize: 11, fontWeight: 500, color: "#9ca3a0", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>
-                Sva interesovanja
+                Ostala interesovanja
               </p>
               <div
                 style={{
@@ -417,15 +381,13 @@ export default function HobbiesPage() {
                   gap: 12,
                 }}
               >
-                {sorted
-                  .filter((h) => userHobbies[h.id] === undefined)
-                  .map((hobby) => (
-                    <HobbyCard
-                      key={hobby.id}
-                      hobby={hobby}
+                {notUserInterests
+                  .map((i) => (
+                    <InterestCard
+                      key={i.idinterests}
+                      interest={i}
                       selected={false}
-                      skill={0}
-                      onToggle={toggleHobby}
+                      onToggle={toggleInterests}
                       onSkillChange={setSkill}
                     />
                   ))}
@@ -436,7 +398,7 @@ export default function HobbiesPage() {
 
         {/* Flat grid (searching or nothing selected) */}
         {(selectedCount === 0 || search !== "") && (
-          sorted.length === 0 ? (
+          filtered.length === 0 ? (
             <div
               style={{
                 background: "white",
@@ -464,7 +426,7 @@ export default function HobbiesPage() {
                   hobby={hobby}
                   selected={userHobbies[hobby.id] !== undefined}
                   skill={userHobbies[hobby.id] ?? 0}
-                  onToggle={toggleHobby}
+                  onToggle={toggleInterests}
                   onSkillChange={setSkill}
                 />
               ))}

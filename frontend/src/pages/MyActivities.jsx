@@ -82,7 +82,6 @@ function DeleteModal({ activity, onConfirm, onCancel }) {
 function ActivityCard({ activity, onDelete }) {
   const { bg, color, border } = getRandomColor(activity.interest_name);
   const isPast = activity.event_time < new Date().toISOString().slice(0, 10);
-  console.log(activity)
 
   return (
     <div style={{

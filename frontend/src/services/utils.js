@@ -15,3 +15,7 @@ export function getRandomColor(str) {
   for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
   return HOBBY_COLORS[Math.abs(hash) % HOBBY_COLORS.length];
 }
+
+export function formatCount(n) {
+  return n >= 1000 ? (n / 1000).toFixed(1).replace(".0", "") + "k" : String(n);
+}
