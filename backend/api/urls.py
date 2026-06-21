@@ -9,24 +9,24 @@ from .views.activity_view import (
 from .views.interest_view import InterestView, UserInterestsView
 from .views.auth_view import LoginView, LogoutView
 from .views.chat_view import UserChatsView, ChatView
-import views
+from .view import UserView, ModeratorRequestView
 
 urlpatterns = [
-    path("users/", views.UserView.as_view(), name="user-list"),
-    path("users/<int:user_id>/", views.UserView.as_view(), name="user-detail"),
+    path("users/", UserView.as_view(), name="user-list"),
+    path("users/<int:user_id>/", UserView.as_view(), name="user-detail"),
     path(
         "moderator-requests/",
-        views.ModeratorRequestView.as_view(),
+        ModeratorRequestView.as_view(),
         name="moderator-request-list",
     ),
     path(
         "moderator-requests/<int:request_id>/",
-        views.ModeratorRequestView.as_view(),
+        ModeratorRequestView.as_view(),
         name="moderator-request-detail",
     ),
     path(
         "users/<int:user_id>/interests/",
-        views.UserInterestsView.as_view(),
+        UserInterestsView.as_view(),
         name="user-interests",
     ),
     path("auth/login/", LoginView.as_view(), name="login"),

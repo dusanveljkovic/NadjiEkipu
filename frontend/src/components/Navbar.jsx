@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { getUserData } from "../services/api";
 
 const ACCENT = "#534AB7";
 const ACCENT_DARK = "#3F3A8C";
@@ -11,8 +12,8 @@ function NavbarItem({ to, onClickF, name, icon }) {
       onClick={() => onClickF()}
       className={({ isActive }) =>
         `flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 text-sm
-        ${isActive 
-          ? "bg-linear-to-r from-primary to-primary-dark text-white shadow-md" 
+        ${isActive
+          ? "bg-linear-to-r from-primary to-primary-dark text-white shadow-md"
           : "text-gray-600 hover:bg-gray-100 hover:translate-x-1"}`
       }
       style={({ isActive }) => isActive ? { background: `linear-gradient(135deg, ${ACCENT} 0%, ${ACCENT_DARK} 100%)` } : {}}
@@ -26,6 +27,7 @@ function NavbarItem({ to, onClickF, name, icon }) {
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const user = getUserData()
 
   const handleLogout = () => {
     if (window.confirm("Da li želite da se odjavite?")) {
@@ -37,7 +39,7 @@ function Navbar() {
   return (
     <>
       {/* TOP BAR */}
-      <nav 
+      <nav
         className="text-white px-4 py-3 flex items-center relative z-50 shadow-lg"
         style={{ background: `linear-gradient(135deg, ${ACCENT} 0%, ${ACCENT_DARK} 100%)` }}
       >
@@ -47,11 +49,11 @@ function Navbar() {
         >
           ☰
         </button>
-        
+
         <div className="flex items-center gap-2 flex-1">
           <h1 className="font-bold text-lg tracking-tight">NađiEkipu</h1>
         </div>
-        
+
         <button
           onClick={handleLogout}
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 text-sm"
@@ -72,12 +74,11 @@ function Navbar() {
 
       {/* SIDEBAR */}
       <div
-        className={`fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Sidebar Header */}
-        <div 
+        <div
           className="p-4 border-b"
           style={{ background: `linear-gradient(135deg, ${ACCENT} 0%, ${ACCENT_DARK} 100%)` }}
         >
@@ -115,14 +116,18 @@ function Navbar() {
               display: none;
             }
           `}</style>
-          
+
           <NavbarItem to="/home" onClickF={() => setIsOpen(false)} name="Aktivnosti" icon="fa-solid fa-calendar-day" />
           <NavbarItem to="/my-chats" onClickF={() => setIsOpen(false)} name="Moji četovi" icon="fa-solid fa-comments" />
           <NavbarItem to="/my-profile" onClickF={() => setIsOpen(false)} name="Moj profil" icon="fa-solid fa-user" />
           <NavbarItem to="/my-interests" onClickF={() => setIsOpen(false)} name="Moja interesovanja" icon="fa-solid fa-heart" />
           <NavbarItem to="/my-activities" onClickF={() => setIsOpen(false)} name="Kreirane aktivnosti" icon="fa-solid fa-calendar-plus" />
-          <NavbarItem to="/all-users" onClickF={() => setIsOpen(false)} name="Svi korisnici" icon="fa-solid fa-users" />
-          <NavbarItem to="/requests" onClickF={() => setIsOpen(false)} name="Zahtevi za moderaciju" icon="fa-solid fa-envelope" />
+          {user.role_id === 1 && (
+            <div>
+              <NavbarItem to="/all-users" onClickF={() => setIsOpen(false)} name="Svi korisnici" icon="fa-solid fa-users" />
+              <NavbarItem to="/requests" onClickF={() => setIsOpen(false)} name="Zahtevi za moderaciju" icon="fa-solid fa-envelope" />
+            </div>
+          )}
         </div>
 
         {/* Sidebar Footer */}

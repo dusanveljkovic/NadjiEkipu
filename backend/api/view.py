@@ -174,26 +174,3 @@ class ModeratorRequestView(View):
 
 
 # Napisala Jana Jolovic 0338/2023
-
-
-class UserInterestsView(View):
-    def get(self, request, user_id):
-        try:
-            user = User.objects.get(idusers=user_id)
-            user_interests = UserInterest.objects.filter(user_id=user).select_related(
-                "interest_id"
-            )
-            return json_response(
-                [
-                    {
-                        "id": ui.interest_id.idinterests,
-                        "name": ui.interest_id.name,
-                        "skill_level": ui.skill_level,
-                        "attended_count": ui.attended_count,
-                    }
-                    for ui in user_interests
-                ]
-            )
-        except User.DoesNotExist:
-            return JsonResponse({"error": "User not found"}, status=404)
-
