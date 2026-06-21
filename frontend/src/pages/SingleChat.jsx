@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react"
 import ChatAvatar from "../components/ChatAvatar"
 import { getFullChat } from "../services/chatService";
 import { getRandomColor } from "../services/utils";
+import chatSocket from "../services/chatSocket";
+import { getUserData } from "../services/api";
 const primaryColor = "#3852B4";
 
 const users = [
@@ -18,7 +20,6 @@ function getTime() {
 function Message({ msg, showAvatar, last }) {
   const AVATAR_SIZE = 32
   const { bg, color } = getRandomColor(msg.sender_name)
-  console.log(msg)
 
   return (
     <div className={`flex gap-2 items-start ${msg.is_own ? "flex-row-reverse" : ""}`}>
@@ -42,7 +43,10 @@ function Message({ msg, showAvatar, last }) {
           {msg.message}
         </div>
         {last && (
-          <span className="text-[10px] text-gray-400 mb-4">{msg.sent_at}</span>
+          <span className="text-[10px] text-gray-400 mb-4">{new Date(msg.sent_at).toLocaleTimeString('sr-RS', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}</span>
         )}
       </div>
     </div>
@@ -66,11 +70,13 @@ function UserItem({ user }) {
 }
 
 export default function ChatPage({ chatId, onBack }) {
+  const [isConnected, setIsConnected] = useState(false)
   const [title, setTitle] = useState('')
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState("")
   const messagesEndRef = useRef(null)
   const textAreaRef = useRef(null)
+  const userId = getUserData().idusers
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -83,37 +89,54 @@ export default function ChatPage({ chatId, onBack }) {
         setTitle(data.activity_title)
       })
       .catch(() => { })
-  }, [])
+
+    const token = localStorage.getItem('auth_token')
+
+    if (token) {
+      chatSocket.connect(chatId, token)
+      setIsConnected(true)
+
+      const messageHandler = (data) => {
+        setMessages(prev => [...prev, {
+          message_id: data.message_id || Date.now(),
+          sender_id: data.sender_id,
+          sender_name: data.sender_name,
+          message: data.message,
+          is_own: data.sender_id === userId,
+          sent_at: data.sent_at || new Date().toISOString()
+        }])
+      }
+
+      const historyHandler = (data) => {
+        setMessages(data.messages.map(item => ({ ...item, is_own: item.sender_id === userId })) || [])
+      }
+
+      chatSocket.on('message', messageHandler)
+      chatSocket.on('history', historyHandler)
+
+      return () => {
+        chatSocket.off('message', messageHandler)
+        chatSocket.off('history', historyHandler)
+        chatSocket.disconnect()
+        setIsConnected(false)
+      }
+    }
+  }, [chatId, userId])
 
   const onlineUsers = users.filter((u) => u.online)
   const offlineUsers = users.filter((u) => !u.online)
 
-  function sendMessage() {
-    const text = input.trim()
-    if (!text) return
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        name: "Me",
-        initials: "ME",
-        bg: "#EEEDFE",
-        color: primaryColor,
-        text,
-        time: getTime(),
-        self: true
-      }
-    ])
-    setInput("")
-    if (textAreaRef.current) {
-      textAreaRef.current.style.height = "auto"
-    }
+  const handleSendMessage = (e) => {
+    e.preventDefault()
+    if (!input.trim() || !isConnected) return
+
+    chatSocket.sendMessage(input.trim())
+    setInput('')
   }
 
   function handleKeyDown(e) {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      sendMessage()
+      handleSendMessage(e)
     }
   }
 
@@ -187,7 +210,7 @@ export default function ChatPage({ chatId, onBack }) {
               }}
             />
             <button
-              onClick={sendMessage}
+              onClick={handleSendMessage}
               className="flex items-center justify-center rounded-full flex-shrink-0 transition-opacity hover:opacity-85 bg-primary"
               style={{ width: 36, height: 36, border: "none", cursor: "pointer" }}
             >
