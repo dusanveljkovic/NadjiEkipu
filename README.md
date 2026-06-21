@@ -13,6 +13,31 @@ Korisnici mogu:
 
 Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim interesovanjima.
 
+## Pokretanje projekta
+
+```bash
+# frontend
+npm install
+npm run dev
+
+# backend 
+python -m pip install -r requirements.txt
+
+docker run -d --name redis -p 6379:6379 redis:alpine
+docker run -d \
+    --name mariadb \
+    -e MYSQL_ROOT_PASSWORD=rootpassword \
+    -e MYSQL_DATABASE=nadji_ekipu \
+    -e MYSQL_USER=myuser \
+    -e MYSQL_PASSWORD=mypasswod \
+    -p 3306:3306 \
+    mariadb:latest
+docker exec -i mariadb mysql -u root -p rootpassword nadjiekipu < ../baza/create_db.sql
+docker exec -i mariadb mysql -u root -p rootpassword nadjiekipu < ../baza/seed.sql
+
+python manage.py runserver
+```
+
 ## Tehnologije
 
 - Frontend: React + Tailwind CSS  
@@ -28,7 +53,7 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 
 ### Autentifikacija
 - 🟦 Registracija korisnika  
-- 🟦 Login  
+- 🟩 Login  
 - 🟦 Logout  
 - 🟥 Role-based autorizacija  
 
@@ -38,23 +63,23 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 - 🟦 Promena lozinke  
 
 ### Interesovanja
-- 🟦 Dodavanje interesovanja  
-- 🟦 Izmena interesovanja  
-- 🟦 Skill level  
+- 🟩 Dodavanje interesovanja  
+- 🟩 Izmena interesovanja  
+- 🟩 Skill level  
 
 ### Aktivnosti
 - 🟦 Kreiranje aktivnosti  
 - 🟦 Prijava na aktivnost  
-- 🟦 Prikaz aktivnosti  
+- 🟩 Prikaz aktivnosti  
 - 🟥 Preporučene aktivnosti  
 
 ### Pretraga i filteri
-- 🟦 Pretraga po interesovanju
-- 🟦 Filter po vremenu i datumu
-- 🟦 Filter po lokaciji  
+- 🟩 Pretraga po interesovanju
+- 🟩 Filter po vremenu i datumu
+- 🟩 Filter po lokaciji  
 
 ### Chat
-- 🟦 Prikaz svi chetova za korisnika
+- 🟩 Prikaz svi chetova za korisnika
 - 🟦 Chat između učesnika  
 - 🟥 Automatsko brisanje chata  
 
@@ -74,10 +99,3 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 - 🟥 Mapa aktivnosti  
 - 🟥 Napredni filteri  
 
-## Pokretanje projekta
-
-```bash
-# frontend
-npm install
-npm run dev
-```

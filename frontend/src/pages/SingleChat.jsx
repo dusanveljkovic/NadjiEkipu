@@ -1,65 +1,66 @@
-import {useEffect, useRef, useState} from "react"
+import { useEffect, useRef, useState } from "react"
 import ChatAvatar from "../components/ChatAvatar"
+import { getFullChat } from "../services/chatService";
+import { getRandomColor } from "../services/utils";
+import chatSocket from "../services/chatSocket";
+import { getUserData } from "../services/api";
 const primaryColor = "#3852B4";
 
 const users = [
-  { name: "jana", initials: "JA", online: true, bg: "#EEEEEE", color: "#0F6E56"},
-  { name: "ana", initials: "AN", online: true, bg: "#FAECE7", color: "#993C1D"},
-  { name: "dusan", initials: "DU", online: false, bg: "#E6F1FB", color: "#185FA5"},
-  { name: "tigar", initials: "TI", online: true, bg: "#FAEEDA", color: "#854F0B"},
-]
-
-const initial_messages = [
-  {id: 1,  name: "jana", initials: "JA", time: "13:00", online: true, bg: "#E1F5EE", color: "#0F6E56", text: "text1", self: false},
-  {id: 2,  name: "jana", initials: "JA", time: "13:02", online: true, bg: "#E1F5EE", color: "#0F6E56", text: "text2", self: false},
-  {id: 3,  name: "jana", initials: "JA", time: "13:03", online: true, bg: "#E1F5EE", color: "#0F6E56", text: "text3", self: false},
-  {id: 4, name: "tigar", initials: "TI", time: "13:04", online: false, bg: "#FAEEDA", color: "#854F0B", text: "text4", self: false},
-  {id: 5, name: "tigar", initials: "TI", time: "13:05", online: false, bg: "#FAEEDA", color: "#854F0B", text: "text5", self: false},
+  { name: "jana", initials: "JA", online: true, bg: "#EEEEEE", color: "#0F6E56" },
+  { name: "ana", initials: "AN", online: true, bg: "#FAECE7", color: "#993C1D" },
+  { name: "dusan", initials: "DU", online: false, bg: "#E6F1FB", color: "#185FA5" },
+  { name: "tigar", initials: "TI", online: true, bg: "#FAEEDA", color: "#854F0B" },
 ]
 
 function getTime() {
-  return new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})
+  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
 }
 
-function Message({msg, showAvatar, last}) {
+function Message({ msg, showAvatar, last }) {
   const AVATAR_SIZE = 32
+  const { bg, color } = getRandomColor(msg.sender_name)
+
   return (
-    <div className={`flex gap-2 items-start ${msg.self ? "flex-row-reverse": ""}`}>
-      {showAvatar ? (
-        <ChatAvatar initials={msg.initials} bg={msg.bg} color={msg.color} size={AVATAR_SIZE} />
+    <div className={`flex gap-2 items-start ${msg.is_own ? "flex-row-reverse" : ""}`}>
+      {!msg.is_own && showAvatar ? (
+        <ChatAvatar initials={msg.sender_name.slice(0, 3).toUpperCase()} bg={bg} color={color} size={AVATAR_SIZE} />
       ) : (
-        <div style={{width: AVATAR_SIZE, flexShrink: 0 }} />
+        <div style={{ width: AVATAR_SIZE, flexShrink: 0 }} />
       )}
-      <div className={`flex flex-col gap-1 max-w-[%62] ${msg.self ? "items-end" : ""}`}>
-        {!msg.self && showAvatar && (
-          <span className="text-[11px] text-gray-400">{msg.name}</span>
+      <div className={`flex flex-col gap-1 max-w-[%62] ${msg.is_own ? "items-end" : ""}`}>
+        {!msg.is_own && showAvatar && (
+          <span className="text-[11px] text-gray-400">{msg.sender_name}</span>
         )}
-        <div 
+        <div
           className="px-3 py-2 rounded-2xl text-[13px] leading-relaxed break-words"
           style={
-            msg.self
-              ? {background: primaryColor, color: "white"}
-              : {background: "white", border: "0.5px solid rgba(0,0,0,0.1)", color: "black"}
+            msg.is_own
+              ? { background: primaryColor, color: "white" }
+              : { background: "white", border: "0.5px solid rgba(0,0,0,0.1)", color: "black" }
           }
         >
-          {msg.text}
+          {msg.message}
         </div>
         {last && (
-          <span className="text-[10px] text-gray-400 mb-4">{msg.time}</span>
+          <span className="text-[10px] text-gray-400 mb-4">{new Date(msg.sent_at).toLocaleTimeString('sr-RS', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}</span>
         )}
       </div>
     </div>
   )
 }
 
-function UserItem({user}) {
+function UserItem({ user }) {
   return (
     <div className="flex items-center gap-2 px-3 py-1">
       <div className="relative flex-shrink-0">
         <ChatAvatar initials={user.initials} bg={user.bg} color={user.color} size={30} />
         <div
           className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border-2 border-white ${user.online ? "bg-green-400" : "bg-gray-400"}`}
-          />
+        />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[12px] text-gray-900 truncate">{user.name}</p>
@@ -68,45 +69,74 @@ function UserItem({user}) {
   )
 }
 
-export default function ChatPage() {
-  const [messages, setMessages] = useState(initial_messages)
+export default function ChatPage({ chatId, onBack }) {
+  const [isConnected, setIsConnected] = useState(false)
+  const [title, setTitle] = useState('')
+  const [messages, setMessages] = useState([])
   const [input, setInput] = useState("")
   const messagesEndRef = useRef(null)
   const textAreaRef = useRef(null)
+  const userId = getUserData().idusers
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({behavior: "smooth"})
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  useEffect(() => {
+    getFullChat(chatId)
+      .then((data) => {
+        setMessages(data.messages)
+        setTitle(data.activity_title)
+      })
+      .catch(() => { })
+
+    const token = localStorage.getItem('auth_token')
+
+    if (token) {
+      chatSocket.connect(chatId, token)
+      setIsConnected(true)
+
+      const messageHandler = (data) => {
+        setMessages(prev => [...prev, {
+          message_id: data.message_id || Date.now(),
+          sender_id: data.sender_id,
+          sender_name: data.sender_name,
+          message: data.message,
+          is_own: data.sender_id === userId,
+          sent_at: data.sent_at || new Date().toISOString()
+        }])
+      }
+
+      const historyHandler = (data) => {
+        setMessages(data.messages.map(item => ({ ...item, is_own: item.sender_id === userId })) || [])
+      }
+
+      chatSocket.on('message', messageHandler)
+      chatSocket.on('history', historyHandler)
+
+      return () => {
+        chatSocket.off('message', messageHandler)
+        chatSocket.off('history', historyHandler)
+        chatSocket.disconnect()
+        setIsConnected(false)
+      }
+    }
+  }, [chatId, userId])
 
   const onlineUsers = users.filter((u) => u.online)
   const offlineUsers = users.filter((u) => !u.online)
 
-  function sendMessage() {
-    const text = input.trim()
-    if(!text) return
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        name: "Me",
-        initials: "ME",
-        bg: "#EEEDFE",
-        color: primaryColor,
-        text,
-        time: getTime(),
-        self: true
-      }
-    ])
-    setInput("")
-    if(textAreaRef.current) {
-      textAreaRef.current.style.height = "auto"
-    }
+  const handleSendMessage = (e) => {
+    e.preventDefault()
+    if (!input.trim() || !isConnected) return
+
+    chatSocket.sendMessage(input.trim())
+    setInput('')
   }
 
   function handleKeyDown(e) {
-    if(e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      sendMessage()
+    if (e.key === "Enter" && !e.shiftKey) {
+      handleSendMessage(e)
     }
   }
 
@@ -137,14 +167,14 @@ export default function ChatPage() {
               className="flex items-center justify-center rounded-full text-[13px] font-medium"
               style={{ width: 36, height: 36, background: "#EEEDFE", color: "#534AB7" }}
             >
-              GC
+              {title.slice(0, 3).toUpperCase()}
             </div>
             <div>
-              <p className="text-[15px] font-medium text-gray-900">Chat</p>
+              <p className="text-[15px] font-medium text-gray-900">{title}</p>
               <p className="text-[12px] text-gray-500">{onlineUsers.length} online</p>
             </div>
           </div>
- 
+
           <div
             className="flex-1 overflow-y-auto flex flex-col p-5"
             style={{ background: "#efefed" }}
@@ -152,17 +182,17 @@ export default function ChatPage() {
             {messages.map((msg, i) => {
               const prev = messages[i - 1]
               const next = messages[i + 1]
-              const sameAsNext = next && next.name === msg.name && next.self === msg.self
-              const sameAsPrev = prev && prev.name === msg.name && prev.self === msg.self;
+              const sameAsNext = next && next.sender_id === msg.sender_id && next.is_own === msg.is_own
+              const sameAsPrev = prev && prev.sender_id === msg.sender_id && prev.is_own === msg.is_own;
               return (
-                <div key={msg.id} style={{marginTop: sameAsPrev ? 2 : 12}}>
+                <div key={msg.message_id} style={{ marginTop: sameAsPrev ? 2 : 12 }}>
                   <Message msg={msg} showAvatar={!sameAsPrev} last={!sameAsNext} />
                 </div>
               )
             })}
             <div ref={messagesEndRef} />
           </div>
- 
+
           {/* Input */}
           <div className="flex items-end gap-2.5 px-5 py-3.5 border-t border-black/10 bg-white">
             <textarea
@@ -180,7 +210,7 @@ export default function ChatPage() {
               }}
             />
             <button
-              onClick={sendMessage}
+              onClick={handleSendMessage}
               className="flex items-center justify-center rounded-full flex-shrink-0 transition-opacity hover:opacity-85 bg-primary"
               style={{ width: 36, height: 36, border: "none", cursor: "pointer" }}
             >
@@ -188,13 +218,13 @@ export default function ChatPage() {
             </button>
           </div>
         </div>
- 
+
         <div className="flex-3 flex flex-col bg-white">
           <div className="px-4 py-3 border-b border-black/10">
             <p className="text-[13px] font-medium text-gray-900">Korisnici</p>
             <p className="text-[11px] text-gray-500 mt-0.5">{users.length} korisnika</p>
           </div>
- 
+
           <div className="flex-1 overflow-y-auto py-2">
             {onlineUsers.length > 0 && (
               <div>

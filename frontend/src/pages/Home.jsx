@@ -1,117 +1,85 @@
-import {useState, useMemo} from "react";
+// Author: Dusan Veljkovic 23/0417
+import { useState, useMemo, useEffect, act } from "react";
 import FillBar from "../components/FillBar"
+import { getInterests } from "../services/interestService";
+import { getActivities, joinActivity } from "../services/activityService"
+import { getRandomColor } from "../services/utils"
 
-const hobbies = [
-  "Fudbal",
-  "Kosarka",
-  "Kuvanje",
-  "Fotografija",
-  "Voznja bicikla",
-  "Ucenje"
-]
-
-const cities = [
-  "Beograd",
-  "Novi Sad",
-  "Niš",
-  "Kragujevac",
-  "Kraljevo",
-  "Novi Pazar"
-]
-
-const mockActivities = [
-  {
-    id: 1,
-    hobby: "Fudbal",
-    date: "2026-04-10",
-    time: "18:00",
-    location: "Novi Sad",
-    signed: 8,
-    max: 10,
-  },
-  {
-    id: 2,
-    hobby: "Sah",
-    date: "2026-04-10",
-    time: "20:00",
-    location: "Beograd",
-    signed: 3,
-    max: 6,
-  },
-  {
-    id: 3,
-    hobby: "Ucenje",
-    date: "2026-04-11",
-    time: "09:00",
-    location: "Beograd",
-    signed: 5,
-    max: 8,
-  },
-]
-
-const HOBBY_COLORS = [
-  { bg: "#EEEDFE", color: "#534AB7" },
-  { bg: "#E1F5EE", color: "#0F6E56" },
-  { bg: "#FAECE7", color: "#993C1D" },
-  { bg: "#E6F1FB", color: "#185FA5" },
-  { bg: "#FBEAF0", color: "#993556" },
-  { bg: "#FAEEDA", color: "#854F0B" },
-  { bg: "#EAF3DE", color: "#3B6D11" },
-  { bg: "#FCEBEB", color: "#A32D2D" },
-];
- 
-function hobbyColor(hobby) {
-  let hash = 0;
-  for (let i = 0; i < hobby.length; i++) hash = hobby.charCodeAt(i) + ((hash << 5) - hash);
-  return HOBBY_COLORS[Math.abs(hash) % HOBBY_COLORS.length];
+function extractCities(activities) {
+  return [...new Set(activities.map(a => a.location_name))]
 }
 
 function Home() {
   const [search, setSearch] = useState("")
-  const [selectedHobbies, setSelectedHobbies] = useState([])
+  const [selectedInterests, setSelectedInterests] = useState([])
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
   const [startTime, setStartTime] = useState("")
   const [endTime, setEndTime] = useState("")
   const [location, setLocation] = useState("")
-  const [activites, setActivites] = useState(mockActivities)
   const [page, setPage] = useState(1)
 
+  const [activites, setActivites] = useState([])
+  const [interests, setInterests] = useState([])
+  const [cities, setCities] = useState([])
+  const [joiningId, setJoiningId] = useState(null)
+  const [error, setError] = useState(null)
 
-  const filteredHobbies = hobbies.filter(h => h.toLowerCase().includes(search.toLowerCase()))
+  useEffect(() => {
+    getInterests()
+      .then((data) => {
+        setInterests(data)
+      })
+      .catch(() => { })
+  }, [])
+
+  useEffect(() => {
+    getActivities()
+      .then((data) => {
+        setActivites(data)
+        setCities(extractCities(data))
+      })
+      .catch(() => { })
+  }, [])
+
+  const filteredInterests = interests.filter(i => i.name.toLowerCase().includes(search.toLowerCase()))
 
   const filteredActivities = useMemo(() => {
     return activites.filter((a) => {
+      let [date, time] = a.event_time.split('T')
+      time = time.replace('Z', '')
       return (
-        (selectedHobbies.length === 0 || selectedHobbies.includes(a.hobby)) &&
-        (!startDate || a.date >= startDate) && 
-        (!endDate || a.date <= endDate) && 
-        (!startTime || a.time >= startTime) && 
-        (!endTime || a.time <= endTime) && 
-        (!location || a.location === location)
+        (selectedInterests.length === 0 || selectedInterests.includes(a.interest_name)) &&
+        (!startDate || date >= startDate) &&
+        (!endDate || date <= endDate) &&
+        (!startTime || time >= startTime) &&
+        (!endTime || time <= endTime) &&
+        (!location || a.location_name === location)
       )
     })
-  }, [activites, selectedHobbies, startDate, endDate, startTime, endTime, location])
+  }, [activites, selectedInterests, startDate, endDate, startTime, endTime, location])
 
   const PAGE_SIZE = 5
   const totalPages = Math.max(1, Math.ceil(filteredActivities.length / PAGE_SIZE));
-  const safePage   = Math.min(page, totalPages);
-  const pageSlice  = filteredActivities.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  const joinActivity = (id) => {}
+  const safePage = Math.min(page, totalPages);
+  const pageSlice = filteredActivities.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const _joinActivity = (id) => {
+    joinActivity(id)
+  }
 
-  const handleSelectedHobby = (hobby => {
-    if(selectedHobbies.includes(hobby))
-      setSelectedHobbies(selectedHobbies.filter(x => x !== hobby))
-    else {
-      setSelectedHobbies([...selectedHobbies, hobby])
-    }
-    console.log(Array.isArray(selectedHobbies))
-    console.log(selectedHobbies)
-  })
-  const toggleHobby = (hobby) => {
+  const handleSelectedInterest = (interest) => {
+    if (selectedInterests.includes(interest))
+      setSelectedInterests(selectedInterests.filter(x => x !== interest))
+    else
+      setSelectedInterests([...selectedInterests, interest])
+
+    console.log(Array.isArray(selectedInterests))
+    console.log(selectedInterests)
+  }
+  const toggleInterest = (interest) => {
     setPage(1);
-    setSelectedHobbies((prev) =>
-      prev.includes(hobby) ? prev.filter((x) => x !== hobby) : [...prev, hobby]
+    setSelectedInterests((prev) =>
+      prev.includes(interest) ? prev.filter((x) => x !== interest) : [...prev, interest]
     );
   };
 
@@ -137,7 +105,7 @@ function Home() {
       }}
     >
       <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
- 
+
         {/* Page title */}
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 500, color: "#1a1a18", margin: 0 }}>Aktivnosti</h1>
@@ -145,7 +113,7 @@ function Home() {
             {filteredActivities.length} {filteredActivities.length === 1 ? "rezultat" : "rezultata"}
           </p>
         </div>
- 
+
         {/* Filter card */}
         <div
           style={{
@@ -173,15 +141,15 @@ function Home() {
                 style={{ ...inputStyle, paddingLeft: 32 }}
               />
             </div>
- 
-            {filteredHobbies.length > 0 && (
+
+            {filteredInterests.length > 0 && (
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {filteredHobbies.map((hobby) => {
-                  const active = selectedHobbies.includes(hobby);
+                {filteredInterests.map((interest) => {
+                  const active = selectedInterests.includes(interest.name);
                   return (
                     <button
-                      key={hobby}
-                      onClick={() => toggleHobby(hobby)}
+                      key={interest.name}
+                      onClick={() => toggleInterest(interest.name)}
                       style={{
                         padding: "5px 12px",
                         borderRadius: 99,
@@ -195,35 +163,35 @@ function Home() {
                         transition: "all 0.15s",
                       }}
                     >
-                      {hobby}
+                      {interest.name}
                     </button>
                   );
                 })}
               </div>
             )}
           </div>
- 
+
           {/* Date / time / city row */}
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <div style={{ display: "flex", gap: 6, flex: "1 1 220px" }}>
               <input type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); setPage(1); }} style={inputStyle} />
-              <input type="date" value={endDate}   onChange={(e) => { setEndDate(e.target.value);   setPage(1); }} style={inputStyle} />
+              <input type="date" value={endDate} onChange={(e) => { setEndDate(e.target.value); setPage(1); }} style={inputStyle} />
             </div>
             <div style={{ display: "flex", gap: 6, flex: "1 1 160px" }}>
               <input type="time" value={startTime} onChange={(e) => { setStartTime(e.target.value); setPage(1); }} style={inputStyle} />
-              <input type="time" value={endTime}   onChange={(e) => { setEndTime(e.target.value);   setPage(1); }} style={inputStyle} />
+              <input type="time" value={endTime} onChange={(e) => { setEndTime(e.target.value); setPage(1); }} style={inputStyle} />
             </div>
             <select
               value={location}
               onChange={(e) => { setLocation(e.target.value); setPage(1); }}
               style={{ ...inputStyle, flex: "0 1 160px", cursor: "pointer" }}
             >
-              <option value="">Svi gradovi</option>
+              <option value="">Sve lokacije</option>
               {cities.map((c) => <option key={c}>{c}</option>)}
             </select>
           </div>
         </div>
- 
+
         {/* Activity list */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {pageSlice.length === 0 ? (
@@ -243,11 +211,11 @@ function Home() {
             </div>
           ) : (
             pageSlice.map((a) => {
-              const { bg, color } = hobbyColor(a.hobby);
-              const full = a.signed >= a.max;
+              const { bg, color } = getRandomColor(a.interest_name);
+              const full = a.num_participants >= a.max_participants;
               return (
                 <div
-                  key={a.id}
+                  key={a.idactivities}
                   style={{
                     background: "white",
                     border: "0.5px solid rgba(0,0,0,0.1)",
@@ -270,34 +238,34 @@ function Home() {
                       textAlign: "center", lineHeight: 1.2,
                     }}
                   >
-                    {a.hobby.slice(0, 3).toUpperCase()}
+                    {a.interest_name.slice(0, 3).toUpperCase()}
                   </div>
- 
+
                   {/* Name */}
                   <div style={{ flex: "0 0 140px", minWidth: 0 }}>
-                    <p style={{ fontSize: 14, fontWeight: 500, color: "#1a1a18", margin: 0 }}>{a.hobby}</p>
+                    <p style={{ fontSize: 14, fontWeight: 500, color: "#1a1a18", margin: 0 }}>{a.title}</p>
                   </div>
- 
+
                   {/* Date & time */}
                   <div style={{ flex: "0 0 100px", display: "flex", flexDirection: "column", gap: 2 }}>
-                    <span style={{ fontSize: 12, color: "#1a1a18" }}>{a.date}</span>
-                    <span style={{ fontSize: 11, color: "#9ca3a0" }}>{a.time}</span>
+                    <span style={{ fontSize: 12, color: "#1a1a18" }}>{a.event_time.split('T')[0]}</span>
+                    <span style={{ fontSize: 11, color: "#9ca3a0" }}>{a.event_time.split('T')[1].replace('Z', '')}</span>
                   </div>
- 
+
                   {/* Location */}
                   <div style={{ flex: "0 0 100px", display: "flex", alignItems: "center", gap: 5 }}>
                     <i className="fa-solid fa-location-pin" />
-                    <span style={{ fontSize: 12, color: "#6b6b67" }}>{a.location}</span>
+                    <span style={{ fontSize: 12, color: "#6b6b67" }}>{a.location_name}</span>
                   </div>
- 
+
                   {/* Fill bar */}
                   <div style={{ flex: 1 }}>
-                    <FillBar signed={a.signed} max={a.max} useFull={true} />
+                    <FillBar signed={a.num_participants} max={a.max_participants} useFull={true} />
                   </div>
- 
+
                   {/* Join button */}
                   <button
-                    onClick={() => !full && joinActivity(a.id)}
+                    onClick={() => !full && _joinActivity(a)}
                     disabled={full}
                     style={{
                       flexShrink: 0,
@@ -322,7 +290,7 @@ function Home() {
             })
           )}
         </div>
- 
+
         {/* Pagination */}
         {totalPages > 1 && (
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 4 }}>

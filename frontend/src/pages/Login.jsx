@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/authService";
 
 const users = [
   {
@@ -19,6 +20,7 @@ const users = [
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate();
 
@@ -26,26 +28,23 @@ function Login() {
     navigate("/registration");
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
+    setLoading(true)
 
     console.log("Username:", username);
     console.log("Password:", password);
 
-    const user = users.find(
-      (u) => u.username === username && u.password === password
-    );
-
-    if (user){
-      console.log("Login successful");
+    try {
+      await login(username, password)
       navigate("/home");
-    }
-    else {
+    } catch (err) {
       console.log("Login failed");
       navigate("/");
+    } finally {
+      setLoading(false)
     }
-    // ovde ide API poziv
   };
 
   return (
@@ -61,12 +60,12 @@ function Login() {
             onChange={(e) => setUsername(e.target.value)}
             required
             style={{
-                border: "1px solid #ccc",
-                padding: "8px",
-                marginTop: "4px",
-                borderRadius: "4px",
-                width: "100%",
-                boxSizing: "border-box"
+              border: "1px solid #ccc",
+              padding: "8px",
+              marginTop: "4px",
+              borderRadius: "4px",
+              width: "100%",
+              boxSizing: "border-box"
             }}
           />
         </div>
@@ -79,18 +78,18 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
             style={{
-                border: "1px solid #ccc",
-                padding: "8px",
-                marginTop: "4px",
-                borderRadius: "4px",
-                width: "100%",
-                boxSizing: "border-box"
+              border: "1px solid #ccc",
+              padding: "8px",
+              marginTop: "4px",
+              borderRadius: "4px",
+              width: "100%",
+              boxSizing: "border-box"
             }}
           />
         </div>
-            <div style={{display: "flex", gap: "20px"}}>
-             <button type="submit">Uloguj se</button>
-             <button type="button" onClick={handleRegistration}>Registruj se</button>
+        <div style={{ display: "flex", gap: "20px" }}>
+          <button type="submit">Uloguj se</button>
+          <button type="button" onClick={handleRegistration}>Registruj se</button>
         </div>
       </form>
     </div>

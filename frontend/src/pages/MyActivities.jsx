@@ -1,29 +1,11 @@
-import { useState } from "react";
+// Author: Dusan Veljkovic 23/0417
+
+import { useEffect, useState } from "react";
 import FillBar from "../components/FillBar"
 import CreateActivity from "./CreateActivity";
+import { getRandomColor } from "../services/utils";
+import { deleteActivity, getUserActivities } from "../services/activityService";
 
-const HOBBY_COLORS = [
-  { bg: "#EEEDFE", color: "#534AB7", border: "#AFA9EC" },
-  { bg: "#E1F5EE", color: "#0F6E56", border: "#5DCAA5" },
-  { bg: "#FAECE7", color: "#993C1D", border: "#F0997B" },
-  { bg: "#E6F1FB", color: "#185FA5", border: "#85B7EB" },
-  { bg: "#FBEAF0", color: "#993556", border: "#ED93B1" },
-  { bg: "#FAEEDA", color: "#854F0B", border: "#EF9F27" },
-  { bg: "#EAF3DE", color: "#3B6D11", border: "#97C459" },
-  { bg: "#FCEBEB", color: "#A32D2D", border: "#F09595" },
-];
-
-function getColor(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  return HOBBY_COLORS[Math.abs(hash) % HOBBY_COLORS.length];
-}
-
-const INITIAL_ACTIVITIES = [
-  { id: 1, hobby: "Košarka",      date: "2026-04-20", time: "18:00", location: "Novi Sad",  signed: 8,  max: 10, description: "Tigar zove na košarku. DOLAZI !!!" },
-  { id: 2, hobby: "Fotografija", date: "2026-04-25", time: "10:00", location: "Beograd",   signed: 3,  max: 6,  description: "" },
-  { id: 3, hobby: "Učenje",      date: "2026-05-01", time: "09:00", location: "Novi Sad",  signed: 12, max: 20, description: "Učenje OS-a sa Janom :)" },
-];
 
 function formatDate(d) {
   if (!d) return "";
@@ -33,7 +15,7 @@ function formatDate(d) {
 }
 
 function DeleteModal({ activity, onConfirm, onCancel }) {
-  const { color, bg } = getColor(activity.hobby);
+  const { color, bg } = getRandomColor(activity.interest_name);
   return (
     <div
       style={{
@@ -57,7 +39,7 @@ function DeleteModal({ activity, onConfirm, onCancel }) {
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
           <div style={{ width: 40, height: 40, borderRadius: 10, background: "#FCEBEB", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A32D2D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
             </svg>
           </div>
           <div>
@@ -67,8 +49,8 @@ function DeleteModal({ activity, onConfirm, onCancel }) {
         </div>
         <p style={{ fontSize: 13, color: "#6b6b67", marginBottom: 24, lineHeight: 1.6 }}>
           Da li si siguran/na da želiš da obrišeš aktivnost{" "}
-          <strong style={{ color: "#1a1a18" }}>{activity.hobby}</strong> zakazanu za{" "}
-          <strong style={{ color: "#1a1a18" }}>{formatDate(activity.date)}</strong>?
+          <strong style={{ color: "#1a1a18" }}>{activity.title}</strong> zakazanu za{" "}
+          <strong style={{ color: "#1a1a18" }}>{formatDate(activity.event_time)}</strong>?
         </p>
         <div style={{ display: "flex", gap: 8 }}>
           <button
@@ -98,8 +80,8 @@ function DeleteModal({ activity, onConfirm, onCancel }) {
 }
 
 function ActivityCard({ activity, onDelete }) {
-  const { bg, color, border } = getColor(activity.hobby);
-  const isPast = activity.date < new Date().toISOString().slice(0, 10);
+  const { bg, color, border } = getRandomColor(activity.interest_name);
+  const isPast = activity.event_time < new Date().toISOString().slice(0, 10);
 
   return (
     <div style={{
@@ -119,10 +101,10 @@ function ActivityCard({ activity, onDelete }) {
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 40, height: 40, borderRadius: 10, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 500, color, flexShrink: 0 }}>
-              {activity.hobby.slice(0, 3).toUpperCase()}
+              {activity.interest_name.slice(0, 3).toUpperCase()}
             </div>
             <div>
-              <p style={{ fontSize: 15, fontWeight: 500, color: "#1a1a18", margin: 0 }}>{activity.hobby}</p>
+              <p style={{ fontSize: 15, fontWeight: 500, color: "#1a1a18", margin: 0 }}>{activity.title}</p>
               {isPast && (
                 <span style={{ fontSize: 10, fontWeight: 500, color: "#9ca3a0", background: "#f5f5f3", borderRadius: 99, padding: "2px 7px", display: "inline-block", marginTop: 3 }}>
                   Završena
@@ -145,7 +127,7 @@ function ActivityCard({ activity, onDelete }) {
             title="Obriši aktivnost"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A32D2D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
             </svg>
           </button>
         </div>
@@ -154,21 +136,21 @@ function ActivityCard({ activity, onDelete }) {
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3a0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            <span style={{ fontSize: 12, color: "#6b6b67" }}>{formatDate(activity.date)}</span>
+            <span style={{ fontSize: 12, color: "#6b6b67" }}>{formatDate(activity.event_time)}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3a0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
-            <span style={{ fontSize: 12, color: "#6b6b67" }}>{activity.time}</span>
+            <span style={{ fontSize: 12, color: "#6b6b67" }}>{activity.event_time.split('T')[1].replace('Z', '')}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3a0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
             </svg>
-            <span style={{ fontSize: 12, color: "#6b6b67" }}>{activity.location}</span>
+            <span style={{ fontSize: 12, color: "#6b6b67" }}>{activity.location_name}</span>
           </div>
         </div>
 
@@ -180,17 +162,24 @@ function ActivityCard({ activity, onDelete }) {
         )}
 
         {/* Fill bar */}
-        <FillBar signed={activity.signed} max={activity.max} color={color} />
+        <FillBar signed={activity.num_participants} max={activity.max_participants} color={color} />
       </div>
     </div>
   );
 }
 
 export default function MyActivities() {
+  const [activities, setActivities] = useState([]);
+  const [page, setPage] = useState("list");      // "list" | "create"
+  const [toDelete, setToDelete] = useState(null);
 
-  const [activities, setActivities]     = useState(INITIAL_ACTIVITIES);
-  const [page, setPage]                 = useState("list");      // "list" | "create"
-  const [toDelete, setToDelete]         = useState(null);
+  useEffect(() => {
+    getUserActivities()
+      .then((data) => {
+        setActivities(data)
+      })
+      .catch(() => { })
+  }, [])
 
   const handleCreate = (newActivity) => {
     setActivities((prev) => [newActivity, ...prev]);
@@ -198,12 +187,13 @@ export default function MyActivities() {
   };
 
   const handleDelete = () => {
-    setActivities((prev) => prev.filter((a) => a.id !== toDelete.id));
+    deleteActivity(toDelete.idactivities)
+    setActivities((prev) => prev.filter((a) => a.idactivities != toDelete.idactivities))
     setToDelete(null);
   };
 
-  const upcoming = activities.filter((a) => a.date >= new Date().toISOString().slice(0, 10));
-  const past     = activities.filter((a) => a.date <  new Date().toISOString().slice(0, 10));
+  const upcoming = activities.filter((a) => a.event_time >= new Date().toISOString().slice(0, 10));
+  const past = activities.filter((a) => a.event_time < new Date().toISOString().slice(0, 10));
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f5f3", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", padding: "32px 16px" }}>
@@ -244,7 +234,7 @@ export default function MyActivities() {
               onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
               </svg>
               Nova aktivnost
             </button>
@@ -272,7 +262,7 @@ export default function MyActivities() {
                 Predstojeće — {upcoming.length}
               </p>
               {upcoming.map((a) => (
-                <ActivityCard key={a.id} activity={a} onDelete={setToDelete} />
+                <ActivityCard key={a.idactivities} activity={a} onDelete={setToDelete} />
               ))}
             </div>
           )}
@@ -284,7 +274,7 @@ export default function MyActivities() {
                 Završene — {past.length}
               </p>
               {past.map((a) => (
-                <ActivityCard key={a.id} activity={a} onDelete={setToDelete} />
+                <ActivityCard key={a.idactivities} activity={a} onDelete={setToDelete} />
               ))}
             </div>
           )}
