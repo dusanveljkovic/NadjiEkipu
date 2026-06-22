@@ -25,3 +25,16 @@ export const logout = async (token) => {
   }
   return response
 }
+
+export const register = async (formData) => {
+  try {
+    const data = await apiFetch("/auth/register/", {
+      method: "POST",
+      body: JSON.stringify(formData)
+    });
+
+    return data;
+  } catch (err) {
+    throw new Error(err.message || "Registration failed");
+  }
+};
