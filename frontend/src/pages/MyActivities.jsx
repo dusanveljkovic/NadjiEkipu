@@ -15,7 +15,6 @@ function formatDate(d) {
 }
 
 function DeleteModal({ activity, onConfirm, onCancel }) {
-  const { color, bg } = getRandomColor(activity.interest_name);
   return (
     <div
       style={{
@@ -173,12 +172,13 @@ export default function MyActivities() {
   const [page, setPage] = useState("list");      // "list" | "create"
   const [toDelete, setToDelete] = useState(null);
 
+  const loadData = async () => {
+    const data = await getUserActivities()
+    setActivities(data)
+  }
+
   useEffect(() => {
-    getUserActivities()
-      .then((data) => {
-        setActivities(data)
-      })
-      .catch(() => { })
+    loadData()
   }, [])
 
   const handleCreate = (newActivity) => {
@@ -186,10 +186,10 @@ export default function MyActivities() {
     setPage("list");
   };
 
-  const handleDelete = () => {
-    deleteActivity(toDelete.idactivities)
-    setActivities((prev) => prev.filter((a) => a.idactivities != toDelete.idactivities))
+  const handleDelete = async () => {
+    await deleteActivity(toDelete.idactivities)
     setToDelete(null);
+    await loadData()
   };
 
   const upcoming = activities.filter((a) => a.event_time >= new Date().toISOString().slice(0, 10));
