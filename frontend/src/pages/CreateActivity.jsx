@@ -1,60 +1,30 @@
 // Napisala Jana Jolovic 0338/2023
 
 import { useState, useEffect } from "react";
+import { getUserData } from "../services/api";
+import { getInterests } from "../services/interestService";
+import { createActivity } from "../services/activityService";
 
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
 const ACCENT_DARK = "#3F3A8C";
 const SOFT = "#F6F4FF";
 
-export default function CreateActivity({ onCreate, onBack }) {
+export default function CreateActivity({ interests, onCreate, onBack }) {
   const [form, setForm] = useState({
-    hobby: "",
+    interest_id: "",
+    title: "",
     date: "",
     time: "",
     location: "",
-    locationType: "indoor", 
-    max: "",
+    locationType: "indoor",
+    max_participants: "",
     description: "",
   });
 
   const [focused, setFocused] = useState(null);
-  const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-      fetch(`http://127.0.0.1:8000/api/users/1`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Greška pri učitavanju korisnika");
-          return res.json();
-        })
-        .then((data) => {
-          setUser(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err.message);
-          setLoading(false);
-        });
-    }, []);
-  
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center h-64">
-          <p className="text-gray-400 text-sm">Učitavanje profila...</p>
-        </div>
-      );
-    }
-  
-    if (error) {
-      return (
-        <div className="flex justify-center items-center h-64">
-          <p className="text-red-400 text-sm">{error}</p>
-        </div>
-      );
-    }
-  
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -73,53 +43,13 @@ export default function CreateActivity({ onCreate, onBack }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.hobby || !form.date || !form.time || !form.location || !form.max ) {
+    console.log(form)
+    if (!form.title || !form.interest_id || !form.date || !form.time || !form.location || !form.max_participants) {
       alert("Popuni sva obavezna polja");
       return;
     }
 
-    const eventTime = `${form.date}T${form.time}:00`;
-
-    const body = {
-      interest_id: 1, 
-      created_by: user.idusers,
-      title: form.hobby,
-      description: form.description,
-      event_time: eventTime,
-      location_name: form.location,
-      max_participants: parseInt(form.max),
-      indoor: form.locationType === "indoor" ? 1 : 0,
-      lat: null,
-      lon: null,
-    };
-
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/activities/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.error || "Greška prilikom kreiranja aktivnosti");
-        return;
-      }
-      alert("Aktivnost uspešno kreirana!");
-      if (onCreate) {
-        onCreate(data);
-      }
-      onBack();
-    } catch (err) {
-      console.error(err);
-      alert("Greška pri povezivanju sa serverom");
-    }
+    onCreate(form)
   };
 
   return (
@@ -197,16 +127,53 @@ export default function CreateActivity({ onCreate, onBack }) {
       >
         {/* Hobby */}
         <Input
-          label="🏆 Hobi"
-          name="hobby"
-          value={form.hobby}
+          label="Naziv"
+          name="title"
+          value={form.title}
           onChange={handleChange}
-          placeholder="Npr. Košarka, Fudbal, Planinarenje..."
-          focused={focused === "hobby"}
-          onFocus={() => setFocused("hobby")}
+          placeholder="Naziv aktivnosti"
+          focused={focused === "title"}
+          onFocus={() => setFocused("title")}
           onBlur={() => setFocused(null)}
         />
-
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            background: (focused === "interest") ? "white" : SOFT,
+            padding: "12px 16px",
+            borderRadius: 16,
+            border: `1.5px solid ${(focused === "interest") ? ACCENT : "transparent"}`,
+            transition: "all 0.2s ease",
+            boxShadow: (focused === "interest") ? `0 0 0 3px ${ACCENT}20` : "none",
+          }}
+        >
+          <label htmlFor="interests" style={{ fontSize: 12, color: ACCENT, fontWeight: 500 }}>
+            {"🏆 Interesovanje"}
+          </label>
+          <select
+            id="interests"
+            name="interest_id"
+            value={form.interest_id}
+            onChange={handleChange}
+            onFocus={() => setFocused("interest_id")}
+            onBlur={() => setFocused(null)}
+            style={{
+              border: "none",
+              outline: "none",
+              background: "transparent",
+              fontSize: 14,
+              padding: "4px 0",
+              color: "#1a1a18",
+            }}
+          >
+            <option key="" value="">Izaber interesovanje</option>
+            {interests.map((i) =>
+              <option key={i.idinterests} value={i.idinterests}>{i.name}</option>
+            )}
+          </select>
+        </div>
         {/* Date + Time */}
         <div style={{ display: "flex", gap: 16 }}>
           <Input
@@ -313,12 +280,12 @@ export default function CreateActivity({ onCreate, onBack }) {
         <Input
           type="number"
           label="👥 Max učesnika"
-          name="max"
-          value={form.max}
+          name="max_participants"
+          value={form.max_participants}
           onChange={handleChange}
           placeholder="Npr. 10"
-          focused={focused === "max"}
-          onFocus={() => setFocused("max")}
+          focused={focused === "max_participants"}
+          onFocus={() => setFocused("max_participants")}
           onBlur={() => setFocused(null)}
         />
 
