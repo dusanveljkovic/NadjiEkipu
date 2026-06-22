@@ -2,7 +2,7 @@
 
 const BASE_API_URL = 'http://127.0.0.1:8000/api'
 
-const getAuthToken = () => {
+export const getAuthToken = () => {
   return localStorage.getItem('auth_token')
 }
 
@@ -20,6 +20,11 @@ export const getUserData = () => {
 
 export const setUserData = (user) => {
   localStorage.setItem('user_data', JSON.stringify(user))
+}
+
+export const removeUserData = () => {
+  localStorage.removeItem('auth_token')
+  localStorage.removeItem('user_data')
 }
 
 export const apiFetch = async (endpoint, options = {}) => {

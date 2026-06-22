@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { getUserData } from "../services/api";
+import { getAuthToken, getUserData } from "../services/api";
+import { logout } from "../services/authService";
 
 const ACCENT = "#534AB7";
 const ACCENT_DARK = "#3F3A8C";
@@ -32,6 +33,7 @@ function Navbar() {
   const handleLogout = () => {
     if (window.confirm("Da li želite da se odjavite?")) {
       console.log("Odjavljen korisnik");
+      logout(getAuthToken());
       navigate("/login");
     }
   };
