@@ -54,7 +54,7 @@ python manage.py runserver
 ### Autentifikacija
 - 🟦 Registracija korisnika  
 - 🟩 Login  
-- 🟦 Logout  
+- 🟩 Logout  
 - 🟥 Role-based autorizacija  
 
 ### Profil
@@ -68,10 +68,10 @@ python manage.py runserver
 - 🟩 Skill level  
 
 ### Aktivnosti
-- 🟦 Kreiranje aktivnosti  
-- 🟦 Prijava na aktivnost  
+- 🟩 Kreiranje aktivnosti  
+- 🟩 Prijava na aktivnost  
 - 🟩 Prikaz aktivnosti
-- 🟦 Brisanje aktivnosti
+- 🟩 Brisanje aktivnosti
 - 🟥 Preporučene aktivnosti  
 
 ### Pretraga i filteri
@@ -82,7 +82,7 @@ python manage.py runserver
 ### Chat
 - 🟩 Prikaz svi chetova za korisnika
 - 🟩 Chat između učesnika  
-- 🟥 Automatsko brisanje chata  
+- 🟩 Automatsko brisanje chata  
 
 ### Moderator
 - 🟥 Dodavanje interesovanja  
@@ -98,5 +98,5 @@ python manage.py runserver
 - 🟥 Integracija OpenWeather API  
 - 🟥 Preporuke po vremenu  
 - 🟥 Mapa aktivnosti  
-- 🟥 Napredni filteri  
+- 🟩 Napredni filteri  
 
