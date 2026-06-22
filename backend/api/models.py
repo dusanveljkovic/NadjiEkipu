@@ -33,6 +33,7 @@ class Role(models.Model):
 
 
 class User(AbstractBaseUser):
+    objects = UserManager()
     idusers = models.AutoField(primary_key=True)
     username = models.CharField(max_length=128, unique=True)
     email = models.EmailField(max_length=128, unique=True)
