@@ -40,13 +40,17 @@ export const deleteActivity = async (id) => {
 }
 
 export const joinActivity = async (id) => {
-  return await apiFetch(`/activities/${id}/join`, {
+  return await apiFetch(`/activities/${id}/join/`, {
     method: 'POST'
   })
 }
 
 export const leaveActivity = async (id) => {
-  return await apiFetch(`/activities/${id}/leave`, {
-    method: 'POST'
+  return await apiFetch(`/activities/${id}/leave/`, {
+    method: 'DELETE'
   })
+}
+
+export const getJoinedActivities = async () => {
+  return await apiFetch('/joined-activities/')
 }

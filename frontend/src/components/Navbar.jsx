@@ -103,8 +103,8 @@ function Navbar() {
               KK
             </div>
             <div>
-              <p className="font-semibold text-sm text-gray-800">Kralj Karaburme</p>
-              <p className="text-xs text-gray-400">@kraljkaraburme</p>
+              <p className="font-semibold text-sm text-gray-800">{user.firstname} {user.lastname}</p>
+              <p className="text-xs text-gray-400">@{user.username}</p>
             </div>
           </div>
         </div>

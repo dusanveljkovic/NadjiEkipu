@@ -50,6 +50,7 @@ class ActivityView(View):
                     "title": a.title,
                     "interest_name": a.interest_id.name,
                     "created_by_name": a.created_by.username,
+                    "created_by_id": a.created_by.idusers,
                     "event_time": a.event_time,
                     "location_name": a.location_name,
                     "max_participants": a.max_participants,
@@ -229,3 +230,12 @@ class LeaveActivityView(View):
             )
         except Activity.DoesNotExist:
             return JsonResponse({"error": "Activity not found"}, status=404)
+
+
+class JoinedActivitiesView(View):
+    def get(self, request):
+        activities = ActivityParticipant.objects.filter(
+            user_id_id=request.user.idusers
+        ).all()
+        activity_list = [{"idactivities": a.activity_id_id} for a in activities]
+        return json_response(activity_list)
