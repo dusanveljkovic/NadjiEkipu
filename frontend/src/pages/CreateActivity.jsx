@@ -1,9 +1,6 @@
 // Napisala Jana Jolovic 0338/2023
 
 import { useState, useEffect } from "react";
-import { getUserData } from "../services/api";
-import { getInterests } from "../services/interestService";
-import { createActivity } from "../services/activityService";
 
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
