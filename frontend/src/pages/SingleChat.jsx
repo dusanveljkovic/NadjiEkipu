@@ -4,6 +4,7 @@ import { getFullChat } from "../services/chatService";
 import { getRandomColor } from "../services/utils";
 import chatSocket from "../services/chatSocket";
 import { getUserData } from "../services/api";
+import { useParams } from "react-router-dom";
 const primaryColor = "#3852B4";
 
 const users = [
@@ -23,9 +24,9 @@ function Message({ msg, showAvatar, last }) {
 
   return (
     <div className={`flex gap-2 items-start ${msg.is_own ? "flex-row-reverse" : ""}`}>
-      {!msg.is_own && showAvatar ? (
+      {showAvatar && !msg.is_own ? (
         <ChatAvatar initials={msg.sender_name.slice(0, 3).toUpperCase()} bg={bg} color={color} size={AVATAR_SIZE} />
-      ) : (
+      ) : (!msg.is_own &&
         <div style={{ width: AVATAR_SIZE, flexShrink: 0 }} />
       )}
       <div className={`flex flex-col gap-1 max-w-[%62] ${msg.is_own ? "items-end" : ""}`}>
@@ -43,7 +44,10 @@ function Message({ msg, showAvatar, last }) {
           {msg.message}
         </div>
         {last && (
-          <span className="text-[10px] text-gray-400 mb-4">{new Date(msg.sent_at).toLocaleTimeString('sr-RS', {
+          <span className="text-[10px] text-gray-400 mb-4">{new Date(msg.sent_at).toLocaleString('sr-RS', {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
             hour: '2-digit',
             minute: '2-digit'
           })}</span>
@@ -69,7 +73,8 @@ function UserItem({ user }) {
   )
 }
 
-export default function ChatPage({ chatId, onBack }) {
+export default function ChatPage() {
+  const { chatId } = useParams()
   const [isConnected, setIsConnected] = useState(false)
   const [title, setTitle] = useState('')
   const [messages, setMessages] = useState([])

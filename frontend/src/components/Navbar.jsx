@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { getUserData } from "../services/api";
+import { getAuthToken, getUserData } from "../services/api";
+import { logout } from "../services/authService";
 
 const ACCENT = "#534AB7";
 const ACCENT_DARK = "#3F3A8C";
@@ -32,6 +33,7 @@ function Navbar() {
   const handleLogout = () => {
     if (window.confirm("Da li želite da se odjavite?")) {
       console.log("Odjavljen korisnik");
+      logout(getAuthToken());
       navigate("/login");
     }
   };
@@ -103,8 +105,8 @@ function Navbar() {
               KK
             </div>
             <div>
-              <p className="font-semibold text-sm text-gray-800">Kralj Karaburme</p>
-              <p className="text-xs text-gray-400">@kraljkaraburme</p>
+              <p className="font-semibold text-sm text-gray-800">{user.firstname} {user.lastname}</p>
+              <p className="text-xs text-gray-400">@{user.username}</p>
             </div>
           </div>
         </div>

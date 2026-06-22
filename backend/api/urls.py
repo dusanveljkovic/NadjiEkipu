@@ -3,6 +3,7 @@ from .views.activity_view import (
     ActivityView,
     ActivityParticipantsView,
     JoinActivityView,
+    JoinedActivitiesView,
     LeaveActivityView,
     UserActivityView,
 )
@@ -63,6 +64,9 @@ urlpatterns = [
         name="user-activities-single",
     ),
     path("user-activities/", UserActivityView.as_view(), name="user-activities"),
+    path(
+        "joined-activities/", JoinedActivitiesView.as_view(), name="joined-activities"
+    ),
     path("user-chats/", UserChatsView.as_view(), name="user-chats"),
     path("chats/<int:chat_id>/", ChatView.as_view(), name="chat-full"),
 ]

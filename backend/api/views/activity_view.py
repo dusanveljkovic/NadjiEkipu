@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.views import View
 from ..models import Activity, ActivityParticipant, Chat, Message
-from datetime import timedelta
+from datetime import timedelta, datetime
 from ..utils import json_response, parse_json_body, validate_required_fields
 
 
@@ -50,6 +50,7 @@ class ActivityView(View):
                     "title": a.title,
                     "interest_name": a.interest_id.name,
                     "created_by_name": a.created_by.username,
+                    "created_by_id": a.created_by.idusers,
                     "event_time": a.event_time,
                     "location_name": a.location_name,
                     "max_participants": a.max_participants,
@@ -80,8 +81,15 @@ class ActivityView(View):
             indoor=data.get("indoor", 0),
         )
 
+        # add self to participants
+        participant = ActivityParticipant.objects.create(
+            activity_id=activity, user_id=request.user, status=1
+        )
+
         # Create chat for the activity
-        expires_at = activity.event_time + timedelta(days=7)
+        expires_at = datetime.strptime(
+            activity.event_time, "%Y-%m-%d %H:%M:%S"
+        ) + timedelta(days=7)
         Chat.objects.create(event_id=activity, expires_at=expires_at)
 
         return json_response(
@@ -229,3 +237,12 @@ class LeaveActivityView(View):
             )
         except Activity.DoesNotExist:
             return JsonResponse({"error": "Activity not found"}, status=404)
+
+
+class JoinedActivitiesView(View):
+    def get(self, request):
+        activities = ActivityParticipant.objects.filter(
+            user_id_id=request.user.idusers
+        ).all()
+        activity_list = [{"idactivities": a.activity_id_id} for a in activities]
+        return json_response(activity_list)

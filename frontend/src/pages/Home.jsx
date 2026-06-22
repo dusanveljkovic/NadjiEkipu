@@ -2,8 +2,9 @@
 import { useState, useMemo, useEffect, act } from "react";
 import FillBar from "../components/FillBar"
 import { getInterests } from "../services/interestService";
-import { getActivities, joinActivity } from "../services/activityService"
+import { getActivities, getJoinedActivities, joinActivity, leaveActivity } from "../services/activityService"
 import { getRandomColor } from "../services/utils"
+import { getUserData } from "../services/api";
 
 function extractCities(activities) {
   return [...new Set(activities.map(a => a.location_name))]
@@ -18,29 +19,35 @@ function Home() {
   const [endTime, setEndTime] = useState("")
   const [location, setLocation] = useState("")
   const [page, setPage] = useState(1)
+  const [showJoined, setShowJoined] = useState(true)
 
   const [activites, setActivites] = useState([])
   const [interests, setInterests] = useState([])
   const [cities, setCities] = useState([])
+  const [joinedActivities, setJoinedActivities] = useState([])
   const [joiningId, setJoiningId] = useState(null)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    getInterests()
-      .then((data) => {
-        setInterests(data)
-      })
-      .catch(() => { })
-  }, [])
+  const user = getUserData()
 
-  useEffect(() => {
-    getActivities()
-      .then((data) => {
-        setActivites(data)
-        setCities(extractCities(data))
-      })
-      .catch(() => { })
-  }, [])
+  useEffect(() => { loadData() }, [])
+
+  const loadData = async () => {
+    let data = await getInterests()
+    setInterests(data)
+
+    data = await getActivities()
+    setActivites(data)
+    setCities(extractCities(data))
+
+    data = await getJoinedActivities()
+    setJoinedActivities(data)
+  }
+
+
+  const isJoined = a => {
+    return joinedActivities.some(ja => ja.idactivities === a.idactivities)
+  }
 
   const filteredInterests = interests.filter(i => i.name.toLowerCase().includes(search.toLowerCase()))
 
@@ -49,22 +56,29 @@ function Home() {
       let [date, time] = a.event_time.split('T')
       time = time.replace('Z', '')
       return (
+        (!(a.created_by_id === user.idusers)) &&
         (selectedInterests.length === 0 || selectedInterests.includes(a.interest_name)) &&
         (!startDate || date >= startDate) &&
         (!endDate || date <= endDate) &&
         (!startTime || time >= startTime) &&
         (!endTime || time <= endTime) &&
-        (!location || a.location_name === location)
+        (!location || a.location_name === location) &&
+        ((!showJoined && !isJoined(a)) || showJoined)
       )
     })
-  }, [activites, selectedInterests, startDate, endDate, startTime, endTime, location])
+  }, [activites, selectedInterests, startDate, endDate, startTime, endTime, location, showJoined])
 
   const PAGE_SIZE = 5
   const totalPages = Math.max(1, Math.ceil(filteredActivities.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const pageSlice = filteredActivities.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  const _joinActivity = (id) => {
-    joinActivity(id)
+
+  const toggleActivity = async (a) => {
+    if (isJoined(a))
+      leaveActivity(a.idactivities)
+    else
+      joinActivity(a.idactivities)
+    await loadData()
   }
 
   const handleSelectedInterest = (interest) => {
@@ -82,6 +96,7 @@ function Home() {
       prev.includes(interest) ? prev.filter((x) => x !== interest) : [...prev, interest]
     );
   };
+
 
   const inputStyle = {
     width: "100%",
@@ -190,7 +205,14 @@ function Home() {
               {cities.map((c) => <option key={c}>{c}</option>)}
             </select>
           </div>
+
+          <div style={{ display: "flex", gap: 10 }}>
+            <input type="checkbox" id="showJoined" checked={showJoined} onChange={(e) => setShowJoined(e.target.checked)}
+              style={{ cursor: "pointer", accentColor: "#534AB7" }} />
+            <label htmlFor="showJoined" style={{ fontSize: 14, color: "#1a1a18", cursor: "pointer" }}>Prikazi pridruzene aktivnosti</label>
+          </div>
         </div>
+
 
         {/* Activity list */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -213,6 +235,7 @@ function Home() {
             pageSlice.map((a) => {
               const { bg, color } = getRandomColor(a.interest_name);
               const full = a.num_participants >= a.max_participants;
+              const isJ = isJoined(a)
               return (
                 <div
                   key={a.idactivities}
@@ -265,7 +288,7 @@ function Home() {
 
                   {/* Join button */}
                   <button
-                    onClick={() => !full && _joinActivity(a)}
+                    onClick={() => !full && toggleActivity(a)}
                     disabled={full}
                     style={{
                       flexShrink: 0,
@@ -276,14 +299,14 @@ function Home() {
                       fontFamily: "inherit",
                       cursor: full ? "not-allowed" : "pointer",
                       border: "none",
-                      background: full ? "rgba(0,0,0,0.06)" : "#534AB7",
+                      background: (full || isJ) ? (full ? "rgba(0,0,0,0.06)" : "#fd0000") : "#534AB7",
                       color: full ? "#9ca3a0" : "white",
                       transition: "opacity 0.15s",
                     }}
                     onMouseEnter={(e) => { if (!full) e.currentTarget.style.opacity = "0.85"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
                   >
-                    {full ? "Popunjeno" : "Pridruži se"}
+                    {(full || isJ) ? (full ? "Popunjeno" : "Ispisi se") : "Pridruzi se"}
                   </button>
                 </div>
               );

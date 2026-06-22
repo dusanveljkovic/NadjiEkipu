@@ -5,7 +5,6 @@ import MyProfile from "./pages/MyProfile";
 import Navbar from "./components/Navbar";
 import Registration from "./pages/Registration";
 import SingleChat from "./pages/SingleChat"
-import Chats from "./pages/Chats";
 import AdminRequests from "./pages/AdminRequests";
 import AdminAllUsers from "./pages/AdminAllUsers";
 import MyInterests from "./pages/MyInterests";
@@ -13,6 +12,7 @@ import MyActivites from "./pages/MyActivities"
 import CreateActivity from "./pages/CreateActivity";
 import AddInterest from "./pages/AddInterest";
 import UserProfilePage from "./pages/UserProfilePage";
+import MyChats from "./pages/MyChats"
 
 function App() {
   const location = useLocation();
@@ -27,7 +27,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/registration" element={<Registration />} />
-          <Route path="/my-chats" element={<Chats />} />
+          <Route path="/my-chats" element={<MyChats />} />
+          <Route path="/my-chats/:chatId" element={<SingleChat />} />
           <Route path="/requests" element={<AdminRequests />} />
           <Route path="/all-users" element={<AdminAllUsers />} />
           <Route path="/my-interests" element={<MyInterests />} />

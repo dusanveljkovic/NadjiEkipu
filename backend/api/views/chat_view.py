@@ -4,7 +4,7 @@ from django.db.models import Count, Q, Max
 from django.http import JsonResponse
 from django.views import View
 from ..models import Chat, Message, Activity
-from datetime import timedelta
+from datetime import timedelta, datetime, UTC
 from ..utils import json_response, parse_json_body, validate_required_fields
 
 
@@ -25,8 +25,14 @@ class UserChatsView(View):
             )
             .order_by("-last_message_time")
         )
+
         chat_list = []
         for chat in chats:
+            if chat.expires_at <= datetime.now(UTC):
+                Message.objects.filter(chat_id=chat).delete()
+                chat.delete()
+                continue
+
             last_message = (
                 Message.objects.filter(chat_id=chat)
                 .select_related("sender_id")

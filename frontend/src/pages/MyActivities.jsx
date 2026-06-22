@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import FillBar from "../components/FillBar"
 import CreateActivity from "./CreateActivity";
 import { getRandomColor } from "../services/utils";
-import { deleteActivity, getUserActivities } from "../services/activityService";
+import { createActivity, deleteActivity, getUserActivities } from "../services/activityService";
+import { getInterests } from "../services/interestService";
 
 
 function formatDate(d) {
@@ -15,7 +16,6 @@ function formatDate(d) {
 }
 
 function DeleteModal({ activity, onConfirm, onCancel }) {
-  const { color, bg } = getRandomColor(activity.interest_name);
   return (
     <div
       style={{
@@ -172,24 +172,31 @@ export default function MyActivities() {
   const [activities, setActivities] = useState([]);
   const [page, setPage] = useState("list");      // "list" | "create"
   const [toDelete, setToDelete] = useState(null);
+  const [interests, setInterests] = useState([]);
+
+  const loadData = async () => {
+    let data = await getUserActivities()
+    setActivities(data)
+
+    data = await getInterests()
+    setInterests(data)
+  }
 
   useEffect(() => {
-    getUserActivities()
-      .then((data) => {
-        setActivities(data)
-      })
-      .catch(() => { })
+    loadData()
   }, [])
 
-  const handleCreate = (newActivity) => {
-    setActivities((prev) => [newActivity, ...prev]);
+  const handleCreate = async (newActivity) => {
+    await createActivity(newActivity)
+    alert("Aktivnost uspesno kreirana")
     setPage("list");
+    await loadData()
   };
 
-  const handleDelete = () => {
-    deleteActivity(toDelete.idactivities)
-    setActivities((prev) => prev.filter((a) => a.idactivities != toDelete.idactivities))
+  const handleDelete = async () => {
+    await deleteActivity(toDelete.idactivities)
     setToDelete(null);
+    await loadData()
   };
 
   const upcoming = activities.filter((a) => a.event_time >= new Date().toISOString().slice(0, 10));
@@ -207,7 +214,7 @@ export default function MyActivities() {
       )}
 
       {page === "create" ? (
-        <CreateActivity onCreate={handleCreate} onBack={() => setPage("list")} />
+        <CreateActivity interests={interests} onCreate={handleCreate} onBack={() => setPage("list")} />
       ) : (
         <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
 
