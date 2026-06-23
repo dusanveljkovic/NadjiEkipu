@@ -44,6 +44,33 @@ class InterestView(View):
             ]
             return json_response(interest_list)
 
+    def post(self, request):
+        data = parse_json_body(request)
+
+        name = data.get("name")
+        description = data.get("description")
+
+        if not name:
+            return json_response(
+                {"error": "Name is required"},
+                status=400
+            )
+
+        interest = Interest.objects.create(
+            name=name,
+            description=description,
+            created_by=request.user
+        )
+
+        return json_response(
+            {
+                "id": interest.idinterests,
+                "name": interest.name,
+                "description": interest.description
+            },
+            status=201
+        )
+
 
 class UserInterestsView(View):
     def get(self, request):

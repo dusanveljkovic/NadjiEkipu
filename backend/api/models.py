@@ -5,11 +5,12 @@ import hashlib
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, email, password=None, **extra_fields):
+    def create_user(self, username, email, firstname, lastname, birthyear, password=None, **extra_fields):
         if not email:
             raise ValueError('Email is required')
         email = self.normalize_email(email)
-        user = self.model(username=username, email=email, **extra_fields)
+        extra_fields.setdefault("role_id", Role.objects.get(pk=3))
+        user = self.model(username=username, email=email, firstname=firstname, lastname=lastname, birthyear=birthyear, **extra_fields)
         if password:
             user.set_password(password)
         user.save(using=self._db)
@@ -107,6 +108,13 @@ class ModeratorRequest(models.Model):
         db_table = 'moderator_requests'
         managed = False
 
+class InterestManager(models.Manager):
+    def create_interest(self, name, description, created_by):
+        return self.create(
+            name=name,
+            description=description,
+            created_by=created_by
+        )
 
 class Interest(models.Model):
     idinterests = models.AutoField(primary_key=True)
@@ -118,9 +126,12 @@ class Interest(models.Model):
                                    db_column='created_by')
     created_at = models.DateTimeField(default=timezone.now)
 
+    objects = InterestManager()
+
     class Meta:
         db_table = 'interests'
         managed = False
+
 
 
 class UserInterest(models.Model):

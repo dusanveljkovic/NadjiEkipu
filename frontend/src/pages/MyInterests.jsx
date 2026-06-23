@@ -180,6 +180,8 @@ function InterestCard({ interest, selected, skill, onToggle, onSkillChange }) {
 }
 
 export default function HobbiesPage() {
+  const navigate = useNavigate();
+
   const [search, setSearch] = useState("");
   const [allInterests, setAllInterests] = useState([])
   const [userInterests, setUserInterests] = useState([])
@@ -202,7 +204,7 @@ export default function HobbiesPage() {
   }, [])
 
   const handleAddInterest = () => {
-    useNavigate("/add-interest")
+    navigate("/add-interest")
   };
 
   const toggleInterests = async (id) => {

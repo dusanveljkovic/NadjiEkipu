@@ -72,6 +72,9 @@ class RegisterView(View):
             username = data.get("username")
             password = data.get("password")
             confirm_password = data.get("confirmPassword")
+            godiste = data.get("godiste")
+            firstname = data.get("ime")
+            lastname = data.get("prezime")
 
             if not email or not username or not password:
                 return JsonResponse({"error": "Missing fields"}, status=400)
@@ -85,13 +88,26 @@ class RegisterView(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({"error": "Email already exists"}, status=400)
 
+
+            print(firstname)
+            print(lastname)
+
             user = User.objects.create_user(
-                username=username, email=email, password=password
+                username=username,
+                email=email,
+                password=password,
+                firstname=firstname,
+                lastname=lastname,
+                birthyear=godiste
             )
 
-            return JsonResponse(
-                {"message": "User created successfully", "user_id": user.pk}, status=201
-            )
+            print(user.firstname)
+            print(user.lastname)
+
+            return JsonResponse({
+                "message": "User created successfully",
+                "user_id": user.pk
+            }, status=201)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
