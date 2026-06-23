@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+// import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { register } from "../services/authService";
 import "../App.css";
 
@@ -32,7 +32,7 @@ function Registration() {
         e.preventDefault();
 
         if (form.password !== form.confirmPassword) {
-            alert("Passwordi se ne poklapaju");
+            alert("Lozinke se ne poklapaju");
                 return;
             }
 
@@ -204,7 +204,7 @@ function Registration() {
                 onClick={() => setShowPassword(!showPassword)}
                 style={iconButton}
                 >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                {/* {showPassword ? <FaEyeSlash /> : <FaEye />} */}
                 </button>
             </div>
 
@@ -225,7 +225,7 @@ function Registration() {
                 onClick={() => setShowPasswordR(!showPasswordR)}
                 style={iconButton}
                 >
-                {showPasswordR ? <FaEyeSlash /> : <FaEye />}
+                {/* {showPasswordR ? <FaEyeSlash /> : <FaEye />} */}
                 </button>
             </div>
 

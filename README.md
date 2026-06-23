@@ -52,7 +52,7 @@ python manage.py runserver
 🟩 - funkcionalnost kompletirana
 
 ### Autentifikacija
-- 🟦 Registracija korisnika  
+- 🟩 Registracija korisnika  
 - 🟩 Login  
 - 🟩 Logout  
 - 🟥 Role-based autorizacija  
