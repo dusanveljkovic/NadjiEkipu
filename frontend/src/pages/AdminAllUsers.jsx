@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getUsers, deleteUser } from "../services/usersService";
 
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
@@ -12,38 +13,26 @@ const DANGER_LIGHT = "#fde8e8";
 function AdminAllUsers() {
   const navigate = useNavigate();
   const [all_users, setAllUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 5;
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/users/")
-      .then((res) => {
-        if (!res.ok) throw new Error("Greška pri učitavanju korisnika");
-        return res.json();
-      })
-      .then((data) => {
-        setAllUsers(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  useEffect(() => { loadData() }, [])
 
-  const handleDelete = (id) => {
-    if (window.confirm("Da li ste sigurni da želite da obrišete ovog korisnika?")) {
-        fetch(`http://127.0.0.1:8000/api/users/${id}/`, {
-            method: "DELETE",
-        })
-        .then((res) => {
-            if (!res.ok) throw new Error("Greška pri brisanju");
-            setAllUsers(all_users.filter((u) => u.idusers !== id));
-        })
-        .catch((err) => console.error(err));
+  const loadData = async () => {
+    let data = await getUsers()
+    setAllUsers(data)
+  }
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Da li ste sigurni da želite da obrišete ovog korisnika?"))
+      return;
+    try {
+      await deleteUser(id);
+      setAllUsers((prev) => prev.filter((u) => u.idusers !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Greška pri brisanju korisnika.");
     }
   };
 
@@ -63,22 +52,6 @@ function AdminAllUsers() {
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-gray-400 text-sm">Učitavanje korisnika...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-red-400 text-sm">{error}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto">

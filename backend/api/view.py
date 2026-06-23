@@ -135,7 +135,7 @@ class ModeratorRequestView(View):
             except ModeratorRequest.DoesNotExist:
                 return JsonResponse({"error": "Request not found"}, status=404)
         else:
-            requests = ModeratorRequest.objects.select_related("user_id").all()
+            requests = ModeratorRequest.objects.all()
             return json_response(
                 [
                     {
@@ -171,6 +171,30 @@ class ModeratorRequestView(View):
             return json_response({"message": "Status updated successfully"})
         except ModeratorRequest.DoesNotExist:
             return JsonResponse({"error": "Request not found"}, status=404)
+
+    def post(self, request):
+        user_id = request.user.idusers
+
+        if ModeratorRequest.objects.filter(
+            user_id=user_id, status="PENDING"
+        ).exists():
+            return JsonResponse(
+                {"error": "Već imate poslat zahtev."},
+                status=400,
+            )
+
+        moderator_request = ModeratorRequest.objects.create(
+            user_id_id=user_id,
+            status="PENDING",
+        )
+
+        return json_response(
+            {
+                "id": moderator_request.idmoderator_requests,
+                "message": "Moderator request created successfully",
+            },
+            status=201,
+        )
 
 
 # Napisala Jana Jolovic 0338/2023

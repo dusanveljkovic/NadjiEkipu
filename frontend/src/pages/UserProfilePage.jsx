@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import Avatar from "../assets/avatar1.png";
 import { useNavigate, useParams } from "react-router-dom";
 import MojeInteresovanjeKartica from "../components/MojeInteresovanjeKartica";
+import { getUserById } from "../services/usersService"
+import { getUserInterests } from "../services/interestService";
 
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
@@ -14,39 +16,16 @@ export default function UserProfilePage() {
   const { userId } = useParams();
 
   const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [interests, setInterests] = useState([]);
 
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/users/${userId}/`)
-        .then(res => res.json())
-        .then(data => setUser(data));
-
-    fetch(`http://127.0.0.1:8000/api/users/${userId}/interests/`)
-        .then(res => res.json())
-        .then(data => setInterests(data))
-        .finally(() => setLoading(false));
-  }, [userId]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-gray-400 text-sm">Učitavanje profila...</p>
-      </div>
-    );
+  useEffect(() => { loadData() }, [])
+    
+  const loadData = async () => {
+    let data = await getUserById(userId)
+    setUser(data)
+    data = await getUserInterests()
+    setInterests(data)
   }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-red-400 text-sm">{error}</p>
-      </div>
-    );
-  }
-
-
-
 
   return (
     <div className="min-h-screen" style={{ background: "#f5f5f3" }}>
@@ -89,12 +68,6 @@ export default function UserProfilePage() {
                   {user.firstname} {user.lastname}
                 </h1>
                 <p className="text-gray-500 text-sm mt-1">@{user.username}</p>
-                <span
-                  className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium"
-                  style={{ background: ACCENT_LIGHT, color: ACCENT }}
-                >
-                  {user.role_name}
-                </span>
               </div>
             </div>
 
@@ -157,18 +130,17 @@ export default function UserProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {interests.map((hobby, index) => (
                 <div
-                  key={hobby.id}
+                  key={hobby.idinterests}
                   style={{ animationDelay: `${index * 100}ms`, animation: "fadeInUp 0.4s ease-out" }}
                 >
                   <MojeInteresovanjeKartica
                     item={{
-                      id: hobby.id,
+                      id: hobby.idinterests,
                       name: hobby.name,
                       icon: hobby.icon,
                       skill: hobby.skill_level,
                       count: hobby.attended_count,
                     }}
-                    readOnly={true}
                   />
                 </div>
               ))}

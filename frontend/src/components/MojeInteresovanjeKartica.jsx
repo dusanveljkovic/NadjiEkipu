@@ -94,7 +94,8 @@ function SkillBar({ level, onChange, color }) {
 export default function MojeInteresovanjeKartica({ 
   item, 
   onRemove, 
-  onSave 
+  onSave,
+  readOnly = false
 }) {
   if (!item) {
     return null;
@@ -132,6 +133,7 @@ export default function MojeInteresovanjeKartica({
       }}
     >
       {/* Desni cosak - X i olovka */}
+      {readOnly && (
       <div
         style={{
           position: "absolute",
@@ -250,6 +252,7 @@ export default function MojeInteresovanjeKartica({
           </svg>
         </button>
       </div>
+      )}
 
       {/* Ikona i naziv */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 4 }}>

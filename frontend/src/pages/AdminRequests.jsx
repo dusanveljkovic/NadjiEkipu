@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getModeratorRequests, updateModeratorRequest } from "../services/usersService";
 
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
@@ -15,60 +16,41 @@ function AdminRequests() {
   const navigate = useNavigate();
 
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 5;
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/moderator-requests/")
-      .then((res) => {
-        if (!res.ok) throw new Error("Greška pri učitavanju zahteva");
-        return res.json();
-      })
-      .then((data) => {
-        // prikazujemo samo PENDING zahteve
-        setRequests(data.filter((r) => r.status === "PENDING"));
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  useEffect(() => { loadData() }, [])
+  
+  const loadData = async () => {
+    let data = await getModeratorRequests();
+    setRequests(data.filter((request) => request.status !== "APPROVED"));
+  }
 
-  const handleAccept = (id) => {
-    if (window.confirm("Da li želite da prihvatite zahtev za moderatora?")) {
-        fetch(`http://127.0.0.1:8000/api/moderator-requests/${id}/`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ status: "APPROVED" }),
-        })
-        .then((res) => {
-            if (!res.ok) throw new Error("Greška");
-            setRequests(requests.filter((r) => r.id !== id));
-        })
-        .catch((err) => console.error(err));
+  const handleAccept = async (id) => {
+    if (!window.confirm("Da li želite da prihvatite zahtev za moderatora?"))
+      return;
+    try {
+      await updateModeratorRequest(id, "APPROVED");
+      setRequests((prev) => prev.filter((r) => r.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Došlo je do greške.");
     }
-};
+  };
 
-const handleReject = (id) => {
-    if (window.confirm("Da li želite da odbijete zahtev za moderatora?")) {
-        fetch(`http://127.0.0.1:8000/api/moderator-requests/${id}/`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ status: "REJECTED" }),
-        })
-        .then((res) => {
-            if (!res.ok) throw new Error("Greška");
-            setRequests(requests.filter((r) => r.id !== id));
-        })
-        .catch((err) => console.error(err));
+  const handleReject = async (id) => {
+    if (!window.confirm("Da li želite da odbijete zahtev za moderatora?"))
+      return;
+    try {
+      await updateModeratorRequest(id, "REJECTED");
+      setRequests((prev) => prev.filter((r) => r.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Došlo je do greške.");
     }
-};
+  };
+
 
   const filteredRequests = requests.filter((r) =>
     r.username.toLowerCase().includes(searchTerm.toLowerCase())
@@ -81,22 +63,6 @@ const handleReject = (id) => {
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-gray-400 text-sm">Učitavanje zahteva...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-red-400 text-sm">{error}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto">

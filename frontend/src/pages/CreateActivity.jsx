@@ -40,12 +40,10 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(form)
     if (!form.title || !form.interest_id || !form.date || !form.time || !form.location || !form.max_participants) {
       alert("Popuni sva obavezna polja");
       return;
     }
-
     onCreate(form)
   };
 

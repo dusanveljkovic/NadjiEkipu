@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getAuthToken, getUserData } from "../services/api";
 import { logout } from "../services/authService";
+import { getUserById } from "../services/usersService"
+
 
 const ACCENT = "#534AB7";
 const ACCENT_DARK = "#3F3A8C";
@@ -28,7 +30,15 @@ function NavbarItem({ to, onClickF, name, icon }) {
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const user = getUserData()
+  const [user, setUser] = useState(getUserData())
+
+  useEffect(() => { loadData() }, [])
+    
+    const loadData = async () => {
+      console.log(user)
+      let data = await getUserById(user.id)
+      setUser(data)
+    }
 
   const handleLogout = () => {
     if (window.confirm("Da li želite da se odjavite?")) {
@@ -37,6 +47,7 @@ function Navbar() {
       navigate("/login");
     }
   };
+
 
   return (
     <>

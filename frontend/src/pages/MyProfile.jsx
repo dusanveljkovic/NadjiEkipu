@@ -1,4 +1,4 @@
-// Napisala Jana Jolovic 0338/2023
+// Autor Jana Jolovic 0338/2023
 
 
 import React, { useState, useEffect } from "react";
@@ -6,6 +6,9 @@ import Avatar from "../assets/avatar1.png";
 import { useNavigate } from "react-router-dom";
 import MojeInteresovanjeKartica from "../components/MojeInteresovanjeKartica";
 import { getUserData } from "../services/api";
+import { getUserById, createModeratorRequest } from "../services/usersService"
+import { getUserInterests, updateUserInterest, deleteUserInterest } from "../services/interestService";
+
 
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
@@ -14,10 +17,39 @@ const ACCENT_DARK = "#3F3A8C";
 export default function ProfilePage() {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [user, setUser] = useState({});
+  const [interests, setInterests] = useState([]);
 
-  const user = getUserData()
+  const user_login = getUserData()
+  const userId = user_login.id
+
+  useEffect(() => { loadData() }, [])
+  
+  const loadData = async () => {
+    let data = await getUserById(userId)
+    setUser(data)
+    data = await getUserInterests()
+    setInterests(data)
+  }
+
+  const handleSaveSkill = async (interestId, skill) => {
+    await updateUserInterest(interestId, skill);
+    loadData();
+  };
+
+  const handleRemoveInterest = async (interestId) => {
+    await deleteUserInterest(interestId);
+    loadData();
+  };
+
+  const handleModeratorRequest = async () => {
+    try {
+      const response = await createModeratorRequest();
+      alert(response.message);
+    } catch (err) {
+      alert(err.message || "Greška prilikom slanja zahteva.");
+    }
+  };
 
   return (
     <div className="min-h-screen" style={{ background: "#f5f5f3" }}>
@@ -86,8 +118,9 @@ export default function ProfilePage() {
                   Promeni lozinku
                 </button>
 
-                <button
-                  onClick={() => {/* zahtev za moderatora */ }}
+                {user.role_id == 3 && (
+                  <button
+                  onClick={handleModeratorRequest}
                   style={{
                     padding: "9px 20px",
                     borderRadius: "10px",
@@ -112,6 +145,7 @@ export default function ProfilePage() {
                 >
                   Zahtev za moderatora
                 </button>
+                )}
               </div>
             </div>
 
@@ -138,14 +172,12 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center" style={{ background: ACCENT_LIGHT }}>
-                  <i className="fa-solid fa-venus-mars" style={{ color: ACCENT }}></i>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: ACCENT_LIGHT }}>
+                  <i className="fa-solid fa-shield-halved" style={{ color: ACCENT }}></i>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Pol</p>
-                  <p className="text-sm font-medium text-gray-700">
-                    {user.gender === "muški" ? "👨 Muški" : user.gender === "ženski" ? "👩 Ženski" : user.gender}
-                  </p>
+                  <p className="text-xs text-gray-400">Uloga</p>
+                  <p className="text-sm font-medium text-gray-700">{user.role_name}</p>
                 </div>
               </div>
             </div>
@@ -164,7 +196,38 @@ export default function ProfilePage() {
               <span className="text-sm font-medium">Moja interesovanja</span>
             </button>
           </div>
-        </div>
+
+          {interests.length === 0 ? (
+              <div className="bg-white rounded-2xl text-center py-12 px-6 shadow-sm border border-gray-100">
+                <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <i className="fa-solid fa-heart text-3xl text-gray-300"></i>
+                </div>
+                <p className="text-gray-500 font-medium">Nema dodatih interesovanja</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {interests.map((hobby, index) => (
+                  <div
+                    key={hobby.idinterests}
+                    style={{ animationDelay: `${index * 100}ms`, animation: "fadeInUp 0.4s ease-out" }}
+                  >
+                    <MojeInteresovanjeKartica
+                      item={{
+                        id: hobby.idinterests,
+                        name: hobby.name,
+                        icon: hobby.icon,
+                        skill: hobby.skill_level,
+                        count: hobby.attended_count,
+                      }}
+                      readOnly={true}
+                      onSave={handleSaveSkill}
+                      onRemove={handleRemoveInterest}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
       </div>
 
       <style>{`
