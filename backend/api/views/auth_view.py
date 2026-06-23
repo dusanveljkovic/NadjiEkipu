@@ -29,21 +29,23 @@ class LoginView(View):
             token = secrets.token_urlsafe(32)
             expires_at = datetime.now(UTC) + timedelta(days=7)
 
-            UserSession.objects.create(
-                user_id=user,
-                token=token,
-                expires_at=expires_at
-            )
+            UserSession.objects.create(user_id=user, token=token, expires_at=expires_at)
 
-            return json_response({
-                "token": token,
-                "user": {
-                    "id": user.idusers,
-                    "username": user.username,
-                    "email": user.email,
-                },
-                "expires_at": expires_at,
-            })
+            return json_response(
+                {
+                    "token": token,
+                    "user": {
+                        "idusers": user.idusers,
+                        "username": user.username,
+                        "email": user.email,
+                        "firstname": user.firstname,
+                        "lastname": user.lastname,
+                        "role_id": user.role_id.idroles,
+                        "birthyear": user.birthyear,
+                    },
+                    "expires_at": expires_at,
+                }
+            )
 
         except User.DoesNotExist:
             return JsonResponse({"error": "Nevalidni kredencijali"}, status=401)
@@ -57,6 +59,7 @@ class LogoutView(View):
         if hasattr(request, "token"):
             UserSession.objects.filter(token=request.token).delete()
         return json_response({"message": "Korisnik uspesno odjavljen"})
+
 
 class RegisterView(View):
 
@@ -82,17 +85,13 @@ class RegisterView(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({"error": "Email already exists"}, status=400)
 
-
             user = User.objects.create_user(
-                username=username,
-                email=email,
-                password=password
+                username=username, email=email, password=password
             )
 
-            return JsonResponse({
-                "message": "User created successfully",
-                "user_id": user.pk
-            }, status=201)
+            return JsonResponse(
+                {"message": "User created successfully", "user_id": user.pk}, status=201
+            )
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
