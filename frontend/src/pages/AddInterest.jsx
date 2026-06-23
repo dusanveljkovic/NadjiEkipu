@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { addInterest } from "../services/interestService"; 
 
 export default function AddInterest() {
   const [name, setName] = useState("");
@@ -24,15 +25,19 @@ export default function AddInterest() {
     navigate("/my-interests");
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ovde šalješ na backend
-    console.log({
-      name,
-      icon,
-      peopleCount,
-    });
+     try {
+      const form = {
+    name: name,
+    peopleCount: peopleCount
+  };
+    await addInterest(form);
+    navigate("/my-interests");
+    } catch (err) {
+      console.error(err);
+    }
     navigate("/my-interests");
   };
 

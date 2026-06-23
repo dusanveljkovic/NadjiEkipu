@@ -6,6 +6,13 @@ export const getInterests = async () => {
   return await apiFetch('/interests/')
 }
 
+export const addInterest = async (form) => {
+  return await apiFetch('/interests/add-interest/', {
+    method: 'POST',
+    body: JSON.stringify(form)
+  })
+}
+
 export const getUserInterests = async () => {
   return await apiFetch('/user-interests/')
 }

@@ -58,6 +58,7 @@ urlpatterns = [
     path(
         "interests/<int:interest_id>/", InterestView.as_view(), name="interest-detail"
     ),
+    path("interests/add-interest/", InterestView.as_view(), name="add-interest"),
     path("user-interests/", UserInterestsView.as_view(), name="user-activities"),
     path(
         "user-interests/<int:user_interest_id>",
