@@ -30,15 +30,7 @@ function NavbarItem({ to, onClickF, name, icon }) {
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const [user, setUser] = useState(getUserData())
-
-  useEffect(() => { loadData() }, [])
-    
-    const loadData = async () => {
-      console.log(user)
-      let data = await getUserById(user.id)
-      setUser(data)
-    }
+  const user = getUserData()
 
   const handleLogout = () => {
     if (window.confirm("Da li želite da se odjavite?")) {

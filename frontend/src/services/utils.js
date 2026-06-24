@@ -10,6 +10,15 @@ const HOBBY_COLORS = [
   { bg: "#FCEBEB", color: "#A32D2D" },
 ];
 
+const EMOJI_MAP = {
+  1: '⚽', 2: '🏀', 3: '🎾', 4: '🏊', 5: '🏃',
+  6: '🧘', 7: '🚴', 8: '🏔️', 9: '♟️', 10: '📸',
+  11: '🍳', 12: '💃', 13: '🎮', 14: '📚', 15: '🎨'
+};
+
+export function getInterestAvatar(interest) {
+  return EMOJI_MAP[interest.avatar_id]
+}
 export function getRandomColor(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);

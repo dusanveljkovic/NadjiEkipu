@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from "react";
 import Avatar from "../assets/avatar1.png";
 import { useNavigate } from "react-router-dom";
-import MojeInteresovanjeKartica from "../components/MojeInteresovanjeKartica";
+import InterestCard from "../components/InterestCard";
 import { getUserData } from "../services/api";
 import { getUserById, createModeratorRequest } from "../services/usersService"
 import { getUserInterests, updateUserInterest, deleteUserInterest } from "../services/interestService";
@@ -13,22 +13,19 @@ import { getUserInterests, updateUserInterest, deleteUserInterest } from "../ser
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
 const ACCENT_DARK = "#3F3A8C";
+const ROLES = ['', 'Admin', 'Moderator', 'Korisnik']
 
 export default function ProfilePage() {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState({});
   const [interests, setInterests] = useState([]);
 
-  const user_login = getUserData()
-  const userId = user_login.id
+  const user = getUserData()
 
   useEffect(() => { loadData() }, [])
-  
+
   const loadData = async () => {
-    let data = await getUserById(userId)
-    setUser(data)
-    data = await getUserInterests()
+    const data = await getUserInterests()
     setInterests(data)
   }
 
@@ -120,31 +117,31 @@ export default function ProfilePage() {
 
                 {user.role_id == 3 && (
                   <button
-                  onClick={handleModeratorRequest}
-                  style={{
-                    padding: "9px 20px",
-                    borderRadius: "10px",
-                    border: "none",
-                    background: "#534AB7",
-                    cursor: "pointer",
-                    fontSize: 13,
-                    fontWeight: 500,
-                    fontFamily: "inherit",
-                    color: "white",
-                    transition: "all 0.2s ease",
-                    whiteSpace: "nowrap",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#4338A4";
-                    e.currentTarget.style.transform = "translateY(-1px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "#534AB7";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  Zahtev za moderatora
-                </button>
+                    onClick={handleModeratorRequest}
+                    style={{
+                      padding: "9px 20px",
+                      borderRadius: "10px",
+                      border: "none",
+                      background: "#534AB7",
+                      cursor: "pointer",
+                      fontSize: 13,
+                      fontWeight: 500,
+                      fontFamily: "inherit",
+                      color: "white",
+                      transition: "all 0.2s ease",
+                      whiteSpace: "nowrap",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#4338A4";
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "#534AB7";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
+                  >
+                    Zahtev za moderatora
+                  </button>
                 )}
               </div>
             </div>
@@ -177,7 +174,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Uloga</p>
-                  <p className="text-sm font-medium text-gray-700">{user.role_name}</p>
+                  <p className="text-sm font-medium text-gray-700">{ROLES[user.role_id]}</p>
                 </div>
               </div>
             </div>
@@ -198,36 +195,31 @@ export default function ProfilePage() {
           </div>
 
           {interests.length === 0 ? (
-              <div className="bg-white rounded-2xl text-center py-12 px-6 shadow-sm border border-gray-100">
-                <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <i className="fa-solid fa-heart text-3xl text-gray-300"></i>
+            <div className="bg-white rounded-2xl text-center py-12 px-6 shadow-sm border border-gray-100">
+              <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i className="fa-solid fa-heart text-3xl text-gray-300"></i>
+              </div>
+              <p className="text-gray-500 font-medium">Nema dodatih interesovanja</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {interests.map((hobby, index) => (
+                <div
+                  key={hobby.idinterests}
+                  style={{ animationDelay: `${index * 100}ms`, animation: "fadeInUp 0.4s ease-out" }}
+                >
+                  <InterestCard
+                    interest={hobby}
+                    selected={true}
+                    skill={hobby.skill_level}
+                    onSave={handleSaveSkill}
+                    onRemove={handleRemoveInterest}
+                  />
                 </div>
-                <p className="text-gray-500 font-medium">Nema dodatih interesovanja</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {interests.map((hobby, index) => (
-                  <div
-                    key={hobby.idinterests}
-                    style={{ animationDelay: `${index * 100}ms`, animation: "fadeInUp 0.4s ease-out" }}
-                  >
-                    <MojeInteresovanjeKartica
-                      item={{
-                        id: hobby.idinterests,
-                        name: hobby.name,
-                        icon: hobby.icon,
-                        skill: hobby.skill_level,
-                        count: hobby.attended_count,
-                      }}
-                      readOnly={true}
-                      onSave={handleSaveSkill}
-                      onRemove={handleRemoveInterest}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <style>{`

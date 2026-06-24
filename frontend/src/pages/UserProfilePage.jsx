@@ -1,9 +1,9 @@
 // Napisala Jana Jolovic 0338/2023
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Avatar from "../assets/avatar1.png";
 import { useNavigate, useParams } from "react-router-dom";
-import MojeInteresovanjeKartica from "../components/MojeInteresovanjeKartica";
+import InterestCard from "../components/InterestCard";
 import { getUserById } from "../services/usersService"
 import { getUserInterests } from "../services/interestService";
 
@@ -19,7 +19,7 @@ export default function UserProfilePage() {
   const [interests, setInterests] = useState([]);
 
   useEffect(() => { loadData() }, [])
-    
+
   const loadData = async () => {
     let data = await getUserById(userId)
     setUser(data)
