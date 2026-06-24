@@ -85,7 +85,7 @@ python manage.py runserver
 - 🟩 Automatsko brisanje chata  
 
 ### Moderator
-- 🟥 Dodavanje interesovanja  
+- 🟩 Dodavanje interesovanja  
 - 🟥 Brisanje interesovanja  
 
 ### Administrator
