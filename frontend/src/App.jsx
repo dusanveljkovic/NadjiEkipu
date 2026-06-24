@@ -13,6 +13,9 @@ import CreateActivity from "./pages/CreateActivity";
 import AddInterest from "./pages/AddInterest";
 import UserProfilePage from "./pages/UserProfilePage";
 import MyChats from "./pages/MyChats"
+import ModeratorRoutes from "./components/ModeratorRoutes";
+import AdminRoute from "./components/AdminRoute";
+import UserRoute from "./components/UserRoute";
 
 function App() {
   const location = useLocation();
@@ -23,19 +26,27 @@ function App() {
       <div className="p-4">
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/registration" element={<Registration />} />
-          <Route path="/my-chats" element={<MyChats />} />
-          <Route path="/my-chats/:chatId" element={<SingleChat />} />
-          <Route path="/requests" element={<AdminRequests />} />
-          <Route path="/all-users" element={<AdminAllUsers />} />
-          <Route path="/my-interests" element={<MyInterests />} />
-          <Route path="/my-activities" element={<MyActivites />} />
-          <Route path="create-activity" element={<CreateActivity />} />
-          <Route path="/add-interest" element={<AddInterest />} />
-          <Route path="/user/:userId" element={<UserProfilePage />} />
+          <Route element={<UserRoute/>}>
+            
+            <Route path="/home" element={<Home />} />
+            <Route path="/my-profile" element={<MyProfile />} />
+            <Route path="/my-chats" element={<MyChats />} />
+            <Route path="/my-chats/:chatId" element={<SingleChat />} />
+            <Route element={<AdminRoute/>}>
+              <Route path="/requests" element={<AdminRequests />} />
+            <Route path="/all-users" element={<AdminAllUsers />} />
+            </Route>
+            <Route path="/my-interests" element={<MyInterests />} />
+            <Route path="/my-activities" element={<MyActivites />} />
+            <Route path="create-activity" element={<CreateActivity />} />
+            <Route element={<ModeratorRoutes/>}>
+              <Route
+              path="/add-interest" element={<AddInterest />} />
+            </Route>
+            <Route path="/user/:userId" element={<UserProfilePage />} />
+          </Route>
         </Routes>
       </div>
     </div>

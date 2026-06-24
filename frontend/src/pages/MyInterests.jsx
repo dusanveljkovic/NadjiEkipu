@@ -13,6 +13,8 @@ export default function HobbiesPage() {
   const [userInterests, setUserInterests] = useState([])
   const user = getUserData()
 
+  const hasPermission = user.role_id === 2 || user.role_id === 1;
+
   useEffect(() => {
     loadUserInterests()
   }, [])
@@ -108,8 +110,8 @@ export default function HobbiesPage() {
                 {selectedCount} odabrano
               </div>
             )}
-
-            {user.role_id != 3 && <button
+            {hasPermission && (
+            <button
               style={{
                 padding: "9px 20px",
                 borderRadius: "10px",
@@ -135,7 +137,8 @@ export default function HobbiesPage() {
               }}
             >
               + Dodaj interesovanje
-            </button>}
+            </button>
+            )}
           </div>
 
         </div>

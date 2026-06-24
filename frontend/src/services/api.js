@@ -29,6 +29,7 @@ export const removeUserData = () => {
 
 export const apiFetch = async (endpoint, options = {}) => {
   const token = getAuthToken()
+  console.log("api FEtch" , token);
   const defaultHeaders = {
     'Content-Type': 'application/json'
   }
@@ -46,6 +47,10 @@ export const apiFetch = async (endpoint, options = {}) => {
   }
 
   try {
+    console.log("TOKEN:", token);
+    console.log("AUTH HEADER:", `Bearer ${token}`);
+
+    console.log("TOKEN2", getAuthToken());
     const response = await fetch(`${BASE_API_URL}${endpoint}`, config)
 
     const data = await response.json()

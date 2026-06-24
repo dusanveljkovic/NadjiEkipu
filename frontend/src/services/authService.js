@@ -5,9 +5,13 @@ export const login = async (username, password) => {
     method: 'POST',
     body: JSON.stringify({ username, password })
   })
+  console.log("LOGIN RESPONSE:", response);
+  console.log("SETTING TOKEN:", response.token);
+  setAuthToken(response.token);
+  console.log("STORED TOKEN:", localStorage.getItem("auth_token"));
 
   if (response.token) {
-    setAuthToken(response.token)
+    //setAuthToken(response.token)
     setUserData(response.user)
   }
 

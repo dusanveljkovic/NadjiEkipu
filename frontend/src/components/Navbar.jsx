@@ -30,12 +30,15 @@ function NavbarItem({ to, onClickF, name, icon }) {
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const user = getUserData()
+  //const [user, setUser] = useState(getUserData());
+  //const user = getUserData()
+  const { user, logout } = useAuth();
+  //if (!user) return null;
 
   const handleLogout = () => {
     if (window.confirm("Da li želite da se odjavite?")) {
       console.log("Odjavljen korisnik");
-      logout(getAuthToken());
+      logout();
       navigate("/login");
     }
   };
@@ -127,7 +130,7 @@ function Navbar() {
           <NavbarItem to="/my-profile" onClickF={() => setIsOpen(false)} name="Moj profil" icon="fa-solid fa-user" />
           <NavbarItem to="/my-interests" onClickF={() => setIsOpen(false)} name="Moja interesovanja" icon="fa-solid fa-heart" />
           <NavbarItem to="/my-activities" onClickF={() => setIsOpen(false)} name="Kreirane aktivnosti" icon="fa-solid fa-calendar-plus" />
-          {user.role_id === 1 && (
+          {user?.role_id === 1 && (
             <div>
               <NavbarItem to="/all-users" onClickF={() => setIsOpen(false)} name="Svi korisnici" icon="fa-solid fa-users" />
               <NavbarItem to="/requests" onClickF={() => setIsOpen(false)} name="Zahtevi za moderaciju" icon="fa-solid fa-envelope" />

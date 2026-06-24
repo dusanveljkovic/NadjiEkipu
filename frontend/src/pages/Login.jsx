@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
-// import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const users = [
   {
@@ -39,7 +39,8 @@ function Login() {
     console.log("Password:", password);
 
     try {
-      await login(username, password)
+      const response = await login(username, password);
+      login(response);
       navigate("/home");
     } catch (err) {
       console.log("Login failed");
@@ -119,7 +120,7 @@ function Login() {
               color: "#666"
             }}
           >
-            {/* {showPassword ? <FaEyeSlash /> : <FaEye />} */}
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
       </div>
