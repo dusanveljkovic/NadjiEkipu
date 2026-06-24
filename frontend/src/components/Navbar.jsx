@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getAuthToken, getUserData } from "../services/api";
-import { logout } from "../services/authService";
 import { getUserById } from "../services/usersService"
+import { useAuth } from "./AuthContext";
 
 
 const ACCENT = "#534AB7";

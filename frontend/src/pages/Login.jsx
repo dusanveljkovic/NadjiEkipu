@@ -40,7 +40,7 @@ function Login() {
 
     try {
       const response = await login(username, password);
-      login(response);
+      authContext.login(response);
       navigate("/home");
     } catch (err) {
       console.log("Login failed");
