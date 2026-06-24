@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
-// import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const users = [
   {
@@ -119,7 +119,7 @@ function Login() {
               color: "#666"
             }}
           >
-            {/* {showPassword ? <FaEyeSlash /> : <FaEye />} */}
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
       </div>
