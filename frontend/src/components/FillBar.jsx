@@ -1,8 +1,10 @@
-
-export default function FillBar({signed, max, color = "#534AB7", useFull = false}) {
+//
+// Napisala Jana Jolovic 2023/0338
+//
+export default function FillBar({ signed, max, color = "#534AB7", useFull = false }) {
   const pct = Math.round((signed / max) * 100);
   const full = pct >= 90;
-  const mid  = pct >= 60;
+  const mid = pct >= 60;
   const fullColor = full ? "#A32D2D" : mid ? "#854F0B" : "#534AB7";
   const barColor = useFull ? fullColor : color
   return (

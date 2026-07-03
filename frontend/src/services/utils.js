@@ -1,4 +1,6 @@
-
+//
+// Napisao Dusan Veljkovic 2023/0417
+//
 const HOBBY_COLORS = [
   { bg: "#EEEDFE", color: "#534AB7" },
   { bg: "#E1F5EE", color: "#0F6E56" },

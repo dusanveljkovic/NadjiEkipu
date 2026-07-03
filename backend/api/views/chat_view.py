@@ -1,15 +1,20 @@
-# Author: Dusan Veljkovic 23/0417
+#
+# Napisao Dusan Veljkovic 2023/0417
+#
 
 from django.db.models import Count, Q, Max
 from django.http import JsonResponse
 from django.views import View
 from ..models import Chat, Message, Activity
-from datetime import timedelta, datetime, UTC
-from ..utils import json_response, parse_json_body, validate_required_fields
+from datetime import datetime, UTC
+from ..utils import json_response
 
 
 class UserChatsView(View):
     def get(self, request):
+        """
+        Dohvati sve chetove ulogovanog korisnika
+        """
         user = request.user
 
         user_activities = Activity.objects.filter(
@@ -66,6 +71,9 @@ class UserChatsView(View):
 
 class ChatView(View):
     def get(self, request, chat_id):
+        """
+        Dohvati sve informacije i poruke o chetu
+        """
         try:
             chat = Chat.objects.select_related("event_id").get(idchats=chat_id)
 

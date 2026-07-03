@@ -1,4 +1,7 @@
-export default function ChatAvatar ({initials, bg, color, size = 32}) {
+//
+// Napisao Dusan Veljkovic 2023/0417
+//
+export default function ChatAvatar({ initials, bg, color, size = 32 }) {
   return (
     <div
       style={{
@@ -7,7 +10,7 @@ export default function ChatAvatar ({initials, bg, color, size = 32}) {
         display: "flex", alignItems: "center", justifyContent: "center",
         fontSize: size < 32 ? 11 : 12, fontWeight: 500,
       }}
-      >
+    >
       {initials}
     </div>
   )

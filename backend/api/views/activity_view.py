@@ -1,6 +1,8 @@
-# Author: Dusan Veljkovic 23/0417
+#
+# Napisao Dusan Veljkovic 2023/0417
+#
 
-from django.db.models import Count, Q
+from django.db.models import Count
 from django.http import JsonResponse
 from django.views import View
 from ..models import Activity, ActivityParticipant, Chat, Message
@@ -10,6 +12,9 @@ from ..utils import json_response, parse_json_body, validate_required_fields
 
 class ActivityView(View):
     def get(self, request, activity_id=None):
+        """
+        Dohvati jednu ili sve aktivnosti iz baze
+        """
         if activity_id:
             try:
                 activity = (
@@ -61,6 +66,21 @@ class ActivityView(View):
             return json_response(activity_list)
 
     def post(self, request):
+        """
+        Kreiraj aktivnost i sacuvaj je u bazi
+        Takodje kreira i chet i dodajte korisnika koji je kreirao u listu ucesnika
+        fields: {
+            interest_id: int,
+            title: str,
+            event_time: datetime,
+            ?description: str,
+            ?lat: float,
+            ?lon: float,
+            ?location_name: str,
+            ?max_participants: int,
+            ?indoor: (1 || 0)
+        }
+        """
         data = parse_json_body(request)
         required_fields = ["interest_id", "title", "event_time"]
         if not validate_required_fields(data, required_fields):
@@ -101,6 +121,7 @@ class ActivityView(View):
         )
 
     def put(self, request, activity_id):
+        """Menja postojecu aktivnost"""
         try:
             activity = Activity.objects.get(idactivities=activity_id)
             data = parse_json_body(request)
@@ -124,6 +145,7 @@ class ActivityView(View):
             return JsonResponse({"error": "Activity not found"}, status=404)
 
     def delete(self, request, activity_id):
+        """Brise postojecu aktivnost iz baze podataka"""
         try:
             activity = Activity.objects.get(idactivities=activity_id)
             if request.user.idusers != activity.created_by.idusers:
@@ -148,6 +170,7 @@ class ActivityView(View):
 
 class UserActivityView(View):
     def get(self, request):
+        """Dohvati sve aktivnosti korisnika"""
         activities = (
             Activity.objects.filter(created_by_id=request.user.idusers)
             .select_related("interest_id", "created_by")
@@ -172,6 +195,7 @@ class UserActivityView(View):
 
 class ActivityParticipantsView(View):
     def get(self, request, activity_id):
+        """Dohvati sve ucesnike aktivnosti"""
         try:
             activity = Activity.objects.get(idactivities=activity_id)
             participants = ActivityParticipant.objects.filter(
@@ -193,6 +217,9 @@ class ActivityParticipantsView(View):
 
 class JoinActivityView(View):
     def post(self, request, activity_id):
+        """
+        Pridruzi ulogovanog korisnika aktivnosti
+        """
         try:
             activity = Activity.objects.get(idactivities=activity_id)
 
@@ -223,6 +250,9 @@ class JoinActivityView(View):
 
 class LeaveActivityView(View):
     def delete(self, request, activity_id):
+        """
+        Izbaci ulogovanog korisnika iz aktivnosti za koju je prijavljen
+        """
         try:
             activity = Activity.objects.get(idactivities=activity_id)
             participant = ActivityParticipant.objects.filter(
@@ -241,6 +271,9 @@ class LeaveActivityView(View):
 
 class JoinedActivitiesView(View):
     def get(self, request):
+        """
+        Dohvati listu aktivnosti za koje je ulogovani korisnik prijavljen
+        """
         activities = ActivityParticipant.objects.filter(
             user_id_id=request.user.idusers
         ).all()

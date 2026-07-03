@@ -1,3 +1,6 @@
+//
+// Napisao Dusan Veljkovic 2023/0417
+//
 import { useEffect, useRef, useState } from "react"
 import ChatAvatar from "../components/ChatAvatar"
 import { getFullChat } from "../services/chatService";

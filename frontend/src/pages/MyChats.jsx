@@ -1,3 +1,6 @@
+//
+// Author: Dusan Veljkovic 23/0417
+//
 import { useEffect, useState } from "react";
 import ChatAvatar from "../components/ChatAvatar"
 import { getUserChats } from "../services/chatService";

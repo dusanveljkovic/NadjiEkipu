@@ -72,7 +72,7 @@ python manage.py runserver
 - 🟩 Prijava na aktivnost  
 - 🟩 Prikaz aktivnosti
 - 🟩 Brisanje aktivnosti
-- 🟥 Preporučene aktivnosti  
+- 🟩 Preporučene aktivnosti  
 
 ### Pretraga i filteri
 - 🟩 Pretraga po interesovanju
@@ -95,8 +95,7 @@ python manage.py runserver
 - 🟩 Pregled statistike  
 
 ### Napredno
-- 🟥 Integracija OpenWeather API  
-- 🟥 Preporuke po vremenu  
-- 🟥 Mapa aktivnosti  
+- 🟩 Integracija OpenWeather API  
+- 🟩 Preporuke po vremenu   
 - 🟩 Napredni filteri  
 

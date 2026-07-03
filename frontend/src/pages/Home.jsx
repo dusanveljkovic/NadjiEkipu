@@ -1,10 +1,13 @@
-// Author: Dusan Veljkovic 23/0417
-import { useState, useMemo, useEffect, act } from "react";
+//
+// Napisao Dusan Veljkovic 2023/0417
+//
+import { useState, useMemo, useEffect } from "react";
 import FillBar from "../components/FillBar"
 import { getInterests } from "../services/interestService";
 import { getActivities, getJoinedActivities, joinActivity, leaveActivity } from "../services/activityService"
 import { getRandomColor } from "../services/utils"
 import { getUserData } from "../services/api";
+import WeatherDisplay from "../components/WeatherDisplay";
 
 function extractCities(activities) {
   return [...new Set(activities.map(a => a.location_name))]
@@ -21,12 +24,13 @@ function Home() {
   const [page, setPage] = useState(1)
   const [showJoined, setShowJoined] = useState(true)
 
+  const [recommendations, setRecommendations] = useState([])
+  const [showRecommended, setShowRecommended] = useState(true)
+
   const [activites, setActivites] = useState([])
   const [interests, setInterests] = useState([])
   const [cities, setCities] = useState([])
   const [joinedActivities, setJoinedActivities] = useState([])
-  const [joiningId, setJoiningId] = useState(null)
-  const [error, setError] = useState(null)
 
   const user = getUserData()
 
@@ -49,6 +53,10 @@ function Home() {
     return joinedActivities.some(ja => ja.idactivities === a.idactivities)
   }
 
+  const isRecommended = (a) => {
+    return recommendations.some(ra => ra.id === a.idactivities)
+  }
+
   const filteredInterests = interests.filter(i => i.name.toLowerCase().includes(search.toLowerCase()))
 
   const filteredActivities = useMemo(() => {
@@ -63,10 +71,11 @@ function Home() {
         (!startTime || time >= startTime) &&
         (!endTime || time <= endTime) &&
         (!location || a.location_name === location) &&
-        ((!showJoined && !isJoined(a)) || showJoined)
+        ((!showJoined && !isJoined(a)) || showJoined) &&
+        (showRecommended || (!showRecommended && !isRecommended(a)))
       )
     })
-  }, [activites, selectedInterests, startDate, endDate, startTime, endTime, location, showJoined])
+  }, [activites, selectedInterests, startDate, endDate, startTime, endTime, location, showJoined, showRecommended])
 
   const PAGE_SIZE = 5
   const totalPages = Math.max(1, Math.ceil(filteredActivities.length / PAGE_SIZE));
@@ -81,21 +90,16 @@ function Home() {
     await loadData()
   }
 
-  const handleSelectedInterest = (interest) => {
-    if (selectedInterests.includes(interest))
-      setSelectedInterests(selectedInterests.filter(x => x !== interest))
-    else
-      setSelectedInterests([...selectedInterests, interest])
-
-    console.log(Array.isArray(selectedInterests))
-    console.log(selectedInterests)
-  }
   const toggleInterest = (interest) => {
     setPage(1);
     setSelectedInterests((prev) =>
       prev.includes(interest) ? prev.filter((x) => x !== interest) : [...prev, interest]
     );
   };
+
+  const handleRecommendations = (recommendations) => {
+    setRecommendations(recommendations["outdoor"].concat(recommendations["indoor"]))
+  }
 
 
   const inputStyle = {
@@ -120,6 +124,7 @@ function Home() {
       }}
     >
       <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+        <WeatherDisplay onRecommendations={handleRecommendations} />
 
         {/* Page title */}
         <div>
@@ -207,9 +212,24 @@ function Home() {
           </div>
 
           <div style={{ display: "flex", gap: 10 }}>
-            <input type="checkbox" id="showJoined" checked={showJoined} onChange={(e) => setShowJoined(e.target.checked)}
-              style={{ cursor: "pointer", accentColor: "#534AB7" }} />
-            <label htmlFor="showJoined" style={{ fontSize: 14, color: "#1a1a18", cursor: "pointer" }}>Prikazi pridruzene aktivnosti</label>
+            <button
+              onClick={(e) => setShowRecommended(!showRecommended)}
+              className={`transition-all duration-100 px-6 py-2 rounded-xl border-2 border-primary hover:scale-102
+                ${showRecommended
+                  ? 'bg-primary text-white'
+                  : 'bg-white text-primary'}`}
+            >
+              {showRecommended ? 'Preporucene aktivnosti' : 'Sve aktivnosti'}
+            </button>
+            <button
+              onClick={(e) => setShowJoined(!showJoined)}
+              className={`transition-all duration-100 px-6 py-2 rounded-xl border-2 border-primary hover:scale-102
+                ${!showJoined
+                  ? 'bg-primary text-white'
+                  : 'bg-white text-primary'}`}
+            >
+              {!showJoined ? 'Aktivnosti za pridruzivanje' : 'Sve aktivnosti'}
+            </button>
           </div>
         </div>
 

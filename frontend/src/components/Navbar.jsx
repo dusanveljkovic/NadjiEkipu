@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+//
+// Napisala Jana Jolovic 2023/0338
+//
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getAuthToken, getUserData } from "../services/api";
 import { logout } from "../services/authService";
-import { getUserById } from "../services/usersService"
-
 
 const ACCENT = "#534AB7";
 const ACCENT_DARK = "#3F3A8C";

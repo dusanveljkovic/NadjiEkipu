@@ -1,4 +1,6 @@
-// Napisala Jana Jolovic 0338/2023
+//
+// Napisala Jana Jolovic 2023/0338
+//
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +23,7 @@ function AdminRequests() {
   const itemsPerPage = 5;
 
   useEffect(() => { loadData() }, [])
-  
+
   const loadData = async () => {
     let data = await getModeratorRequests();
     setRequests(data.filter((request) => request.status !== "APPROVED"));

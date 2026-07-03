@@ -1,4 +1,6 @@
-// Autor Jana Jolovic 0338/2023
+//
+// Napisala Jana Jolovic 2023/0338
+//
 
 
 import React, { useState, useEffect } from "react";

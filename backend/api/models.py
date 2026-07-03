@@ -1,3 +1,8 @@
+#
+# Napisala Jana Jolovic 2023/0338
+# Napisao Ivan Majer 2023/0406
+# Napisao Dusan Veljkovic 2023/0417
+#
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils import timezone
@@ -5,19 +10,35 @@ import hashlib
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, email, firstname, lastname, birthyear, password=None, **extra_fields):
+    def create_user(
+        self,
+        username,
+        email,
+        firstname,
+        lastname,
+        birthyear,
+        password=None,
+        **extra_fields
+    ):
         if not email:
-            raise ValueError('Email is required')
+            raise ValueError("Email is required")
         email = self.normalize_email(email)
         extra_fields.setdefault("role_id", Role.objects.get(pk=3))
-        user = self.model(username=username, email=email, firstname=firstname, lastname=lastname, birthyear=birthyear, **extra_fields)
+        user = self.model(
+            username=username,
+            email=email,
+            firstname=firstname,
+            lastname=lastname,
+            birthyear=birthyear,
+            **extra_fields
+        )
         if password:
             user.set_password(password)
         user.save(using=self._db)
         return user
 
     def create_superuser(self, username, email, password=None, **extra_fields):
-        extra_fields.setdefault('role_id', 1)
+        extra_fields.setdefault("role_id", 1)
         return self.create_user(username, email, password, **extra_fields)
 
 
@@ -26,7 +47,7 @@ class Role(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     class Meta:
-        db_table = 'roles'
+        db_table = "roles"
         managed = False
 
     def __str__(self):
@@ -44,10 +65,7 @@ class User(AbstractBaseUser):
     birthyear = models.IntegerField(null=True, blank=True)
     # role_id = models.IntegerField(default=1)
     role_id = models.ForeignKey(
-        Role,
-        on_delete=models.DO_NOTHING,
-        db_column='role_id',
-        default=1
+        Role, on_delete=models.DO_NOTHING, db_column="role_id", default=1
     )
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
@@ -55,11 +73,11 @@ class User(AbstractBaseUser):
 
     last_login = None
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
 
     class Meta:
-        db_table = 'users'
+        db_table = "users"
         managed = False
 
     def set_password(self, raw_password):
@@ -72,9 +90,9 @@ class User(AbstractBaseUser):
 
     @property
     def password(self):
-        raise AttributeError('password is not readable')
+        raise AttributeError("password is not readable")
 
-    @password.setter 
+    @password.setter
     def password(self, raw_password):
         self.set_password(raw_password)
 
@@ -89,78 +107,71 @@ class User(AbstractBaseUser):
 
 class ModeratorRequest(models.Model):
     STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('APPROVED', 'Approved'),
-        ('REJECTED', 'Rejected'),
+        ("PENDING", "Pending"),
+        ("APPROVED", "Approved"),
+        ("REJECTED", "Rejected"),
     ]
 
     idmoderator_requests = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User,
-                                on_delete=models.DO_NOTHING,
-                                db_column='user_id')
-    status = models.CharField(max_length=10,
-                              choices=STATUS_CHOICES,
-                              default='PENDING')
+    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column="user_id")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="PENDING")
     created_at = models.DateTimeField(default=timezone.now)
     resolved_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        db_table = 'moderator_requests'
+        db_table = "moderator_requests"
         managed = False
+
 
 class InterestManager(models.Manager):
     def create_interest(self, name, description, created_by):
-        return self.create(
-            name=name,
-            description=description,
-            created_by=created_by
-        )
+        return self.create(name=name, description=description, created_by=created_by)
+
 
 class Interest(models.Model):
     idinterests = models.AutoField(primary_key=True)
     name = models.CharField(max_length=128, unique=True)
     description = models.TextField(null=True, blank=True)
     avatar_id = models.SmallIntegerField(default=0)
-    created_by = models.ForeignKey(User,
-                                   on_delete=models.DO_NOTHING,
-                                   db_column='created_by')
+    created_by = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, db_column="created_by"
+    )
     created_at = models.DateTimeField(default=timezone.now)
 
     objects = InterestManager()
 
     class Meta:
-        db_table = 'interests'
+        db_table = "interests"
         managed = False
-
 
 
 class UserInterest(models.Model):
     iduser_interests = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User,
-                                on_delete=models.DO_NOTHING,
-                                db_column='user_id')
-    interest_id = models.ForeignKey(Interest,
-                                    on_delete=models.DO_NOTHING,
-                                    db_column='interest_id')
+    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column="user_id")
+    interest_id = models.ForeignKey(
+        Interest, on_delete=models.DO_NOTHING, db_column="interest_id"
+    )
     skill_level = models.SmallIntegerField(default=0)
     attended_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        db_table = 'user_interests'
+        db_table = "user_interests"
         managed = False
-        unique_together = (('user_id', 'interest_id'),)
+        unique_together = (("user_id", "interest_id"),)
 
 
 class Activity(models.Model):
     idactivities = models.AutoField(primary_key=True)
-    interest_id = models.ForeignKey(Interest,
-                                    on_delete=models.DO_NOTHING,
-                                    db_column='interest_id')
-    created_by = models.ForeignKey(User,
-                                   on_delete=models.DO_NOTHING,
-                                   db_column='created_by',
-                                   related_name='created_activities')
+    interest_id = models.ForeignKey(
+        Interest, on_delete=models.DO_NOTHING, db_column="interest_id"
+    )
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.DO_NOTHING,
+        db_column="created_by",
+        related_name="created_activities",
+    )
     title = models.CharField(max_length=128)
     description = models.TextField(null=True, blank=True)
     event_time = models.DateTimeField()
@@ -172,66 +183,59 @@ class Activity(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        db_table = 'activities'
+        db_table = "activities"
         managed = False
 
 
 class ActivityParticipant(models.Model):
     idactivity_participants = models.AutoField(primary_key=True)
-    activity_id = models.ForeignKey(Activity,
-                                    on_delete=models.DO_NOTHING,
-                                    db_column='activity_id')
-    user_id = models.ForeignKey(User,
-                                on_delete=models.DO_NOTHING,
-                                db_column='user_id')
+    activity_id = models.ForeignKey(
+        Activity, on_delete=models.DO_NOTHING, db_column="activity_id"
+    )
+    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column="user_id")
     joined_at = models.DateTimeField(default=timezone.now)
     status = models.SmallIntegerField(default=0)
 
     class Meta:
-        db_table = 'activity_participants'
+        db_table = "activity_participants"
         managed = False
-        unique_together = (('activity_id', 'user_id'),)
+        unique_together = (("activity_id", "user_id"),)
 
 
 class Chat(models.Model):
     idchats = models.AutoField(primary_key=True)
-    event_id = models.OneToOneField(Activity,
-                                    on_delete=models.DO_NOTHING,
-                                    db_column='event_id')
+    event_id = models.OneToOneField(
+        Activity, on_delete=models.DO_NOTHING, db_column="event_id"
+    )
     created_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField()
 
     class Meta:
-        db_table = 'chats'
+        db_table = "chats"
         managed = False
 
 
 class Message(models.Model):
     idmessages = models.AutoField(primary_key=True)
-    chat_id = models.ForeignKey(Chat,
-                                on_delete=models.DO_NOTHING,
-                                db_column='chat_id')
-    sender_id = models.ForeignKey(User,
-                                  on_delete=models.DO_NOTHING,
-                                  db_column='sender_id')
+    chat_id = models.ForeignKey(Chat, on_delete=models.DO_NOTHING, db_column="chat_id")
+    sender_id = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, db_column="sender_id"
+    )
     message = models.TextField()
     sent_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        db_table = 'messages'
+        db_table = "messages"
         managed = False
 
 
 class UserSession(models.Model):
     iduser_sessions = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User,
-                                on_delete=models.DO_NOTHING,
-                                db_column='user_id')
+    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column="user_id")
     token = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField()
 
     class Meta:
-        db_table = 'user_sessions'
+        db_table = "user_sessions"
         managed = False
-

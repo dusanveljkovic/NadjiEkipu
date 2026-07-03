@@ -1,3 +1,8 @@
+#
+# Napisala Jana Jolovic 2023/0338
+# Napisao Ivan Majer 2023/0406
+# Napisao Dusan Veljkovic 2023/0417
+#
 from django.urls import path
 from .views.activity_view import (
     ActivityView,
@@ -10,6 +15,7 @@ from .views.activity_view import (
 from .views.interest_view import InterestView, UserInterestsView
 from .views.auth_view import LoginView, LogoutView, RegisterView
 from .views.chat_view import UserChatsView, ChatView
+from .views.weather_view import WeatherView, WeatherForecastView
 from .view import UserView, ModeratorRequestView
 
 urlpatterns = [
@@ -71,4 +77,6 @@ urlpatterns = [
     ),
     path("user-chats/", UserChatsView.as_view(), name="user-chats"),
     path("chats/<int:chat_id>/", ChatView.as_view(), name="chat-full"),
+    path("weather/", WeatherView.as_view(), name="weather"),
+    path("weather/forecast", WeatherForecastView.as_view(), name="weather-forecast"),
 ]

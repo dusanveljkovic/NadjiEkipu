@@ -1,3 +1,6 @@
+#
+# Napisao Dusan Veljkovic 2023/0417
+#
 from django.urls import re_path
 from . import consumers
 
