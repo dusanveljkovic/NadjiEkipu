@@ -1,3 +1,8 @@
+#
+# Napisala Jana Jolovic 2023/0338
+# Napisao Ivan Majer 2023/0406
+# Napisao Dusan Veljkovic 2023/0417
+#
 from django.urls import path
 from .views.activity_view import (
     ActivityView,

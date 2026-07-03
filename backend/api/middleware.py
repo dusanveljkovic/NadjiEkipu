@@ -1,3 +1,7 @@
+#
+# Napisao Ivan Majer 2023/0406
+# Napisao Dusan Veljkovic 2023/0417
+#
 from urllib.parse import parse_qs
 from django.http import JsonResponse
 from .models import UserSession
@@ -10,6 +14,11 @@ import re
 
 
 class AuthenticationMiddleware:
+    """
+    Middleware sasluzan za autentifikaciju korisnika i postavljanje
+    request.user i request.token polja
+    """
+
     exempt_urls = [
         r"^/api/auth/login/$",
         r"^/api/auth/register/$",
@@ -51,6 +60,9 @@ class AuthenticationMiddleware:
 
 @database_sync_to_async
 def get_user_from_token(token):
+    """
+    Pronadji korisnika koristeci njegov token za autentifikaciju
+    """
     if not token:
         return AnonymousUser()
     try:
@@ -61,6 +73,11 @@ def get_user_from_token(token):
 
 
 class WSAuthMiddleware(BaseMiddleware):
+    """
+    Middleware sasluzan za autentifikaciju korisnika kada salje websocket poruke.
+    Postavlja scope["user"] na korisnika
+    """
+
     async def __call__(self, scope, receive, send):
         query_string = parse_qs(scope.get("query_string", b"").decode())
         token = query_string.get("token", [None])[0]

@@ -117,6 +117,8 @@ import os
 #     }
 # }
 
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",

@@ -1,26 +1,22 @@
+#
+# Napisala Jana Jolovic 0338/2023
+#
 from django.http import JsonResponse
 from django.views import View
 from .models import (
-    Activity,
-    ActivityParticipant,
-    Chat,
     User,
-    Role,
     ModeratorRequest,
-    Message,
-    UserSession,
-    UserInterest,
 )
-from datetime import datetime, timedelta
-from .utils import json_response, parse_json_body, validate_required_fields
+from .utils import json_response, parse_json_body
 from django.utils import timezone
 from django.db import connection
-
-# Napisala Jana Jolovic 0338/2023
 
 
 class UserView(View):
     def get(self, request, user_id=None):
+        """
+        Dohvati jednog ili listu svih korisnika
+        """
         if user_id:
             try:
                 user = User.objects.get(idusers=user_id)
@@ -59,6 +55,10 @@ class UserView(View):
             )
 
     def delete(self, request, user_id):
+        """
+        Obrisi jednog korisnika i sve njegove zahteve za moderatora, chetove, poruke,
+        interesovanja
+        """
         try:
             user = User.objects.get(idusers=user_id)
             with connection.cursor() as cursor:
@@ -112,11 +112,11 @@ class UserView(View):
             return JsonResponse({"error": "User not found"}, status=404)
 
 
-# Napisala Jana Jolovic 0338/2023
-
-
 class ModeratorRequestView(View):
     def get(self, request, request_id=None):
+        """
+        Dohvati jedan ili listu zahteva za moderatora
+        """
         if request_id:
             try:
                 mod_request = ModeratorRequest.objects.select_related("user_id").get(
@@ -151,6 +151,12 @@ class ModeratorRequestView(View):
             )
 
     def patch(self, request, request_id):
+        """
+        Promeni status aktivnog zahteva za moderatora
+        fields: {
+            status: str ("APPROVED" || "REJECTED")
+        }
+        """
         try:
             mod_request = ModeratorRequest.objects.get(idmoderator_requests=request_id)
             data = parse_json_body(request)
@@ -173,11 +179,12 @@ class ModeratorRequestView(View):
             return JsonResponse({"error": "Request not found"}, status=404)
 
     def post(self, request):
+        """
+        Kreiraj zahtev za moderatora za ulogovanog korisnika
+        """
         user_id = request.user.idusers
 
-        if ModeratorRequest.objects.filter(
-            user_id=user_id, status="PENDING"
-        ).exists():
+        if ModeratorRequest.objects.filter(user_id=user_id, status="PENDING").exists():
             return JsonResponse(
                 {"error": "Već imate poslat zahtev."},
                 status=400,
@@ -195,6 +202,3 @@ class ModeratorRequestView(View):
             },
             status=201,
         )
-
-
-# Napisala Jana Jolovic 0338/2023

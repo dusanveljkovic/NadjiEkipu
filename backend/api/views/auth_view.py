@@ -1,4 +1,7 @@
-# Author: Dusan Veljkovic 23/0417
+#
+# Napisao Ivan Majer 2023/0406
+# Napisao Dusan Veljkovic 2023/0417
+#
 
 import secrets
 from django.http import JsonResponse
@@ -12,6 +15,13 @@ import json
 
 class LoginView(View):
     def post(self, request):
+        """
+        Uloguj korisnika
+        fields: {
+            username: str,
+            password: str
+        }
+        """
         data = parse_json_body(request)
 
         username = data.get("username")
@@ -56,6 +66,7 @@ class LoginView(View):
 
 class LogoutView(View):
     def post(self, request):
+        """Izloguj korisnika"""
         if hasattr(request, "token"):
             UserSession.objects.filter(token=request.token).delete()
         return json_response({"message": "Korisnik uspesno odjavljen"})
@@ -64,6 +75,18 @@ class LogoutView(View):
 class RegisterView(View):
 
     def post(self, request):
+        """
+        Registruj korisnika
+        fields: {
+            email: str,
+            username: str,
+            password: str,
+            confirm_password: str,
+            godiste: int,
+            firstname: str,
+            lastname: str
+        }
+        """
         try:
             data = json.loads(request.body)
 
@@ -88,7 +111,6 @@ class RegisterView(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({"error": "Email already exists"}, status=400)
 
-
             print(firstname)
             print(lastname)
 
@@ -98,16 +120,15 @@ class RegisterView(View):
                 password=password,
                 firstname=firstname,
                 lastname=lastname,
-                birthyear=godiste
+                birthyear=godiste,
             )
 
             print(user.firstname)
             print(user.lastname)
 
-            return JsonResponse({
-                "message": "User created successfully",
-                "user_id": user.pk
-            }, status=201)
+            return JsonResponse(
+                {"message": "User created successfully", "user_id": user.pk}, status=201
+            )
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)

@@ -1,3 +1,7 @@
+#
+# Napisao Ivan Majer 2023/0406
+# Napisao Dusan Veljkovic 2023/0417
+#
 from django.db.models import Count
 from django.http import JsonResponse
 from django.views import View
@@ -7,6 +11,9 @@ from ..utils import json_response, parse_json_body
 
 class InterestView(View):
     def get(self, request, interest_id=None):
+        """
+        Dohvati jedno ili listu interesovanja
+        """
         if interest_id:
             try:
                 interest = Interest.objects.select_related("created_by").get(
@@ -45,35 +52,40 @@ class InterestView(View):
             return json_response(interest_list)
 
     def post(self, request):
+        """
+        Kreiraj interesovanje
+        fields: {
+            name: str,
+            description: str
+        }
+        """
         data = parse_json_body(request)
 
         name = data.get("name")
         description = data.get("description")
 
         if not name:
-            return json_response(
-                {"error": "Name is required"},
-                status=400
-            )
+            return json_response({"error": "Name is required"}, status=400)
 
         interest = Interest.objects.create(
-            name=name,
-            description=description,
-            created_by=request.user
+            name=name, description=description, created_by=request.user
         )
 
         return json_response(
             {
                 "id": interest.idinterests,
                 "name": interest.name,
-                "description": interest.description
+                "description": interest.description,
             },
-            status=201
+            status=201,
         )
 
 
 class UserInterestsView(View):
     def get(self, request):
+        """
+        Dohvati interesovanja ulogovanog korisnika
+        """
         user_interests = (
             UserInterest.objects.filter(user_id=request.user.idusers)
             .select_related("user_id", "interest_id")
@@ -92,6 +104,13 @@ class UserInterestsView(View):
         return json_response(user_interests_list)
 
     def post(self, request):
+        """
+        Dodaj novo interesovanje korisniku
+        fields: {
+            interest_id: int,
+            ?skill_level: int (0..10)
+        }
+        """
         data = parse_json_body(request)
         if not UserInterest.objects.filter(
             user_id=request.user, interest_id=data["interest_id"]
@@ -106,6 +125,9 @@ class UserInterestsView(View):
             return json_response({"iduser_interests": ui.iduser_interests}, status=201)
 
     def put(self, request, user_interest_id):
+        """
+        Izmeni skill level interesovanja korisnika
+        """
         try:
             ui = UserInterest.objects.get(
                 iduser_interests=user_interest_id, user_id=request.user
@@ -126,6 +148,9 @@ class UserInterestsView(View):
             )
 
     def delete(self, request, user_interest_id):
+        """
+        Obrisi interesovanje korisnika
+        """
         try:
             ui = UserInterest.objects.get(
                 iduser_interests=user_interest_id, user_id=request.user

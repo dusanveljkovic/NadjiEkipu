@@ -1,15 +1,24 @@
+#
+# Napisao Dusan Veljkovic 2023/0417
+#
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from django.utils import timezone
-from .models import Chat, Message, User, UserSession
+from .models import Chat, Message, User, ActivityParticipant
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    """
+    Klasa zaduzena za slanje i primanje poruka u chetu
+    """
+
     async def connect(self):
+        """
+        Povezi se na websocket kanal
+        """
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
         self.room_group_name = f"chat_{self.chat_id}"
 
@@ -36,12 +45,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"type": "history", "messages": messages}))
 
     async def disconnect(self, close_code):
+        """
+        Odvezi se sa websocket kanala
+        """
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         logger.info(
             f"User {self.user.idusers if self.user else 'Unknown'} disconnected from chat {self.chat_id}"
         )
 
     async def receive(self, text_data):
+        """
+        Primi websocket poruku
+        """
         try:
             data = json.loads(text_data)
             message_type = data.get("type", "message")
@@ -67,24 +82,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         },
                     )
 
-            elif message_type == "typing":
-                # Broadcast typing indicator
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "typing_indicator",
-                        "sender_id": self.user.idusers,
-                        "sender_name": self.user.username,
-                        "is_typing": data.get("is_typing", True),
-                    },
-                )
-
         except json.JSONDecodeError:
             logger.error(f"Invalid JSON received: {text_data}")
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}")
 
     async def chat_message(self, event):
+        """
+        Posalji poruku na websocket
+        """
         await self.send(
             text_data=json.dumps(
                 {
@@ -98,31 +104,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
         )
 
-    async def typing_indicator(self, event):
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "typing",
-                    "sender_id": event["sender_id"],
-                    "sender_name": event["sender_name"],
-                    "is_typing": event["is_typing"],
-                }
-            )
-        )
-
     @database_sync_to_async
     def user_has_access(self, chat_id, user_id):
-        """Check if user has access to this chat"""
+        """
+        Proveri da li korisnik moze da pristupi ovom chetu
+        """
         try:
             chat = Chat.objects.select_related("event_id").get(idchats=chat_id)
             activity = chat.event_id
 
-            # User has access if they created the activity or are a participant
             if activity.created_by.idusers == user_id:
                 return True
-
-            # Check if user is a participant
-            from .models import ActivityParticipant
 
             return ActivityParticipant.objects.filter(
                 activity_id=activity, user_id=user_id
@@ -132,7 +124,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_recent_messages(self, chat_id, limit=50):
-        """Get recent messages for a chat"""
+        """
+        Dohvati najskorije poruke iz cheta
+        """
         try:
             chat = Chat.objects.get(idchats=chat_id)
             messages = (
@@ -141,7 +135,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 .order_by("-sent_at")[:limit]
             )
 
-            # Reverse to get chronological order
             messages = list(reversed(messages))
 
             return [
@@ -159,7 +152,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_message(self, chat_id, sender_id, message):
-        """Save message to database"""
+        """
+        Sacuvaj poruku u bazi
+        """
         try:
             chat = Chat.objects.get(idchats=chat_id)
             user = User.objects.get(idusers=sender_id)
