@@ -1,3 +1,6 @@
+//
+// Author: Dusan Veljkovic 23/0417
+//
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserInterests, getInterests, addUserInterest, deleteUserInterest, updateUserInterest } from "../services/interestService";

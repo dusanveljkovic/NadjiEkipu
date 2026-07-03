@@ -1,4 +1,7 @@
-import { useState, useRef } from "react";
+//
+// Napisala Jana Jolovic 2023/0338
+//
+import { useRef } from "react";
 import { getRandomColor, formatCount, getInterestAvatar } from "../services/utils.js"
 
 function SkillBar({ level, onChange, color }) {

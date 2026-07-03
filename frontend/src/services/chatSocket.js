@@ -1,3 +1,6 @@
+//
+// Napisao Dusan Veljkovic 2023/0417
+//
 class ChatSocket {
   constructor() {
     this.ws = null;

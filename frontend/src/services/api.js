@@ -1,11 +1,15 @@
-// Author: Dusan Veljkovic 23/0417
+//
+// Napisao Dusan Veljkovic 23/0417
+//
 
 const BASE_API_URL = 'http://127.0.0.1:8000/api'
 
+// Dohvati token iz local storage
 export const getAuthToken = () => {
   return localStorage.getItem('auth_token')
 }
 
+// Postavi token u local storage
 export const setAuthToken = (token) => {
   if (token)
     localStorage.setItem('auth_token', token)
@@ -13,20 +17,24 @@ export const setAuthToken = (token) => {
     localStorage.removeItem('auth_token')
 }
 
+// Dohvati podatke o korisniku iz local storage
 export const getUserData = () => {
   const userStr = localStorage.getItem('user_data')
   return userStr ? JSON.parse(userStr) : null
 }
 
+// Postavi podatke o korisniku u local storage
 export const setUserData = (user) => {
   localStorage.setItem('user_data', JSON.stringify(user))
 }
 
+// Izbrisi sve podatke iz local storage
 export const removeUserData = () => {
   localStorage.removeItem('auth_token')
   localStorage.removeItem('user_data')
 }
 
+// Pozovi api
 export const apiFetch = async (endpoint, options = {}) => {
   const token = getAuthToken()
   const defaultHeaders = {

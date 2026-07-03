@@ -1,11 +1,15 @@
-// Author: Dusan Veljkovic 23/0417
+//
+// Napisao Dusan Veljkovic 2023/0417
+//
 
 import apiFetch from "./api";
 
+// Dohvati sva interesovanja
 export const getInterests = async () => {
   return await apiFetch('/interests/')
 }
 
+// Dodaj interesovanje
 export const addInterest = async (form) => {
   return await apiFetch('/interests/add-interest/', {
     method: 'POST',
@@ -13,10 +17,12 @@ export const addInterest = async (form) => {
   })
 }
 
+// Dohvati sva interesovanja korisnika
 export const getUserInterests = async () => {
   return await apiFetch('/user-interests/')
 }
 
+// Dodaj interesovanje korisniku
 export const addUserInterest = async (interest_id) => {
   return await apiFetch('/user-interests/', {
     method: 'POST',
@@ -24,6 +30,7 @@ export const addUserInterest = async (interest_id) => {
   })
 }
 
+// Promeni skill level interesovanja korisnika
 export const updateUserInterest = async (id, skillLevel) => {
   return await apiFetch(`/user-interests/${id}`, {
     method: 'PUT',
@@ -31,6 +38,7 @@ export const updateUserInterest = async (id, skillLevel) => {
   })
 }
 
+// Obrisi interesovanje korisnika
 export const deleteUserInterest = async (id) => {
   return await apiFetch(`/user-interests/${id}`, {
     method: 'DELETE'

@@ -1,5 +1,7 @@
-// Author: Dusan Veljkovic 23/0417
-import { useState, useMemo, useEffect, act } from "react";
+//
+// Napisao Dusan Veljkovic 2023/0417
+//
+import { useState, useMemo, useEffect } from "react";
 import FillBar from "../components/FillBar"
 import { getInterests } from "../services/interestService";
 import { getActivities, getJoinedActivities, joinActivity, leaveActivity } from "../services/activityService"

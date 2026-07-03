@@ -1,6 +1,9 @@
+// 
+// Napisao Ivan Majer 2023/0406
+//
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addInterest } from "../services/interestService"; 
+import { addInterest } from "../services/interestService";
 
 export default function AddInterest() {
   const [name, setName] = useState("");
@@ -28,13 +31,13 @@ export default function AddInterest() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-     try {
+    try {
       const form = {
-    name: name,
-    peopleCount: peopleCount
-  };
-    await addInterest(form);
-    navigate("/my-interests");
+        name: name,
+        peopleCount: peopleCount
+      };
+      await addInterest(form);
+      navigate("/my-interests");
     } catch (err) {
       console.error(err);
     }
@@ -43,8 +46,8 @@ export default function AddInterest() {
 
   return (
     <div style={{ maxWidth: 500, margin: "0 auto", padding: 20 }}>
-      
-      <h1 style={{ fontSize: 22, marginBottom: 20, fontWeight: 500}}>
+
+      <h1 style={{ fontSize: 22, marginBottom: 20, fontWeight: 500 }}>
         Dodaj interesovanje
       </h1>
 
@@ -98,7 +101,7 @@ export default function AddInterest() {
 
         {/* Dugmad */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-          <button type="button"  
+          <button type="button"
             style={{
               padding: "9px 20px",
               borderRadius: "10px",
@@ -119,7 +122,7 @@ export default function AddInterest() {
             onMouseLeave={(e) => {
               e.currentTarget.style.background = "#fff";
               e.currentTarget.style.borderColor = "#e0e0e0";
-            }} 
+            }}
             onClick={handleCancel}>
             Otkaži
           </button>
