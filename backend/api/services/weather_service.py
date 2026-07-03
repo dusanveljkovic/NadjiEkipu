@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.cache import cache
 
 
-class WeatcherService:
+class WeatherService:
     """Klasa zaduzena sa integraciju sa openweather API-jem"""
 
     BASE_URL = "https://api.openweathermap.org/data/2.5"
@@ -37,7 +37,7 @@ class WeatcherService:
             cache.set(cache_key, data, 600)
             return data
         except requests.exceptions.RequestException as e:
-            print("Weather error " + e)
+            print(f"Weather error {e}")
             return None
 
     @classmethod
@@ -67,5 +67,33 @@ class WeatcherService:
             cache.set(cache_key, data, 1800)
             return data
         except requests.exceptions.RequestException as e:
-            print("Weather error " + e)
+            print(f"Weather error {e}")
+            return None
+
+    @classmethod
+    def get_weather_by_city(cls, city, units="metric"):
+        """Trenutna vremenska prognoza za grad"""
+        cache_key = f"weather_{city}"
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return cached_data
+
+        try:
+            response = requests.get(
+                f"{cls.BASE_URL}/weather",
+                params={
+                    "q": city,
+                    "appid": settings.OPENWEATHER_API_KEY,
+                    "units": units,
+                },
+                timeout=10,
+            )
+            response.raise_for_status()
+            data = response.json()
+
+            cache.set(cache_key, data, 600)
+            return data
+        except requests.exceptions.RequestException as e:
+            print(f"Weather error {e}")
             return None

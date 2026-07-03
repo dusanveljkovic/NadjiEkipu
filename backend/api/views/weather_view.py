@@ -4,10 +4,9 @@
 import json
 from django.http import JsonResponse
 from django.views import View
-from .services.weather_service import WeatherService
-from .services.activity_recommender import ActivityRecommender
-from .utils import json_response
-from .models import Activity
+from ..services.weather_service import WeatherService
+from ..services.activity_recommender import ActivityRecommender
+from ..utils import json_response
 
 
 class WeatherView(View):
@@ -15,8 +14,11 @@ class WeatherView(View):
         """Trenutno vreme za lokaciju (koordinate)"""
         lat = request.GET.get("lat")
         lon = request.GET.get("lon")
+        city = request.GET.get("city")
 
-        if lat and lon:
+        if city:
+            weather_data = WeatherService.get_weather_by_city(city)
+        elif lat and lon:
             weather_data = WeatherService.get_current_weather(lat, lon)
         else:
             return JsonResponse(

@@ -10,28 +10,61 @@ class ActivityRecommender:
     # Weather-based activity mapping
     WEATHER_RECOMMENDATIONS = {
         "Clear": {
-            "outdoor": ["Running", "Cycling", "Hiking", "Outdoor Sports"],
-            "indoor": ["Yoga", "Swimming", "Dancing"],
+            "outdoor": [
+                "Fudbal",
+                "Kosarka",
+                "Tenis",
+                "Trcanje",
+                "Biciklizam",
+                "Planinarenje",
+                "Fotografija",
+            ],
+            "indoor": ["Plivanje", "Joga"],
         },
         "Clouds": {
-            "outdoor": ["Running", "Cycling", "Hiking"],
-            "indoor": ["Yoga", "Swimming", "Dancing", "Gaming"],
+            "outdoor": [
+                "Fudbal",
+                "Kosarka",
+                "Tenis",
+                "Trcanje",
+                "Biciklizam",
+                "Planinarenje",
+                "Fotografija",
+            ],
+            "indoor": [
+                "Plivanje",
+                "Joga",
+                "Sah",
+                "Kuvanje",
+                "Citanje",
+                "Umetnost",
+                "Ples",
+            ],
         },
         "Rain": {
             "outdoor": [],
-            "indoor": ["Swimming", "Yoga", "Dancing", "Gaming", "Chess"],
+            "indoor": [
+                "Plivanje",
+                "Joga",
+                "Sah",
+                "Kuvanje",
+                "Citanje",
+                "Umetnost",
+                "Gaming",
+                "Ples",
+            ],
         },
         "Thunderstorm": {
             "outdoor": [],
-            "indoor": ["Chess", "Gaming", "Art", "Reading"],
+            "indoor": ["Sah", "Kuvanje", "Citanje", "Umetnost", "Gaming", "Ples"],
         },
         "Snow": {
-            "outdoor": ["Hiking", "Running"],
-            "indoor": ["Swimming", "Yoga", "Dancing", "Gaming"],
+            "outdoor": ["Planinarenje", "Tracanje", "Fotografija"],
+            "indoor": ["Sah", "Kuvanje", "Citanje", "Umetnost", "Gaming", "Ples"],
         },
         "Mist": {
-            "outdoor": ["Running", "Cycling"],
-            "indoor": ["Yoga", "Swimming", "Dancing"],
+            "outdoor": ["Planinarenje", "Tracanje", "Fotografija"],
+            "indoor": ["Sah", "Kuvanje", "Citanje", "Umetnost", "Gaming", "Ples"],
         },
         "Fog": {"outdoor": [], "indoor": ["Yoga", "Dancing", "Gaming", "Chess"]},
     }
