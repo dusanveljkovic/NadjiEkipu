@@ -1,6 +1,9 @@
 //
 // Napisala Jana Jolovic 2023/0338
 //
+// Napisao Ivan Majer 2023/0406
+//
+//
 import { useRef } from "react";
 import { getRandomColor, formatCount, getInterestAvatar } from "../services/utils.js"
 import { getInterest } from "../services/interestService.js"
