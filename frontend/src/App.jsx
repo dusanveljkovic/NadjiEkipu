@@ -13,29 +13,54 @@ import CreateActivity from "./pages/CreateActivity";
 import AddInterest from "./pages/AddInterest";
 import UserProfilePage from "./pages/UserProfilePage";
 import MyChats from "./pages/MyChats"
+import UserRoute from "./components/UserRoute";
+import AdminRoute from "./components/AdminRoute";
+import ModeratorRoute from "./components/ModeratorRoute";
+import PublicLayout from "./components/PublicLayout";
+import AppLayout from "./components/AppLayout";
 
 function App() {
   const location = useLocation();
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {location.pathname !== "/login" && location.pathname !== "/registration" && location.pathname !== "/" && <Navbar />}
       <div className="p-4">
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/my-profile" element={<MyProfile />} />
-          <Route path="/registration" element={<Registration />} />
-          <Route path="/my-chats" element={<MyChats />} />
-          <Route path="/my-chats/:chatId" element={<SingleChat />} />
-          <Route path="/requests" element={<AdminRequests />} />
-          <Route path="/all-users" element={<AdminAllUsers />} />
-          <Route path="/my-interests" element={<MyInterests />} />
-          <Route path="/my-activities" element={<MyActivites />} />
-          <Route path="create-activity" element={<CreateActivity />} />
-          <Route path="/add-interest" element={<AddInterest />} />
-          <Route path="/user/:userId" element={<UserProfilePage />} />
+          {/* PUBLIC */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registration" element={<Registration />} />
+          </Route>
+
+          {/* PRIVATE */}
+          <Route element={<UserRoute />}>
+            <Route element={<AppLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/my-profile" element={<MyProfile />} />
+              <Route path="/my-chats" element={<MyChats />} />
+              <Route path="/my-chats/:chatId" element={<SingleChat />} />
+              <Route path="/my-interests" element={<MyInterests />} />
+              <Route path="/my-activities" element={<MyActivites />} />
+              <Route path="/create-activity" element={<CreateActivity />} />
+              <Route path="/user/:userId" element={<UserProfilePage />} />
+            </Route>
+          </Route>
+
+          {/* ADMIN */}
+          <Route element={<AdminRoute />}>
+            <Route element={<AppLayout />}>
+              <Route path="/requests" element={<AdminRequests />} />
+              <Route path="/all-users" element={<AdminAllUsers />} />
+            </Route>
+          </Route>
+
+          {/* MODERATOR */}
+          <Route element={<ModeratorRoute />}>
+            <Route element={<AppLayout />}>
+              <Route path="/add-interest" element={<AddInterest />} />
+            </Route>
+          </Route>
         </Routes>
       </div>
     </div>
