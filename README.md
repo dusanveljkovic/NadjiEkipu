@@ -55,7 +55,7 @@ python manage.py runserver
 - 🟩 Registracija korisnika  
 - 🟩 Login  
 - 🟩 Logout  
-- 🟥 Role-based autorizacija  
+- 🟩 Role-based autorizacija  
 
 ### Profil
 - 🟩 Pregled profila  
