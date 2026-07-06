@@ -135,7 +135,7 @@ export default function UserProfilePage() {
                   key={hobby.idinterests}
                   style={{ animationDelay: `${index * 100}ms`, animation: "fadeInUp 0.4s ease-out" }}
                 >
-                  <MojeInteresovanjeKartica
+                  <InterestCard
                     item={{
                       id: hobby.idinterests,
                       name: hobby.name,

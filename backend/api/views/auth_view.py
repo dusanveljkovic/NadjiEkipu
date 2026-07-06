@@ -7,7 +7,7 @@ import secrets
 from django.http import JsonResponse
 from django.views import View
 from ..models import User, UserSession, UserManager
-from datetime import timedelta, datetime, UTC
+from datetime import timedelta, datetime, timezone
 from ..utils import json_response, parse_json_body
 import traceback
 import json
@@ -37,7 +37,7 @@ class LoginView(View):
                 return JsonResponse({"error": "Nevalidni kredencijali"}, status=401)
 
             token = secrets.token_urlsafe(32)
-            expires_at = datetime.now(UTC) + timedelta(days=7)
+            expires_at = datetime.now(timezone.utc) + timedelta(days=7)
 
             UserSession.objects.create(user_id=user, token=token, expires_at=expires_at)
 

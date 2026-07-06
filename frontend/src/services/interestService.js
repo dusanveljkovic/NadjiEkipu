@@ -9,6 +9,11 @@ export const getInterests = async () => {
   return await apiFetch('/interests/')
 }
 
+//Dohvati interesovanje
+export const getInterest = async (id_interest) => {
+  return await apiFetch(`/interests/${id_interest}/`)
+}
+
 // Dodaj interesovanje
 export const addInterest = async (form) => {
   return await apiFetch('/interests/add-interest/', {

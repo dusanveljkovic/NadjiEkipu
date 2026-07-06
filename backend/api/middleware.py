@@ -5,7 +5,7 @@
 from urllib.parse import parse_qs
 from django.http import JsonResponse
 from .models import UserSession
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from channels.auth import AuthMiddlewareStack
 from channels.db import database_sync_to_async
 from channels.middleware import BaseMiddleware
@@ -49,7 +49,7 @@ class AuthenticationMiddleware:
 
         try:
             session = UserSession.objects.get(
-                token=token, expires_at__gt=datetime.now(UTC)
+                token=token, expires_at__gt=datetime.now(timezone.utc)
             )
             request.user = session.user_id
             request.token = token
@@ -66,7 +66,7 @@ def get_user_from_token(token):
     if not token:
         return AnonymousUser()
     try:
-        session = UserSession.objects.get(token=token, expires_at__gt=datetime.now(UTC))
+        session = UserSession.objects.get(token=token, expires_at__gt=datetime.now(timezone.utc))
         return session.user_id
     except UserSession.DoesNotExist:
         return AnonymousUser()
