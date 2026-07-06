@@ -3,8 +3,12 @@
 //
 import { useRef } from "react";
 import { getRandomColor, formatCount, getInterestAvatar } from "../services/utils.js"
+import { getInterest } from "../services/interestService.js"
+import { useEffect, useState } from "react";
+
 
 function SkillBar({ level, onChange, color }) {
+  const interestService = interestService()
   const trackRef = useRef(null);
 
   const calcLevel = (clientX) => {
@@ -76,7 +80,27 @@ function SkillBar({ level, onChange, color }) {
   );
 }
 
-function InterestCard({ interest, selected, skill, onToggle, onSkillChange }) {
+function InterestCard({ item, selected, skill, onToggle, onSkillChange }) {
+  const interestid = item.id;
+  console.log("interestid:", interestid);
+  const [interest, setInterest] = useState(null);
+
+  useEffect(() => {
+    if (!item?.id) return;
+
+    const fetchInterest = async () => {
+      const data = await getInterest(interestid);
+      console.log("Interest:", data);
+      setInterest(data);
+    };
+
+    fetchInterest();
+  }, [interestid]);
+
+  if (!interest) return <div>Loading...</div>;
+
+  console.log("Interest" + interest);
+  
   const { bg, color } = getRandomColor(interest.name)
   const border = color
 

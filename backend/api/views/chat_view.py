@@ -6,7 +6,7 @@ from django.db.models import Count, Q, Max
 from django.http import JsonResponse
 from django.views import View
 from ..models import Chat, Message, Activity
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from ..utils import json_response
 
 
@@ -33,7 +33,7 @@ class UserChatsView(View):
 
         chat_list = []
         for chat in chats:
-            if chat.expires_at <= datetime.now(UTC):
+            if chat.expires_at <= datetime.now(timezone.utc):
                 Message.objects.filter(chat_id=chat).delete()
                 chat.delete()
                 continue
