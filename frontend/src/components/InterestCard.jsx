@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 
 
 function SkillBar({ level, onChange, color }) {
-  const interestService = interestService()
+  //const interestService = interestService()
   const trackRef = useRef(null);
 
   const calcLevel = (clientX) => {
@@ -84,8 +84,10 @@ function SkillBar({ level, onChange, color }) {
 }
 
 function InterestCard({ item, selected, skill, onToggle, onSkillChange }) {
+  if (!item) {
+      return null;
+  }
   const interestid = item.id;
-  console.log("interestid:", interestid);
   const [interest, setInterest] = useState(null);
 
   useEffect(() => {
@@ -93,7 +95,6 @@ function InterestCard({ item, selected, skill, onToggle, onSkillChange }) {
 
     const fetchInterest = async () => {
       const data = await getInterest(interestid);
-      console.log("Interest:", data);
       setInterest(data);
     };
 
@@ -101,8 +102,6 @@ function InterestCard({ item, selected, skill, onToggle, onSkillChange }) {
   }, [interestid]);
 
   if (!interest) return <div>Loading...</div>;
-
-  console.log("Interest" + interest);
   
   const { bg, color } = getRandomColor(interest.name)
   const border = color

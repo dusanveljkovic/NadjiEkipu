@@ -1,10 +1,11 @@
 //
 // Napisala Jana Jolovic 2023/0338
 //
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getAuthToken, getUserData } from "../services/api";
 import { logout } from "../services/authService";
+import { Navigate } from "react-router-dom";
 
 const ACCENT = "#534AB7";
 const ACCENT_DARK = "#3F3A8C";
@@ -30,12 +31,28 @@ function NavbarItem({ to, onClickF, name, icon }) {
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const user = getUserData()
+  //const user = getUserData()
+
+  useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const data = await getUserData();
+                setUser(data);
+            } catch (error) {
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
   const handleLogout = () => {
     if (window.confirm("Da li želite da se odjavite?")) {
-      console.log("Odjavljen korisnik");
       logout(getAuthToken());
       navigate("/login");
     }
@@ -109,8 +126,8 @@ function Navbar() {
               KK
             </div>
             <div>
-              <p className="font-semibold text-sm text-gray-800">{user.firstname} {user.lastname}</p>
-              <p className="text-xs text-gray-400">@{user.username}</p>
+              <p className="font-semibold text-sm text-gray-800">{user?.firstname} {user?.lastname}</p>
+              <p className="text-xs text-gray-400">@{user?.username}</p>
             </div>
           </div>
         </div>
@@ -128,7 +145,7 @@ function Navbar() {
           <NavbarItem to="/my-profile" onClickF={() => setIsOpen(false)} name="Moj profil" icon="fa-solid fa-user" />
           <NavbarItem to="/my-interests" onClickF={() => setIsOpen(false)} name="Moja interesovanja" icon="fa-solid fa-heart" />
           <NavbarItem to="/my-activities" onClickF={() => setIsOpen(false)} name="Kreirane aktivnosti" icon="fa-solid fa-calendar-plus" />
-          {user.role_id === 1 && (
+          {user?.role_id === 1 && (
             <div>
               <NavbarItem to="/all-users" onClickF={() => setIsOpen(false)} name="Svi korisnici" icon="fa-solid fa-users" />
               <NavbarItem to="/requests" onClickF={() => setIsOpen(false)} name="Zahtevi za moderaciju" icon="fa-solid fa-envelope" />

@@ -16,11 +16,12 @@ from .views.interest_view import InterestView, UserInterestsView
 from .views.auth_view import LoginView, LogoutView, RegisterView
 from .views.chat_view import UserChatsView, ChatView
 from .views.weather_view import WeatherView, WeatherForecastView
-from .view import UserView, ModeratorRequestView
+from .view import UserDataView, UserView, ModeratorRequestView
 
 urlpatterns = [
-    path("users/", UserView.as_view(), name="user-list"),
+    path("user-data/", UserDataView.as_view(), name="user-data"),
     path("users/<int:user_id>/", UserView.as_view(), name="user-detail"),
+    path("users/", UserView.as_view(), name="user-list"),
     path(
         "moderator-requests/",
         ModeratorRequestView.as_view(),

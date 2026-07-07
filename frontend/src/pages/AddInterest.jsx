@@ -24,7 +24,6 @@ export default function AddInterest() {
   const handleCancel = (e) => {
     e.preventDefault();
 
-    console.log("Dodavanje interesovanja otkazano");
     navigate("/my-interests");
   }
 

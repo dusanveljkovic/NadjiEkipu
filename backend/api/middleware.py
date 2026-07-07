@@ -4,13 +4,15 @@
 #
 from urllib.parse import parse_qs
 from django.http import JsonResponse
-from .models import UserSession
+from .models import UserSession, User
 from datetime import datetime, timezone
 from channels.auth import AuthMiddlewareStack
 from channels.db import database_sync_to_async
 from channels.middleware import BaseMiddleware
 from django.contrib.auth.models import AnonymousUser
 import re
+import jwt
+from django.conf import settings
 
 
 class AuthenticationMiddleware:
@@ -43,17 +45,20 @@ class AuthenticationMiddleware:
             return JsonResponse({"error": "Bad authorizaion header"}, status=401)
 
         try:
-            token = auth_header.split(" ")[1]
+            token = auth_header.replace("Bearer ", "")
+            #token = auth_header.split(" ")[1]
         except IndexError:
             return JsonResponse({"error": "Bad authorizaion header"}, status=401)
 
         try:
-            session = UserSession.objects.get(
-                token=token, expires_at__gt=datetime.now(timezone.utc)
+            payload = jwt.decode(
+                token,
+                settings.SECRET_KEY,
+                algorithms=["HS256"]
             )
-            request.user = session.user_id
+
+            request.user = User.objects.get(idusers=payload["user_id"])
             request.token = token
-            return None
         except UserSession.DoesNotExist:
             return JsonResponse({"error": "Invalid or expired token"}, status=401)
 
@@ -65,16 +70,25 @@ def get_user_from_token(token):
     """
     if not token:
         return AnonymousUser()
+
     try:
-        session = UserSession.objects.get(token=token, expires_at__gt=datetime.now(timezone.utc))
-        return session.user_id
-    except UserSession.DoesNotExist:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload["user_id"]
+
+        return User.objects.get(idusers=user_id)
+
+    except Exception:
         return AnonymousUser()
 
 
 class WSAuthMiddleware(BaseMiddleware):
     """
-    Middleware sasluzan za autentifikaciju korisnika kada salje websocket poruke.
+    Middleware zasluzan za autentifikaciju korisnika kada salje websocket poruke.
     Postavlja scope["user"] na korisnika
     """
 

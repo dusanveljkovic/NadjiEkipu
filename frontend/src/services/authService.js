@@ -9,9 +9,12 @@ export const login = async (username, password) => {
     body: JSON.stringify({ username, password })
   })
 
+  
+    console.log("RESPONSE TOKEN", response);
   if (response.token) {
+    
     setAuthToken(response.token)
-    setUserData(response.user)
+    //setUserData(response.user)
   }
 
   return response

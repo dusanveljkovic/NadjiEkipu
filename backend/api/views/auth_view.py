@@ -11,6 +11,7 @@ from datetime import timedelta, datetime, timezone
 from ..utils import json_response, parse_json_body
 import traceback
 import json
+from ..services.auth_service import generate_token
 
 
 class LoginView(View):
@@ -36,24 +37,16 @@ class LoginView(View):
             if not user.check_password(password):
                 return JsonResponse({"error": "Nevalidni kredencijali"}, status=401)
 
-            token = secrets.token_urlsafe(32)
-            expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+            auth_token = generate_token(user)
+            print(auth_token)
+            #token = secrets.token_urlsafe(32)
+            #expires_at = datetime.now(timezone.utc) + timedelta(days=7)
 
-            UserSession.objects.create(user_id=user, token=token, expires_at=expires_at)
+            #UserSession.objects.create(user_id=user, token=token, expires_at=expires_at)
 
             return json_response(
                 {
-                    "token": token,
-                    "user": {
-                        "idusers": user.idusers,
-                        "username": user.username,
-                        "email": user.email,
-                        "firstname": user.firstname,
-                        "lastname": user.lastname,
-                        "role_id": user.role_id.idroles,
-                        "birthyear": user.birthyear,
-                    },
-                    "expires_at": expires_at,
+                    "token": auth_token,
                 }
             )
 
