@@ -1,17 +1,10 @@
 //
 // Napisala Jana Jolovic 2023/0338
 //
-// Napisao Ivan Majer 2023/0406
-//
-//
 import { useRef } from "react";
 import { getRandomColor, formatCount, getInterestAvatar } from "../services/utils.js"
-import { getInterest } from "../services/interestService.js"
-import { useEffect, useState } from "react";
-
 
 function SkillBar({ level, onChange, color }) {
-  //const interestService = interestService()
   const trackRef = useRef(null);
 
   const calcLevel = (clientX) => {
@@ -83,26 +76,7 @@ function SkillBar({ level, onChange, color }) {
   );
 }
 
-function InterestCard({ item, selected, skill, onToggle, onSkillChange }) {
-  if (!item) {
-      return null;
-  }
-  const interestid = item.id;
-  const [interest, setInterest] = useState(null);
-
-  useEffect(() => {
-    if (!item?.id) return;
-
-    const fetchInterest = async () => {
-      const data = await getInterest(interestid);
-      setInterest(data);
-    };
-
-    fetchInterest();
-  }, [interestid]);
-
-  if (!interest) return <div>Loading...</div>;
-  
+function InterestCard({ interest, selected, skill, onToggle, onSkillChange }) {
   const { bg, color } = getRandomColor(interest.name)
   const border = color
 

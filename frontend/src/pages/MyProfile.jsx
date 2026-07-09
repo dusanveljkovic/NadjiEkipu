@@ -225,17 +225,9 @@ export default function ProfilePage() {
                   style={{ animationDelay: `${index * 100}ms`, animation: "fadeInUp 0.4s ease-out" }}
                 >
                   <InterestCard
-                    item={{
-                      id: hobby.idinterests,
-                      name: hobby.name,
-                      icon: hobby.icon,
-                      skill: hobby.skill_level,
-                      count: hobby.attended_count,
-                    }}
+                    interest={hobby}
                     selected={true}
                     skill={hobby.skill_level}
-                    onSave={handleSaveSkill}
-                    onRemove={handleRemoveInterest}
                   />
                 </div>
               ))}
