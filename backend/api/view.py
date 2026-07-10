@@ -131,16 +131,12 @@ class UserDataView(View):
         
         token = token.replace("Bearer ", "")
 
-        print("Token", token)
-
         try:
             payload = jwt.decode(
                 token,
                 settings.SECRET_KEY,
                 algorithms=["HS256"]
             )
-
-            print("PAYLOAD:", payload)
 
             user_id = payload["user_id"]
 

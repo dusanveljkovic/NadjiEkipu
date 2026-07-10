@@ -38,7 +38,6 @@ class LoginView(View):
                 return JsonResponse({"error": "Nevalidni kredencijali"}, status=401)
 
             auth_token = generate_token(user)
-            print(auth_token)
 
             return json_response(
                 {
@@ -71,7 +70,6 @@ class RegisterView(View):
         try:
             data = json.loads(request.body)
 
-            print(request.body)
             email = data.get("email")
             username = data.get("username")
             password = data.get("password")
@@ -92,9 +90,6 @@ class RegisterView(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({"error": "Email already exists"}, status=400)
 
-            print(firstname)
-            print(lastname)
-
             user = User.objects.create_user(
                 username=username,
                 email=email,
@@ -103,9 +98,6 @@ class RegisterView(View):
                 lastname=lastname,
                 birthyear=godiste,
             )
-
-            print(user.firstname)
-            print(user.lastname)
 
             return JsonResponse(
                 {"message": "User created successfully", "user_id": user.pk}, status=201

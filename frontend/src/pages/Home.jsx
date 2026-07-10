@@ -41,6 +41,8 @@ function Home() {
     setInterests(data)
 
     data = await getActivities()
+    console.log(data);
+    
     setActivites(data)
     setCities(extractCities(data))
 

@@ -11,6 +11,7 @@ from .views.activity_view import (
     JoinedActivitiesView,
     LeaveActivityView,
     UserActivityView,
+    RecommendedActivitiesView
 )
 from .views.interest_view import InterestView, UserInterestsView
 from .views.auth_view import LoginView, RegisterView
@@ -59,6 +60,11 @@ urlpatterns = [
         "activities/<int:activity_id>/leave/",
         LeaveActivityView.as_view(),
         name="leave-activity",
+    ),
+    path(
+        "activities/recommended/",
+        RecommendedActivitiesView.as_view(),
+        name="recomended-activities"
     ),
     path("interests/", InterestView.as_view(), name="interest-list"),
     path(
