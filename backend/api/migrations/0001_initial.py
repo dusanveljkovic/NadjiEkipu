@@ -138,17 +138,4 @@ class Migration(migrations.Migration):
                 'managed': False,
             },
         ),
-        migrations.CreateModel(
-            name='UserSession',
-            fields=[
-                ('iduser_sessions', models.AutoField(primary_key=True, serialize=False)),
-                ('token', models.CharField(max_length=255, unique=True)),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expires_at', models.DateTimeField()),
-            ],
-            options={
-                'db_table': 'user_sessions',
-                'managed': False,
-            },
-        ),
     ]

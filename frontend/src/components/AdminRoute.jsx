@@ -6,6 +6,10 @@ import { Navigate, Outlet } from "react-router-dom";
 import { getUserData, removeUserData } from "../services/api";
 
 export default function AdminRoute() {
+    /*
+    Guard koji proverava pristup ruti sa admin privilegijama
+    U slucaju neuspesnog pristupa, vraca korisnika na home stranicu
+     */
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -32,7 +36,6 @@ export default function AdminRoute() {
     const role = user.role_id;
 
     if (role != 1) {
-        //removeUserData();
         return <Navigate to="/home" replace />;
     }
 

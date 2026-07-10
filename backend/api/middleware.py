@@ -4,7 +4,7 @@
 #
 from urllib.parse import parse_qs
 from django.http import JsonResponse
-from .models import UserSession, User
+from .models import User
 from datetime import datetime, timezone
 from channels.auth import AuthMiddlewareStack
 from channels.db import database_sync_to_async
@@ -59,7 +59,7 @@ class AuthenticationMiddleware:
 
             request.user = User.objects.get(idusers=payload["user_id"])
             request.token = token
-        except UserSession.DoesNotExist:
+        except (jwt.InvalidTokenError, User.DoesNotExist):
             return JsonResponse({"error": "Invalid or expired token"}, status=401)
 
 

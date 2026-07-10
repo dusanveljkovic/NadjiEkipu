@@ -3,6 +3,7 @@
 //
 import { apiFetch, removeUserData, setAuthToken, setUserData } from "./api";
 
+//login korisnika na sistem
 export const login = async (username, password) => {
   const response = await apiFetch('/auth/login/', {
     method: 'POST',
@@ -14,24 +15,16 @@ export const login = async (username, password) => {
   if (response.token) {
     
     setAuthToken(response.token)
-    //setUserData(response.user)
   }
 
   return response
 }
 
-export const logout = async (token) => {
-  const response = await apiFetch('/auth/logout/', {
-    method: 'POST',
-    body: JSON.stringify({ token })
-  })
-
-  if (response) {
-    removeUserData()
-  }
-  return response
+export const logout = async () => {
+  removeUserData();
 }
 
+//registruje korisnika u sistem
 export const register = async (formData) => {
   try {
     const data = await apiFetch("/auth/register/", {

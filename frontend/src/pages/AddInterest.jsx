@@ -6,6 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { addInterest } from "../services/interestService";
 
 export default function AddInterest() {
+  /**
+   * Dodavanje interesovanja od strane moderatora
+   * Dodaje se ikona interesovanja, naziv i opciono preporucen broj korisnika
+   */
   const [name, setName] = useState("");
   const [icon, setIcon] = useState(null);
   const [preview, setPreview] = useState(null);

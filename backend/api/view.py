@@ -1,12 +1,13 @@
 #
 # Napisala Jana Jolovic 0338/2023
 #
+# Napisao Ivan Majer 0406/2023
+#
 from django.http import JsonResponse
 from django.views import View
 from .models import (
     User,
     ModeratorRequest,
-    UserSession,
 )
 from .utils import json_response, parse_json_body
 from django.utils import timezone
@@ -116,8 +117,10 @@ class UserView(View):
 
 
 class UserDataView(View):
+    """
+    Dohvati podatke trenutno ulogovanog korisnika
+    """
     def get(self, request):
-        print("USER DATA VIEW ENTERED")
         token = request.headers.get("Authorization")
 
         if not token:
