@@ -1,11 +1,15 @@
+#
+# Napisao Ivan Majer 2023/0406
+#
 import jwt
 from datetime import datetime, timedelta, timezone
 from django.conf import settings
 
-import os
-import django
-
 def generate_token(user):
+    """
+    Generise token sa zadatim poljima koristeci apikey
+    Vraca token kao odgovor na uspesan login
+    """
     payload = {
         "user_id": user.idusers,
         "username": user.username,
@@ -21,18 +25,3 @@ def generate_token(user):
     )
 
     return token
-
-if __name__ == "__main__":
-
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
-    django.setup()
-
-    class TestUser:
-        id = 1
-        username = "pera"
-        role_id = 1
-
-    user = TestUser()
-
-    token = generate_token(user)
-    print(token)

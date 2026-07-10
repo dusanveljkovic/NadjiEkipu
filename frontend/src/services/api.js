@@ -20,19 +20,6 @@ export const setAuthToken = (token) => {
     localStorage.removeItem('auth_token')
 }
 
-// Dohvati podatke o korisniku iz local storage
-/*export const getUserData = () => {
-  const token = getAuthToken();
-
-  if (!token)
-    return null;
-
-
-
-  const userStr = localStorage.getItem('user_data')
-  return userStr ? JSON.parse(userStr) : null
-}*/
-
 // Dohvati podatke o korisniku preko servera koristeci jwt
 export async function getUserData() {
   const token = getAuthToken();

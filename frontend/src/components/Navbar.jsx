@@ -53,7 +53,7 @@ function Navbar() {
 
   const handleLogout = () => {
     if (window.confirm("Da li želite da se odjavite?")) {
-      logout(getAuthToken());
+      logout();
       navigate("/login");
     }
   };

@@ -13,7 +13,7 @@ from .views.activity_view import (
     UserActivityView,
 )
 from .views.interest_view import InterestView, UserInterestsView
-from .views.auth_view import LoginView, LogoutView, RegisterView
+from .views.auth_view import LoginView, RegisterView
 from .views.chat_view import UserChatsView, ChatView
 from .views.weather_view import WeatherView, WeatherForecastView
 from .view import UserDataView, UserView, ModeratorRequestView
@@ -38,7 +38,6 @@ urlpatterns = [
         name="user-interests",
     ),
     path("auth/login/", LoginView.as_view(), name="login"),
-    path("auth/logout/", LogoutView.as_view(), name="login"),
     path("auth/register/", RegisterView.as_view(), name="register"),
     path("activities/", ActivityView.as_view(), name="activity-list"),
     path(

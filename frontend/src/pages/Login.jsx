@@ -7,6 +7,11 @@ import { login } from "../services/authService";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login() {
+  /**
+   * Salje zahtev za prijavu korisnika
+   * U slucaju uspeha prijavljuje korisnika u sitem, 
+   * a u localStorage postavlja token generisan od servera
+   */
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false)

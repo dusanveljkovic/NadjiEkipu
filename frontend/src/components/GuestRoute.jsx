@@ -1,9 +1,16 @@
+//
+// Napisao Ivan Majer 2023/0406
+//
 import { Navigate, Outlet } from "react-router-dom";
 import { getAuthToken } from "../services/api";
 import { useState, useEffect } from "react";
 import { getUserData } from "../services/api";
 
 export default function GuestRoute(){
+    /*
+    Guard koji proverava pristup ruti koja zahteva neulogovanog korisnika
+    U slucaju neuspesnog pristupa, vraca korisnika na home stranicu
+     */
     const [user, setUser] = useState(undefined);
 
     useEffect(() => {

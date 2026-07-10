@@ -227,15 +227,3 @@ class Message(models.Model):
     class Meta:
         db_table = "messages"
         managed = False
-
-
-class UserSession(models.Model):
-    iduser_sessions = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_column="user_id")
-    token = models.CharField(max_length=1024, unique=True)
-    created_at = models.DateTimeField(default=timezone.now)
-    expires_at = models.DateTimeField()
-
-    class Meta:
-        db_table = "user_sessions"
-        managed = False

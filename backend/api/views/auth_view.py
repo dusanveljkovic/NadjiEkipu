@@ -6,7 +6,7 @@
 import secrets
 from django.http import JsonResponse
 from django.views import View
-from ..models import User, UserSession, UserManager
+from ..models import User, UserManager
 from datetime import timedelta, datetime, timezone
 from ..utils import json_response, parse_json_body
 import traceback
@@ -39,10 +39,6 @@ class LoginView(View):
 
             auth_token = generate_token(user)
             print(auth_token)
-            #token = secrets.token_urlsafe(32)
-            #expires_at = datetime.now(timezone.utc) + timedelta(days=7)
-
-            #UserSession.objects.create(user_id=user, token=token, expires_at=expires_at)
 
             return json_response(
                 {
@@ -55,14 +51,6 @@ class LoginView(View):
         except Exception as e:
             print(traceback.format_exc())
             return JsonResponse({"error": str(e)}, status=500)
-
-
-class LogoutView(View):
-    def post(self, request):
-        """Izloguj korisnika"""
-        if hasattr(request, "token"):
-            UserSession.objects.filter(token=request.token).delete()
-        return json_response({"message": "Korisnik uspesno odjavljen"})
 
 
 class RegisterView(View):
