@@ -6,10 +6,13 @@ from django.views import View
 from .models import (
     User,
     ModeratorRequest,
+    UserSession,
 )
 from .utils import json_response, parse_json_body
 from django.utils import timezone
 from django.db import connection
+import jwt
+from django.conf import settings
 
 
 class UserView(View):
@@ -111,6 +114,54 @@ class UserView(View):
         except User.DoesNotExist:
             return JsonResponse({"error": "User not found"}, status=404)
 
+
+class UserDataView(View):
+    def get(self, request):
+        print("USER DATA VIEW ENTERED")
+        token = request.headers.get("Authorization")
+
+        if not token:
+            return JsonResponse(
+                {"error" : "no token"},
+                status = 401
+            )
+        
+        token = token.replace("Bearer ", "")
+
+        print("Token", token)
+
+        try:
+            payload = jwt.decode(
+                token,
+                settings.SECRET_KEY,
+                algorithms=["HS256"]
+            )
+
+            print("PAYLOAD:", payload)
+
+            user_id = payload["user_id"]
+
+            user = User.objects.get(idusers=user_id)
+
+            return json_response({
+                "idusers": user.idusers,
+                "username": user.username,
+                "firstname": user.firstname,
+                "lastname": user.lastname,
+                "email": user.email,
+                "birthyear": user.birthyear,
+                "role_id": user.role_id.idroles,
+                "role_name": user.role_id.name
+            })
+
+        except Exception as e:
+            print("JWT ERROR TYPE:", type(e))
+            print("JWT ERROR:", e)
+
+            return JsonResponse(
+                {"error": str(e)},
+                status=401
+            )
 
 class ModeratorRequestView(View):
     def get(self, request, request_id=None):

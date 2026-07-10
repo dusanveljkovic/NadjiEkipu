@@ -57,7 +57,6 @@ export default function HobbiesPage() {
     allInterests.filter(i => !userInterests.some(ui => ui.idinterests === i.idinterests))
 
   const selectedCount = userInterests.length;
-  console.log(filtered)
 
   return (
     <div

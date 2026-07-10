@@ -22,15 +22,29 @@ export default function ProfilePage() {
 
   const [interests, setInterests] = useState([]);
 
-  const user = getUserData()
+  const [user, setUser] = useState(null);
 
-  useEffect(() => { loadData() }, [])
+  useEffect(() => {
+      const init = async () => {
+          const [userData, interestsData] = await Promise.all([
+              getUserData(),
+              getUserInterests()
+          ]);
+
+          setUser(userData);
+          setInterests(interestsData);
+      };
+
+      init();
+  }, []);
+
+
 
   const loadData = async () => {
     const data = await getUserInterests()
     setInterests(data)
   }
-
+  
   const handleSaveSkill = async (interestId, skill) => {
     await updateUserInterest(interestId, skill);
     loadData();
@@ -83,9 +97,9 @@ export default function ProfilePage() {
             <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
               <div>
                 <h1 className="text-3xl font-bold" style={{ color: ACCENT_DARK }}>
-                  {user.firstname + ' ' + user.lastname}
+                  {user?.firstname + ' ' + user?.lastname}
                 </h1>
-                <p className="text-gray-500 text-sm mt-1">@{user.username}</p>
+                <p className="text-gray-500 text-sm mt-1">@{user?.username}</p>
               </div>
 
               <div className="flex gap-3 md:justify-end">
@@ -117,7 +131,7 @@ export default function ProfilePage() {
                   Promeni lozinku
                 </button>
 
-                {user.role_id == 3 && (
+                {user?.role_id == 3 && (
                   <button
                     onClick={handleModeratorRequest}
                     style={{
@@ -156,7 +170,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Email</p>
-                  <p className="text-sm font-medium text-gray-700">{user.email}</p>
+                  <p className="text-sm font-medium text-gray-700">{user?.email}</p>
                 </div>
               </div>
 
@@ -166,7 +180,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Godište</p>
-                  <p className="text-sm font-medium text-gray-700">{user.birthyear}</p>
+                  <p className="text-sm font-medium text-gray-700">{user?.birthyear}</p>
                 </div>
               </div>
 
@@ -176,7 +190,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Uloga</p>
-                  <p className="text-sm font-medium text-gray-700">{ROLES[user.role_id]}</p>
+                  <p className="text-sm font-medium text-gray-700">{ROLES[user?.role_id]}</p>
                 </div>
               </div>
             </div>
@@ -214,8 +228,6 @@ export default function ProfilePage() {
                     interest={hobby}
                     selected={true}
                     skill={hobby.skill_level}
-                    onSave={handleSaveSkill}
-                    onRemove={handleRemoveInterest}
                   />
                 </div>
               ))}

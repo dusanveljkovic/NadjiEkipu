@@ -23,9 +23,6 @@ function Login() {
     e.preventDefault();
     setLoading(true)
 
-    console.log("Username:", username);
-    console.log("Password:", password);
-
     try {
       await login(username, password)
       navigate("/home");

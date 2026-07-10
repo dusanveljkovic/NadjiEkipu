@@ -11,16 +11,43 @@ export const getAuthToken = () => {
 
 // Postavi token u local storage
 export const setAuthToken = (token) => {
-  if (token)
+  
+  
+  if (token){
     localStorage.setItem('auth_token', token)
+  }
   else
     localStorage.removeItem('auth_token')
 }
 
 // Dohvati podatke o korisniku iz local storage
-export const getUserData = () => {
+/*export const getUserData = () => {
+  const token = getAuthToken();
+
+  if (!token)
+    return null;
+
+
+
   const userStr = localStorage.getItem('user_data')
   return userStr ? JSON.parse(userStr) : null
+}*/
+
+// Dohvati podatke o korisniku preko servera koristeci jwt
+export async function getUserData() {
+  const token = getAuthToken();
+
+  if (!token)
+    return null;
+  
+  const response = await apiFetch('/user-data/', {
+    method: 'GET',
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
+
+  return response;
 }
 
 // Postavi podatke o korisniku u local storage

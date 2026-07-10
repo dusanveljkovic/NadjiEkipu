@@ -1,25 +1,34 @@
-//
-// Napisao Ivan Majer 2023/0406
-//
+import { useEffect, useState } from "react";
+import { getUserData } from "../services/api";
 import { Navigate, Outlet } from "react-router-dom";
-import { getUserData, removeUserData } from "../services/api";
 
 export default function UserRoute() {
-    const user = getUserData();
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    console.log("USER:", user);
+    useEffect(() => {
+        getUserData()
+            .then((data) => {
+                setUser(data);
+                setLoading(false);
+            })
+            .catch(() => {
+                setUser(null);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     if (!user) {
-        console.log("NO USER");
         return <Navigate to="/login" replace />;
     }
 
     const role = user.role_id;
 
-    console.log("ROLE:", role);
-
     if (![1, 2, 3].includes(role)) {
-        console.log("INVALID ROLE");
         removeUserData();
         return <Navigate to="/login" replace />;
     }

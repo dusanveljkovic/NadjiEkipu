@@ -18,6 +18,7 @@ import AdminRoute from "./components/AdminRoute";
 import ModeratorRoute from "./components/ModeratorRoute";
 import PublicLayout from "./components/PublicLayout";
 import AppLayout from "./components/AppLayout";
+import GuestRoute from "./components/GuestRoute";
 
 function App() {
   const location = useLocation();
@@ -27,11 +28,14 @@ function App() {
       <div className="p-4">
         <Routes>
           {/* PUBLIC */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<Login />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/registration" element={<Registration />} />
+          <Route element={<GuestRoute/>}>
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<Login />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/registration" element={<Registration />} />
+            </Route>
           </Route>
+          
 
           {/* PRIVATE */}
           <Route element={<UserRoute />}>

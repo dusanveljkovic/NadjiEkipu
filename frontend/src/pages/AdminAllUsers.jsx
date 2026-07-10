@@ -159,7 +159,6 @@ function AdminAllUsers() {
                 <span className="col-span-3 text-gray-600 text-sm">@{user.username}</span>
                 <span className="col-span-3 text-gray-600 text-sm truncate">{user.email}</span>
                 <span className="col-span-1 text-gray-600 text-sm">{user.birthyear ?? '-'}</span>
-                {console.log(user)}
 
                 {/* Actions */}
                 <div className="col-span-1 flex justify-end gap-2">
