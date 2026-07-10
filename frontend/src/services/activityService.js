@@ -5,7 +5,7 @@
 import apiFetch from "./api";
 
 export const getActivities = async () => {
-  return await apiFetch('/activities/')
+  return await apiFetch('/activities/recommended/')
 }
 
 export const getActivityById = async (id) => {

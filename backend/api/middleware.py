@@ -96,7 +96,6 @@ class WSAuthMiddleware(BaseMiddleware):
         query_string = parse_qs(scope.get("query_string", b"").decode())
         token = query_string.get("token", [None])[0]
         scope["user"] = await get_user_from_token(token)
-        print(scope["user"])
         return await super().__call__(scope, receive, send)
 
 

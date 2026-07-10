@@ -1,11 +1,14 @@
 #
 # Napisao Dusan Veljkovic 2023/0417
 #
+# Napisao Ivan Majer 2023/0406
+#
 
 from django.db.models import Count
 from django.http import JsonResponse
 from django.views import View
-from ..models import Activity, ActivityParticipant, Chat, Message
+from django.utils import timezone
+from ..models import Activity, ActivityParticipant, Chat, Message, UserInterest, User
 from datetime import timedelta, datetime
 from ..utils import json_response, parse_json_body, validate_required_fields
 
@@ -279,3 +282,86 @@ class JoinedActivitiesView(View):
         ).all()
         activity_list = [{"idactivities": a.activity_id_id} for a in activities]
         return json_response(activity_list)
+    
+class RecommendedActivitiesView(View):
+
+    def get(self, request):
+        user = request.user
+
+
+        activities = Activity.objects.filter(
+            event_time__gte=timezone.now()
+        )
+
+        result = []
+
+        for activity in activities:
+            user_interest = UserInterest.objects.filter(user_id=user.idusers, interest_id=activity.interest_id).first()
+            
+            user_skill = 1
+
+            if user_interest:
+                user_skill = user_interest.skill_level
+
+            
+            participants = ActivityParticipant.objects.filter(
+                activity_id=activity
+            ).select_related("user_id")
+
+            # prosečan skill svih ucesnika
+            if participants.exists():
+                skill_sum = 0
+
+            for p in participants:
+                user_interest = UserInterest.objects.filter(
+                    user_id=p.user_id,
+                    interest_id=activity.interest_id
+                ).first()
+
+                if user_interest:
+                    skill_sum += user_interest.skill_level
+
+                avg_skill = skill_sum / participants.count()
+            else:
+                avg_skill = user_skill
+
+            # broj prethodnih aktivnosti tog interesovanja
+            previous_count = Activity.objects.filter(
+                interest_id=activity.interest_id,
+                event_time__lt=timezone.now()
+            ).count()
+
+            # score
+            score = (
+                0.8 * previous_count -
+                abs(user_skill - avg_skill)
+            )
+            num_participants = ActivityParticipant.objects.filter(activity_id=activity.idactivities).count()
+            result.append({
+                "activity": {
+                    "idactivities": activity.idactivities,
+                    "title": activity.title,
+                    "interest_name": activity.interest_id.name,
+                    "created_by_name": activity.created_by.username,
+                    "created_by_id": activity.created_by.idusers,
+                    "event_time": activity.event_time,
+                    "location_name": activity.location_name,
+                    "max_participants": activity.max_participants,
+                    "num_participants": num_participants,
+                },
+                "score": score
+            })
+
+
+        # sortiranje opadajuce
+        result.sort(
+            key=lambda x: x["score"],
+            reverse=True
+        )
+
+        realres = [
+            item["activity"]
+            for item in result
+        ]
+        
+        return json_response(realres)
