@@ -82,12 +82,15 @@ class InterestView(View):
 
 
 class UserInterestsView(View):
-    def get(self, request):
+    def get(self, request, user_id=None):
         """
         Dohvati interesovanja ulogovanog korisnika
         """
+
+        target_user_id = user_id if user_id else request.user.idusers
+
         user_interests = (
-            UserInterest.objects.filter(user_id=request.user.idusers)
+            UserInterest.objects.filter(user_id=target_user_id)
             .select_related("user_id", "interest_id")
             .all()
         )

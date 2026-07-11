@@ -34,7 +34,7 @@ INSERT INTO `roles` (`name`) VALUES
 INSERT INTO `users` (`username`, `email`, `password_hash`, `firstname`, `lastname`, `birthyear`, `role_id`, `avatar_id`) VALUES 
 ('admin', 'admin@nadjiekipu.com', SHA2('admin123', 256), 'Administrator', 'Sistema', 2004, 1, 1),
 ('tigar', 'tigar@nadjiekipu.com', SHA2('password123', 256), 'Tigar', 'Tigric', 2004, 2, 2),
-('jana', 'jana@nadjiekipu.com', SHA2('password123', 256), 'Jana', 'Banana', 2004, 3, 3);
+('jana', 'jana@nadjiekipu.com', SHA2('password123', 256), 'Jana', 'Jolovic', 2004, 3, 3);
 
 -- =============================================
 -- 3. Popunjavanje tabela interesovanja (interests)

@@ -7,7 +7,7 @@ import Avatar from "../assets/avatar1.png";
 import { useNavigate, useParams } from "react-router-dom";
 import InterestCard from "../components/InterestCard";
 import { getUserById } from "../services/usersService"
-import { getUserInterests } from "../services/interestService";
+import { getUserInterestsById } from "../services/interestService";
 
 const ACCENT = "#534AB7";
 const ACCENT_LIGHT = "#EEEDFE";
@@ -25,7 +25,7 @@ export default function UserProfilePage() {
   const loadData = async () => {
     let data = await getUserById(userId)
     setUser(data)
-    data = await getUserInterests()
+    data = await getUserInterestsById(data.idusers)
     setInterests(data)
   }
 
@@ -136,13 +136,9 @@ export default function UserProfilePage() {
                   style={{ animationDelay: `${index * 100}ms`, animation: "fadeInUp 0.4s ease-out" }}
                 >
                   <InterestCard
-                    item={{
-                      id: hobby.idinterests,
-                      name: hobby.name,
-                      icon: hobby.icon,
-                      skill: hobby.skill_level,
-                      count: hobby.attended_count,
-                    }}
+                      interest={hobby}
+                      selected={false}
+                      skill={hobby.skill_level}
                   />
                 </div>
               ))}
