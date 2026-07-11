@@ -7,3 +7,4 @@ channels-redis>=4.3.0
 daphne>=4.2.2
 requests>=2.34.2
 pyjwt>=2.13.0
+django-extensions>=4.1
