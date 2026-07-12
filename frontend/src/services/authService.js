@@ -37,3 +37,19 @@ export const register = async (formData) => {
     throw new Error(err.message || "Registration failed");
   }
 };
+
+
+// Napisala Jana Jolovic 0038/23
+export const changePassword = async (oldPassword, newPassword) => {
+  return await apiFetch('/auth/change-password/', {
+    method: 'PUT',
+    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
+  })
+}
+
+export const updateAvatar = async (avatarId) => {
+  return await apiFetch('/auth/update-avatar/', {
+    method: 'PUT',
+    body: JSON.stringify({ avatar_id: avatarId })
+  })
+}

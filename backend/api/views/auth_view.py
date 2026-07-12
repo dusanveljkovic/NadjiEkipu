@@ -105,3 +105,37 @@ class RegisterView(View):
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+        
+
+# Napisala Jana Jolovic 0038/23
+class ChangePasswordView(View):
+    def put(self, request):
+        data = parse_json_body(request)
+        old_password = data.get("old_password")
+        new_password = data.get("new_password")
+
+        if not old_password or not new_password:
+            return json_response({"error": "Sva polja su obavezna"}, status=400)
+
+        user = request.user
+
+        if not user.check_password(old_password):
+            return json_response({"error": "Stara lozinka nije ispravna"}, status=400)
+
+        user.set_password(new_password)
+        return json_response({"message": "Lozinka je uspesno promenjena"})
+
+
+class UpdateAvatarView(View):
+    def put(self, request):
+        data = parse_json_body(request)
+        avatar_id = data.get("avatar_id")
+
+        if avatar_id is None or avatar_id not in [0, 1, 2]:
+            return json_response({"error": "Neispravan avatar_id"}, status=400)
+
+        user = request.user
+        user.avatar_id = avatar_id
+        user.save()
+
+        return json_response({"message": "Avatar uspesno promenjen", "avatar_id": avatar_id})
