@@ -9,7 +9,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 function Login() {
   /**
    * Salje zahtev za prijavu korisnika
-   * U slucaju uspeha prijavljuje korisnika u sitem, 
+   * U slucaju uspeha prijavljuje korisnika u sistem, 
    * a u localStorage postavlja token generisan od servera
    */
   const [username, setUsername] = useState("");
