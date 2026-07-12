@@ -16,7 +16,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState(false);
   const navigate = useNavigate();
 
   const handleRegistration = (e) => {
@@ -29,9 +29,12 @@ function Login() {
     setLoading(true)
 
     try {
+      console.log(username, password);
+      setErrorMessage("");
       await login(username, password)
       navigate("/home");
     } catch (err) {
+      setErrorMessage("Neispravno korisnicko ime ili lozinka");
       console.log("Login failed");
       navigate("/");
     } finally {
@@ -54,6 +57,20 @@ function Login() {
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
         Login
       </h2>
+
+      {errorMessage && (
+        <div
+          style={{
+            color: "#d32f2f",
+            background: "#fdecea",
+            padding: "10px",
+            borderRadius: "6px",
+            fontSize: "14px"
+          }}
+        >
+          {errorMessage}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "15px" }}>
