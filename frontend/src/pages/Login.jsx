@@ -60,7 +60,6 @@ function Login() {
 
       {errorMessage && (
         <div
-          id="login-error-message"
           style={{
             color: "#d32f2f",
             background: "#fdecea",
