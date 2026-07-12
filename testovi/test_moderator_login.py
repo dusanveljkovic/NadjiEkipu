@@ -1,6 +1,6 @@
 """
 Napisala Jana Jolovic 0038/23
-test za SSU dokument 02
+test za SSU dokument 03
 """
 
 import time
@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 BASE_URL = "http://localhost:5173"
 
 # Test korisnik koji mora vec postojati u bazi pre pokretanja testova
-VALID_USERNAME = "jana"
+VALID_USERNAME = "tigar"
 VALID_PASSWORD = "password123"
 INVALID_PASSWORD = "123"
 
@@ -52,7 +52,7 @@ class LoginTests(unittest.TestCase):
         # Ceka da se URL promeni na /home nakon uspesnog logina
         self.wait.until(EC.url_contains("/home"))
         self.assertIn("/home", self.driver.current_url,
-                       "Nakon uspesnog logina korisnik treba da bude na /home")
+                       "Nakon uspesnog logina moderatora treba da bude na /home")
 
     # # ---------- Test 2.2 - Neispravni kredencijali ----------
     def test_neispravni_kredencijali(self):
@@ -69,7 +69,7 @@ class LoginTests(unittest.TestCase):
             self.fail("Poruka o gresci se ne prikazuje pri neispravnim kredencijalima")
 
         self.assertIn("/", self.driver.current_url,
-                    "Korisnik ne bi trebalo da bude preusmeren nakon neuspesnog logina")
+                    "Moderator ne bi trebalo da bude preusmeren nakon neuspesnog logina")
 
     # ---------- Test - prazna polja  ----------
     def test_prazna_polja_ne_saljs_formu(self):

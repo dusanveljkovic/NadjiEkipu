@@ -25,7 +25,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="p-4">
+      <div>
         {/* Route gardovi, stite rute od pristupa nedozvoljenog korisnika */}
         <Routes>
           {/* PUBLIC */}

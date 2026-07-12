@@ -15,11 +15,12 @@ const HOBBY_COLORS = [
 const EMOJI_MAP = {
   1: '⚽', 2: '🏀', 3: '🎾', 4: '🏊', 5: '🏃',
   6: '🧘', 7: '🚴', 8: '🏔️', 9: '♟️', 10: '📸',
-  11: '🍳', 12: '💃', 13: '🎮', 14: '📚', 15: '🎨'
+  11: '🍳', 12: '💃', 13: '🎮', 14: '📚', 15: '🎨',
+  16: '🂡'
 };
 
 export function getInterestAvatar(interest) {
-  return EMOJI_MAP[interest.avatar_id]
+  return EMOJI_MAP[interest.avatar_id] ?? "❓";
 }
 export function getRandomColor(str) {
   let hash = 0;
@@ -29,4 +30,8 @@ export function getRandomColor(str) {
 
 export function formatCount(n) {
   return n >= 1000 ? (n / 1000).toFixed(1).replace(".0", "") + "k" : String(n);
+}
+
+export function getIcons() {
+  return EMOJI_MAP;
 }
