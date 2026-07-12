@@ -32,8 +32,8 @@ docker run -d \
     -e MYSQL_PASSWORD=mypasswod \
     -p 3306:3306 \
     mariadb:latest
-docker exec -i mariadb mysql -u root -p rootpassword nadjiekipu < ../baza/create_db.sql
-docker exec -i mariadb mysql -u root -p rootpassword nadjiekipu < ../baza/seed.sql
+docker exec -i mariadb mysql -uroot -prootpassword nadji_ekipu < ../baza/create_dbW.sql
+docker exec -i mariadb mysql -uroot -prootpassword nadji_ekipu < ../baza/seedW.sql
 
 python manage.py runserver
 ```

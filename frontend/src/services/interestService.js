@@ -27,6 +27,10 @@ export const getUserInterests = async () => {
   return await apiFetch('/user-interests/')
 }
 
+export const getUserInterestsById = async (userId) => {
+  return await apiFetch(`/users/${userId}/interests/`)
+}
+
 // Dodaj interesovanje korisniku
 export const addUserInterest = async (interest_id) => {
   return await apiFetch('/user-interests/', {
