@@ -56,19 +56,21 @@ class InterestView(View):
         Kreiraj interesovanje
         fields: {
             name: str,
-            description: str
+            description: str,
+            avatar_id: str
         }
         """
         data = parse_json_body(request)
 
         name = data.get("name")
         description = data.get("description")
+        avatar_id = data.get("avatar_id")
 
         if not name:
             return json_response({"error": "Name is required"}, status=400)
 
         interest = Interest.objects.create(
-            name=name, description=description, created_by=request.user
+            name=name, description=description, avatar_id=avatar_id, created_by=request.user
         )
 
         return json_response(

@@ -4,26 +4,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addInterest } from "../services/interestService";
+import { getIcons } from "../services/utils";
 
 export default function AddInterest() {
   /**
    * Dodavanje interesovanja od strane moderatora
-   * Dodaje se ikona interesovanja, naziv i opciono preporucen broj korisnika
+   * Dodaje se ikona interesovanja, naziv, opis
    */
   const [name, setName] = useState("");
-  const [icon, setIcon] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [peopleCount, setPeopleCount] = useState(1);
+  const [description, setDescription] = useState("");
+  const [selectedIcon, setSelectedIcon] = useState("");
 
   const navigate = useNavigate();
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setIcon(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
+  const icons = getIcons();
 
   const handleCancel = (e) => {
     e.preventDefault();
@@ -37,7 +31,8 @@ export default function AddInterest() {
     try {
       const form = {
         name: name,
-        peopleCount: peopleCount
+        description: description,
+        avatar_id: Number(selectedIcon)
       };
       await addInterest(form);
       navigate("/my-interests");
@@ -56,32 +51,27 @@ export default function AddInterest() {
 
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-        {/* Upload ikone */}
         <div>
-          <label style={{ fontSize: 14 }}>Ikonica</label>
+          <label style={{ fontSize: 14 }}>Ikonica:  </label>
 
-          <div
-            style={{
-              marginTop: 6,
-              border: "2px dashed #ccc",
-              borderRadius: 10,
-              padding: 20,
-              textAlign: "center",
-              cursor: "pointer"
-            }}
+          <select
+            value={selectedIcon}
+            onChange={(e) => setSelectedIcon(e.target.value)}
           >
-            <input type="file" accept="image/*" onChange={handleImageChange} />
+            <option value="">Izaberi ikonicu</option>
 
-            {preview && (
-              <div style={{ marginTop: 10 }}>
-                <img
-                  src={preview}
-                  alt="preview"
-                  style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8 }}
-                />
-              </div>
-            )}
-          </div>
+            {Object.entries(icons).map(([id, emoji]) => (
+              <option key={id} value={id}>
+                {emoji}
+              </option>
+            ))}
+          </select>
+
+          {selectedIcon && (
+            <div style={{ fontSize: 50 }}>
+              {icons[selectedIcon]}
+            </div>
+          )}
         </div>
 
         {/* Naziv */}
@@ -98,6 +88,27 @@ export default function AddInterest() {
               borderRadius: "6px",
               border: "1px solid #ccc",
               width: "100%"
+            }}
+          />
+        </div>
+
+        {/* Opis */}
+        <div>
+          <label style={{ fontSize: 14 }}>Opis interesovanja</label>
+
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Kratak opis interesovanja..."
+            rows={4}
+            style={{
+              marginTop: 6,
+              padding: "10px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              width: "100%",
+              resize: "vertical",
+              fontFamily: "inherit"
             }}
           />
         </div>

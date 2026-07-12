@@ -14,7 +14,7 @@ from .views.activity_view import (
     RecommendedActivitiesView
 )
 from .views.interest_view import InterestView, UserInterestsView
-from .views.auth_view import LoginView, RegisterView
+from .views.auth_view import LoginView, RegisterView, ChangePasswordView, UpdateAvatarView
 from .views.chat_view import UserChatsView, ChatView
 from .views.weather_view import WeatherView, WeatherForecastView
 from .view import UserDataView, UserView, ModeratorRequestView
@@ -85,4 +85,6 @@ urlpatterns = [
     path("chats/<int:chat_id>/", ChatView.as_view(), name="chat-full"),
     path("weather/", WeatherView.as_view(), name="weather"),
     path("weather/forecast", WeatherForecastView.as_view(), name="weather-forecast"),
+    path("auth/change-password/", ChangePasswordView.as_view(), name="change-password"),
+    path("auth/update-avatar/", UpdateAvatarView.as_view(), name="update-avatar"),
 ]

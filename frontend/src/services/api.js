@@ -29,6 +29,7 @@ export async function getUserData() {
   
   const response = await apiFetch('/user-data/', {
     method: 'GET',
+    cache: 'no-store',
     headers: {
       "Authorization": `Bearer ${token}`
     }

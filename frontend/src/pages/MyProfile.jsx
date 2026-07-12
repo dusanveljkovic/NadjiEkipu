@@ -4,12 +4,18 @@
 
 
 import React, { useState, useEffect } from "react";
-import Avatar from "../assets/avatar1.png";
 import { useNavigate } from "react-router-dom";
 import InterestCard from "../components/InterestCard";
 import { getUserData } from "../services/api";
+import { changePassword } from "../services/authService";
 import { getUserById, createModeratorRequest } from "../services/usersService"
 import { getUserInterests, updateUserInterest, deleteUserInterest } from "../services/interestService";
+import Avatar1 from "../assets/avatar1.png";
+import Avatar2 from "../assets/avatar2.png";
+import Avatar3 from "../assets/avatar3.png";
+import { updateAvatar } from "../services/authService";
+
+const AVATARS = [Avatar1, Avatar2, Avatar3];
 
 
 const ACCENT = "#534AB7";
@@ -21,8 +27,13 @@ export default function ProfilePage() {
   const navigate = useNavigate();
 
   const [interests, setInterests] = useState([]);
-
   const [user, setUser] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
 
   useEffect(() => {
       const init = async () => {
@@ -38,6 +49,37 @@ export default function ProfilePage() {
       init();
   }, []);
 
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordError("");
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Nove lozinke se ne poklapaju");
+      return;
+    }
+
+    try {
+      const response = await changePassword(oldPassword, newPassword);
+      alert(response.message);
+      setShowPasswordModal(false);
+      setOldPassword(""); setNewPassword(""); setConfirmPassword("");
+    } catch (err) {
+      setPasswordError(err.message || "Greska prilikom promene lozinke");
+    }
+  };
+
+  const handleSelectAvatar = async (avatarId) => {
+    try {
+      const response = await updateAvatar(avatarId);
+      const updatedUser = { ...user, avatar_id: avatarId };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setShowAvatarModal(false);
+    } catch (err) {
+      alert(err.message || "Greska prilikom promene avatara");
+    }
+  };
 
 
   const loadData = async () => {
@@ -80,11 +122,13 @@ export default function ProfilePage() {
             <div className="flex justify-center md:justify-start -mt-16 mb-6">
               <div className="relative">
                 <img
-                  src={Avatar}
+                  src={AVATARS[user?.avatar_id ?? 0]}
                   alt="Profile"
                   className="w-32 h-32 object-cover rounded-2xl border-4 border-white shadow-lg"
                 />
                 <button
+                  id="promeni-avatar-btn"
+                  onClick={() => setShowAvatarModal(true)}
                   className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center hover:scale-110 transition"
                   style={{ color: ACCENT }}
                 >
@@ -105,7 +149,8 @@ export default function ProfilePage() {
               <div className="flex gap-3 md:justify-end">
 
                 <button
-                  onClick={() => {/* promena lozinke */ }}
+                  id="promeni-lozinku-btn"
+                  onClick={() => setShowPasswordModal(true)}
                   style={{
                     padding: "9px 20px",
                     borderRadius: "10px",
@@ -235,6 +280,105 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+
+      {showPasswordModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.4)", display: "flex",
+          alignItems: "center", justifyContent: "center", zIndex: 1000
+        }}>
+          <div style={{ background: "white", padding: 30, borderRadius: 12, width: 360 }}>
+            <h3 style={{ marginBottom: 16 }}>Promena lozinke</h3>
+
+            <form onSubmit={handleChangePassword} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <input
+                id="old-password-input"
+                type="password"
+                placeholder="Stara lozinka"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                required
+                style={{ padding: 10, borderRadius: 8, border: "1px solid #ddd" }}
+              />
+              <input
+                id="new-password-input"
+                type="password"
+                placeholder="Nova lozinka"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                style={{ padding: 10, borderRadius: 8, border: "1px solid #ddd" }}
+              />
+              <input
+                id="confirm-password-input"
+                type="password"
+                placeholder="Potvrdi novu lozinku"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                style={{ padding: 10, borderRadius: 8, border: "1px solid #ddd" }}
+              />
+
+              {passwordError && (
+                <div id="password-error-message" style={{ color: "#d32f2f", fontSize: 13 }}>
+                  {passwordError}
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
+                <button type="button" onClick={() => setShowPasswordModal(false)}
+                        style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #ddd", background: "white" }}>
+                  Otkazi
+                </button>
+                <button type="submit" id="submit-password-change"
+                        style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: ACCENT, color: "white" }}>
+                  Sacuvaj
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showAvatarModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.4)", display: "flex",
+          alignItems: "center", justifyContent: "center", zIndex: 1000
+        }}>
+          <div style={{ background: "white", padding: 30, borderRadius: 12, width: 380 }}>
+            <h3 style={{ marginBottom: 20 }}>Izaberi profilnu sliku</h3>
+
+            <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
+              {AVATARS.map((avatarSrc, index) => (
+                <img
+                  key={index}
+                  id={`avatar-option-${index}`}
+                  src={avatarSrc}
+                  alt={`Avatar ${index}`}
+                  onClick={() => handleSelectAvatar(index)}
+                  style={{
+                    width: 90, height: 90, borderRadius: 12, objectFit: "cover",
+                    cursor: "pointer",
+                    border: user?.avatar_id === index ? `3px solid ${ACCENT}` : "3px solid transparent",
+                    transition: "border 0.2s ease"
+                  }}
+                />
+              ))}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}>
+              <button
+                type="button"
+                onClick={() => setShowAvatarModal(false)}
+                style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #ddd", background: "white" }}
+              >
+                Zatvori
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes fadeInUp {

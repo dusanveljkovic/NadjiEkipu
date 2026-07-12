@@ -150,7 +150,8 @@ class UserDataView(View):
                 "email": user.email,
                 "birthyear": user.birthyear,
                 "role_id": user.role_id.idroles,
-                "role_name": user.role_id.name
+                "role_name": user.role_id.name,
+                "avatar_id": user.avatar_id,
             })
 
         except Exception as e:

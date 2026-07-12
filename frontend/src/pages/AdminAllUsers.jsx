@@ -119,7 +119,7 @@ function AdminAllUsers() {
           <i className="fa-solid fa-envelope mr-2"></i>Email
         </span>
         <span className="col-span-1 text-sm font-semibold" style={{ color: ACCENT }}>
-          <i className="fa-solid fa-calendar mr-2"></i>Godište
+          <i className="fa-solid fa-calendar mr-2"></i>Uloga
         </span>
         <span className="col-span-1 text-sm font-semibold text-right" style={{ color: ACCENT }}>
           Akcije
@@ -155,10 +155,9 @@ function AdminAllUsers() {
                   </div>
                   {fullName}
                 </span>
-
                 <span className="col-span-3 text-gray-600 text-sm">@{user.username}</span>
                 <span className="col-span-3 text-gray-600 text-sm truncate">{user.email}</span>
-                <span className="col-span-1 text-gray-600 text-sm">{user.birthyear ?? '-'}</span>
+                <span className="col-span-1 text-gray-600 text-sm">{user.role_name}</span>
 
                 {/* Actions */}
                 <div className="col-span-1 flex justify-end gap-2">
