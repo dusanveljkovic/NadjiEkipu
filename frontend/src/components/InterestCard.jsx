@@ -76,12 +76,13 @@ function SkillBar({ level, onChange, color }) {
   );
 }
 
-function InterestCard({ interest, selected, skill, onToggle, onSkillChange }) {
+function InterestCard({ interest, selected, skill, onToggle, onSkillChange, testId }) {
   const { bg, color } = getRandomColor(interest.name)
   const border = color
 
   return (
     <div
+      data-testid={testId}
       onClick={() => { if (!selected) onToggle(interest.idinterests) }}
       style={{
         background: selected ? bg : "white",

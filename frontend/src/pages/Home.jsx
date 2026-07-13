@@ -170,6 +170,7 @@ function Home() {
                   const active = selectedInterests.includes(interest.name);
                   return (
                     <button
+                      data-testid={`Interest-${interest.name}`}
                       key={interest.name}
                       onClick={() => toggleInterest(interest.name)}
                       style={{
@@ -260,6 +261,7 @@ function Home() {
               const isJ = isJoined(a)
               return (
                 <div
+                  data-testid="aktivnost"
                   key={a.idactivities}
                   style={{
                     background: "white",

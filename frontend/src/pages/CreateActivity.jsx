@@ -42,6 +42,8 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log(form);
+
     if (!form.title || !form.interest_id || !form.date || !form.time || !form.location || !form.max_participants) {
       alert("Popuni sva obavezna polja");
       return;
@@ -69,6 +71,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
         }}
       >
         <button
+          data-testid="back-button"
           onClick={onBack}
           style={{
             border: "none",
@@ -124,6 +127,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
       >
         {/* Hobby */}
         <Input
+          data-testid="activity-title"
           label="Naziv"
           name="title"
           value={form.title}
@@ -150,6 +154,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
             {"🏆 Interesovanje"}
           </label>
           <select
+            data-testid="activity-interest"
             id="interests"
             name="interest_id"
             value={form.interest_id}
@@ -174,6 +179,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
         {/* Date + Time */}
         <div style={{ display: "flex", gap: 16 }}>
           <Input
+            data-testid="activity-date"
             type="date"
             label="📅 Datum"
             name="date"
@@ -184,6 +190,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
             onBlur={() => setFocused(null)}
           />
           <Input
+            data-testid="activity-time"
             type="time"
             label="⏰ Vreme"
             name="time"
@@ -197,6 +204,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
 
         {/* Location */}
         <Input
+          data-testid="activity-location"
           label="📍 Lokacija (adresa/mesto)"
           name="location"
           value={form.location}
@@ -275,6 +283,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
 
         {/* Max */}
         <Input
+          data-testid="activity-max-participants"
           type="number"
           label="👥 Max učesnika"
           name="max_participants"
@@ -304,6 +313,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
             📝 Opis aktivnosti
           </label>
           <textarea
+            data-testid="activity-description"
             name="description"
             value={form.description}
             onChange={handleChange}
@@ -330,6 +340,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
         {/* Buttons */}
         <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
           <button
+            data-testid="cancel-button"
             type="button"
             onClick={onBack}
             style={secondaryBtn}
@@ -346,6 +357,7 @@ export default function CreateActivity({ interests, onCreate, onBack }) {
           </button>
 
           <button
+            data-testid="create-activity"
             type="submit"
             style={primaryBtn}
             onMouseEnter={(e) => {
