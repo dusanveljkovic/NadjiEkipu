@@ -86,7 +86,9 @@ function ActivityCard({ activity, onDelete }) {
   const isPast = activity.event_time < new Date().toISOString().slice(0, 10);
 
   return (
-    <div style={{
+    <div
+    data-testid="activity-card"
+     style={{
       background: "white",
       border: "0.5px solid rgba(0,0,0,0.1)",
       borderRadius: 14,
@@ -229,6 +231,7 @@ export default function MyActivities() {
               </p>
             </div>
             <button
+              data-testid = "add-activity"
               onClick={() => setPage("create")}
               style={{
                 display: "flex", alignItems: "center", gap: 7,

@@ -190,6 +190,7 @@ export default function HobbiesPage() {
                 {userInterests
                   .map((ui) => (
                     <InterestCard
+                    testId={`Interest-${ui.idinterests}`}
                       key={ui.idinterests}
                       interest={ui}
                       selected
@@ -215,6 +216,7 @@ export default function HobbiesPage() {
                 {notUserInterests
                   .map((i) => (
                     <InterestCard
+                      testId={`interest-${i.idinterests}`}
                       key={i.idinterests}
                       interest={i}
                       selected={false}
@@ -253,6 +255,7 @@ export default function HobbiesPage() {
             >
               {filtered.map(i => (
                 <InterestCard
+                  
                   key={i.idinterests}
                   interest={i}
                   selected={false}
