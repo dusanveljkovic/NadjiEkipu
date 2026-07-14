@@ -8,3 +8,5 @@ daphne>=4.2.2
 requests>=2.34.2
 pyjwt>=2.13.0
 django-extensions>=4.1
+selenium>=4.20
+pytest>=8.0

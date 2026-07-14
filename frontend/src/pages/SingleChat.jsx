@@ -7,15 +7,8 @@ import { getFullChat } from "../services/chatService";
 import { getRandomColor } from "../services/utils";
 import chatSocket from "../services/chatSocket";
 import { getUserData } from "../services/api";
-import { useParams } from "react-router-dom";
+import { data, useParams } from "react-router-dom";
 const primaryColor = "#3852B4";
-
-const users = [
-  { name: "jana", initials: "JA", online: true, bg: "#EEEEEE", color: "#0F6E56" },
-  { name: "ana", initials: "AN", online: true, bg: "#FAECE7", color: "#993C1D" },
-  { name: "dusan", initials: "DU", online: false, bg: "#E6F1FB", color: "#185FA5" },
-  { name: "tigar", initials: "TI", online: true, bg: "#FAEEDA", color: "#854F0B" },
-]
 
 function getTime() {
   return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
@@ -84,13 +77,17 @@ export default function ChatPage() {
   const [input, setInput] = useState("")
   const messagesEndRef = useRef(null)
   const textAreaRef = useRef(null)
-  const userId = getUserData().idusers
+  var userId 
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
   useEffect(() => {
+    getUserData().then((data) => {
+      userId = data.idusers
+    }
+    )
     getFullChat(chatId)
       .then((data) => {
         setMessages(data.messages)
@@ -131,9 +128,6 @@ export default function ChatPage() {
     }
   }, [chatId, userId])
 
-  const onlineUsers = users.filter((u) => u.online)
-  const offlineUsers = users.filter((u) => !u.online)
-
   const handleSendMessage = (e) => {
     e.preventDefault()
     if (!input.trim() || !isConnected) return
@@ -169,7 +163,7 @@ export default function ChatPage() {
           background: "white",
         }}
       >
-        <div className="flex-7 flex flex-col border-r border-black/10">
+        <div className="flex flex-3 flex-col border-r border-black/10">
           <div className="flex items-center gap-2 px-5 py-3 border-b border-black/10 bg-white">
             <div
               className="flex items-center justify-center rounded-full text-[13px] font-medium"
@@ -179,7 +173,6 @@ export default function ChatPage() {
             </div>
             <div>
               <p className="text-[15px] font-medium text-gray-900">{title}</p>
-              <p className="text-[12px] text-gray-500">{onlineUsers.length} online</p>
             </div>
           </div>
 
@@ -224,36 +217,6 @@ export default function ChatPage() {
             >
               <i className="text-white fa-regular fa-paper-plane" />
             </button>
-          </div>
-        </div>
-
-        <div className="flex-3 flex flex-col bg-white">
-          <div className="px-4 py-3 border-b border-black/10">
-            <p className="text-[13px] font-medium text-gray-900">Korisnici</p>
-            <p className="text-[11px] text-gray-500 mt-0.5">{users.length} korisnika</p>
-          </div>
-
-          <div className="flex-1 overflow-y-auto py-2">
-            {onlineUsers.length > 0 && (
-              <div>
-                <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest px-3.5 pt-2 pb-1">
-                  Online — {onlineUsers.length}
-                </p>
-                {onlineUsers.map((u) => (
-                  <UserItem key={u.name} user={u} />
-                ))}
-              </div>
-            )}
-            {offlineUsers.length > 0 && (
-              <div>
-                <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest px-3.5 pt-3 pb-1">
-                  Offline — {offlineUsers.length}
-                </p>
-                {offlineUsers.map((u) => (
-                  <UserItem key={u.name} user={u} />
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
