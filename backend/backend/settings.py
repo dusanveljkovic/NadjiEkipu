@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,7 +61,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [{"address": "redis://127.0.0.1:6379/0", "socket_timeout": None}]
+            "hosts": [{"address": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0"), "socket_timeout": None}]
         },
     },
 }
@@ -101,7 +102,7 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-import os
+
 
 # import pymysql
 # pymysql.install_as_MySQLdb()
@@ -123,11 +124,11 @@ OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "nadji_ekipu",
-        "USER": "root",
-        "PASSWORD": "rootpassword",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
+        "NAME": os.getenv("DB_NAME", "nadji_ekipu"),
+        "USER": os.getenv("DB_USER", "root"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "rootpassword"),
+        "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+        "PORT": os.getenv("DB_PORT", "3306"),
     }
 }
 

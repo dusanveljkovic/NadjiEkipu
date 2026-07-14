@@ -16,6 +16,9 @@ Cilj aplikacije je da olakša organizaciju i povezivanje ljudi sa sličnim inter
 ## Pokretanje projekta
 
 ```bash
+# docker
+docker compose up --build 
+
 # frontend
 npm install
 npm run dev
@@ -32,8 +35,8 @@ docker run -d \
     -e MYSQL_PASSWORD=mypasswod \
     -p 3306:3306 \
     mariadb:latest
-docker exec -i mariadb mysql -uroot -prootpassword nadji_ekipu < ../baza/create_dbW.sql
-docker exec -i mariadb mysql -uroot -prootpassword nadji_ekipu < ../baza/seedW.sql
+docker exec -i mariadb mariadb -uroot -prootpassword < ../baza/create_dbW.sql
+docker exec -i mariadb mariadb -uroot -prootpassword nadji_ekipu < ../baza/seedW.sql
 
 python manage.py runserver
 ```

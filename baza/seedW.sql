@@ -88,27 +88,12 @@ INSERT INTO `activities` (`interest_id`, `created_by`, `title`, `description`, `
 (9, 2, 'Sahovski Turnir', 'Brzopotezni sah turnir', DATE_ADD(NOW(), INTERVAL 12 DAY), 44.820556, 20.462083, 'Sah klub ''Dorcol''', 32, 1),
 (10, 3, 'Ulicna Fotografija', 'Radionica ulicne fotografije', DATE_ADD(NOW(), INTERVAL 13 DAY), 44.817813, 20.456896, 'Umetnicki kvart Savamala', 10, 0);
 
--- =============================================
--- 6. Popunjavanje tabela ucesnika aktivnosti (activity_participants)
--- =============================================
-INSERT INTO `activity_participants` (`activity_id`, `user_id`, `status`) VALUES 
-(1, 3, 1),
-(1, 2, 1),
-(2, 3, 1),
-(3, 2, 1),
-(4, 2, 1),
-(5, 2, 1),
-(6, 2, 1),
-(7, 3, 1),
-(8, 2, 1),
-(8, 3, 1),
-(9, 3, 1),
-(10, 2, 1),
-(11, 3, 1),
-(12, 2, 1),
-(13, 3, 1),
-(14, 2, 1),
-(15, 2, 1);
+INSERT INTO `activity_participants` (`activity_id`, `user_id`, `status`) 
+SELECT 
+    a.idactivities,
+    a.created_by,
+    1  -- status = 1 (potvrđen)
+FROM activities a;
 
 -- =============================================
 -- 7. Popunjavanje tabela caskanja (chats)

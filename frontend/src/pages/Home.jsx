@@ -32,9 +32,12 @@ function Home() {
   const [cities, setCities] = useState([])
   const [joinedActivities, setJoinedActivities] = useState([])
 
-  const user = getUserData()
+  const [user, setUser] = useState(null)
 
-  useEffect(() => { loadData() }, [])
+  useEffect(() => { 
+    getUserData().then((data) => setUser(data))
+    loadData()
+   }, [])
 
   const loadData = async () => {
     let data = await getInterests()
@@ -77,7 +80,7 @@ function Home() {
         (showRecommended || (!showRecommended && !isRecommended(a)))
       )
     })
-  }, [activites, selectedInterests, startDate, endDate, startTime, endTime, location, showJoined, showRecommended])
+  }, [activites, user, selectedInterests, startDate, endDate, startTime, endTime, location, showJoined, showRecommended])
 
   const PAGE_SIZE = 5
   const totalPages = Math.max(1, Math.ceil(filteredActivities.length / PAGE_SIZE));
